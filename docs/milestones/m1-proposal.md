@@ -1,15 +1,15 @@
-# M1 proposal — ingest the Vero price list
+# M1 proposal - ingest the Vero price list
 
-**Status:** Proposed — requires owner approval before implementation begins.
+**Status:** APPROVED by owner 2026-10-28 (scope, fixtures, fetch window, Ramstore skip). Implemented same day; evidence in docs/milestones/current-status.md and scripts/test-m1.ps1 output.
 **Depends on:** M0 (this work package).
 
 ## Goal
 Replay the Vero published price list into PostgreSQL as store-specific offers with full provenance, without duplicate or corrupt records, verifiable by tests and by re-running.
 
 ## Validated basis (evidence in `docs/research/retailer-sources.md`)
-- Source: `https://pricelist.vero.com.mk/` — static HTML, per-store pages `{storeId}_{page}.html`, 17 stores (ВЕРО 1–14, ЏАМБО 1–3).
+- Source: `https://pricelist.vero.com.mk/` - static HTML, per-store pages `{storeId}_{page}.html`, 17 stores (ВЕРО 1–14, ЏАМБО 1–3).
 - Verified row schema: name, selling price (incl. VAT), unit price (`ден/парче`), availability (Да/Не), category, regular price, discount price, discount %, promo type, promo validity dates, per-page "last updated" timestamp.
-- robots.txt expresses no restrictions; no ToS prohibition found on the pricelist host (unlike Ramstore, which is blocked by its site terms — ADR-0005).
+- robots.txt expresses no restrictions; no ToS prohibition found on the pricelist host (unlike Ramstore, which is blocked by its site terms - ADR-0005).
 
 ## Deliverables
 1. **PostgreSQL schema (Flyway migrations):** `retailers`, `stores`, `retailer_products`, `offers_current`, `price_observations`, `promotions`, `ingestion_runs`, `raw_snapshots` (M1 scope; `canonical_products`/matching tables arrive in M2).
@@ -29,6 +29,6 @@ Replay the Vero published price list into PostgreSQL as store-specific offers wi
 ~1 schema migration set, 1 Python package (`adapters/vero/`), 1 contract doc, fixtures (~2 real pages committed), CI wiring. No paid services, no cloud.
 
 ## Risks / open questions for the owner
-1. Vero updates ~daily (page showed 28/10/2026 8:02) — confirm acceptable fetch window (proposal: once daily after 08:30 local).
-2. Discounted and non-promoted rows coexist; M1 stores both regular and current price per row — confirm.
+1. Vero updates ~daily (page showed 28/10/2026 8:02) - confirm acceptable fetch window (proposal: once daily after 08:30 local).
+2. Discounted and non-promoted rows coexist; M1 stores both regular and current price per row - confirm.
 3. Committing real captured HTML fixtures to the repo: acceptable? (They are public price publications; content-hash dedup keeps them small.)

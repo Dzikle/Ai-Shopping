@@ -5,3 +5,4 @@
 *.gif binary
 *.pdf binary
 *.gz binary
+tests/fixtures/vero/*.html -text

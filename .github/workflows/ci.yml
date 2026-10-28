@@ -35,6 +35,13 @@ jobs:
         shell: pwsh
         run: ./scripts/validate-baseline.ps1
 
+      - name: Adapter unit tests (Python 3.12, stdlib only)
+        run: docker run --rm -v "$PWD:/w" -w /w/adapters/vero python:3.12-slim python -B tests.py
+
+      - name: M1 integration test (replay fixtures, idempotent load)
+        shell: pwsh
+        run: ./scripts/test-m1.ps1
+
       - name: Teardown
         if: always()
         run: docker compose down -v
