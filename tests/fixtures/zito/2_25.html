@@ -1,0 +1,2356 @@
+﻿
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка на цени</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color:rgb(255, 255, 255);
+            color: black;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        table {
+            background: white;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        table {
+            user-select: none;
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none; 
+        }
+        
+        * {
+    user-select: none;
+    -webkit-user-select: none; 
+    -webkit-touch-callout: none;
+    }
+
+
+
+    </style>
+</head>
+<body>
+
+
+<script>
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener("keydown", function(event) {
+    
+    if (
+        event.key === "F12" || 
+        (event.ctrlKey && event.shiftKey && (event.key === "I" || event.key === "J")) || 
+        (event.ctrlKey && (event.key === "U" || event.key === "S"))
+    ) {
+        event.preventDefault();
+        
+    }
+});
+
+</script>
+
+
+<div class="container my-4">
+<div class="header d-flex align-items-center p-3" style="background-color:rgb(233 233 233);
+ color: black;">
+
+        <a href="index.php" style="margin-right: 19%;">
+    <img src="logo.png" alt="Logo" id="logo" style="height: 65px; margin-right: 19%;">
+    </a>
+ 
+    <h1 class="mb-0" style="font-size: 34px; font-weight: bold;">ПРОВЕРКА НА ЦЕНИ</h1>
+</div>
+    </div>
+
+
+<div class="container my-4">
+    <div class="card p-3 shadow-sm">
+        <form class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <select name="org" class="form-select" onchange="this.form.submit()">
+                    <option value="">Одберете маркет</option>
+                                            <option value="2" 
+                                selected>
+                            2 Трговски - Велес                        </option>
+                                            <option value="3" 
+                                >
+                            3 Струмица 4                        </option>
+                                            <option value="4" 
+                                >
+                            4 Пазар - Кочани                        </option>
+                                            <option value="5" 
+                                >
+                            5 Делчево 2                        </option>
+                                            <option value="6" 
+                                >
+                            6 Куманово - Трговски                        </option>
+                                            <option value="7" 
+                                >
+                            7 Интернат - Велес                        </option>
+                                            <option value="8" 
+                                >
+                            8 Бутел1 - Скопје                        </option>
+                                            <option value="9" 
+                                >
+                            9 Жито Ване - Велес                        </option>
+                                            <option value="10" 
+                                >
+                            10 Жито Ване Кат                        </option>
+                                            <option value="11" 
+                                >
+                            11 Ѓорче - Скопје                        </option>
+                                            <option value="12" 
+                                >
+                            12 Демир капија                        </option>
+                                            <option value="13" 
+                                >
+                            13 Центар ЗОИЛ - Скопје                        </option>
+                                            <option value="14" 
+                                >
+                            14 Мичурин - Скопје                        </option>
+                                            <option value="15" 
+                                >
+                            15 Соколана - Велес                        </option>
+                                            <option value="16" 
+                                >
+                            16 Центар - Велес                        </option>
+                                            <option value="17" 
+                                >
+                            17 Автобуска - Кочани                        </option>
+                                            <option value="18" 
+                                >
+                            18 Баумаркет - Скопје                        </option>
+                                            <option value="19" 
+                                >
+                            19 Фонтана - Велес                        </option>
+                                            <option value="20" 
+                                >
+                            20 Багремче - Велес                        </option>
+                                            <option value="21" 
+                                >
+                            21 Градско                        </option>
+                                            <option value="22" 
+                                >
+                            22 Илинден - Скопје                        </option>
+                                            <option value="23" 
+                                >
+                            23 Рид - Прилеп                        </option>
+                                            <option value="24" 
+                                >
+                            24 Штип Сењак                        </option>
+                                            <option value="25" 
+                                >
+                            25 Виница                        </option>
+                                            <option value="26" 
+                                >
+                            26 Неготино                        </option>
+                                            <option value="27" 
+                                >
+                            27 Делчево                        </option>
+                                            <option value="28" 
+                                >
+                            28 Росоман                        </option>
+                                            <option value="29" 
+                                >
+                            29 Општина - Велес                        </option>
+                                            <option value="30" 
+                                >
+                            30 Струмица 1                        </option>
+                                            <option value="31" 
+                                >
+                            95 Кавадарци 2                        </option>
+                                            <option value="32" 
+                                >
+                            32 Поток - Тетово                        </option>
+                                            <option value="33" 
+                                >
+                            33 Валандово                        </option>
+                                            <option value="34" 
+                                >
+                            34 Гостивар                        </option>
+                                            <option value="35" 
+                                >
+                            35 Ново Лисиче - Скопје                        </option>
+                                            <option value="36" 
+                                >
+                            96 К.Вода Расадник 2                        </option>
+                                            <option value="37" 
+                                >
+                            37 Градски Саат - Велес                        </option>
+                                            <option value="38" 
+                                >
+                            38 Аеродром Пазар - Скопје                        </option>
+                                            <option value="39" 
+                                >
+                            39 Кисела Вода 2 - Скопје                        </option>
+                                            <option value="40" 
+                                >
+                            40 Бутел2 - Скопје                        </option>
+                                            <option value="41" 
+                                >
+                            41 Кеј - Прилеп                        </option>
+                                            <option value="42" 
+                                >
+                            42 Облешево                        </option>
+                                            <option value="43" 
+                                >
+                            43 Железара - Скопје                        </option>
+                                            <option value="44" 
+                                >
+                            44 Драчево1 - Скопје                        </option>
+                                            <option value="45" 
+                                >
+                            45 Превалец                        </option>
+                                            <option value="46" 
+                                >
+                            46 Аеродром Тобако - Скопје                        </option>
+                                            <option value="47" 
+                                >
+                            47 Аеродром Капитол - Скопје                        </option>
+                                            <option value="48" 
+                                >
+                            48 Влае - Скопје                        </option>
+                                            <option value="49" 
+                                >
+                            49 Чашка                        </option>
+                                            <option value="50" 
+                                >
+                            50 Влез - Кочани                        </option>
+                                            <option value="51" 
+                                >
+                            51 КиМ - Велес                        </option>
+                                            <option value="52" 
+                                >
+                            52 Касарна - Битола                        </option>
+                                            <option value="53" 
+                                >
+                            53 Градинка - Велес                        </option>
+                                            <option value="54" 
+                                >
+                            54 Брвеница - Тетово                        </option>
+                                            <option value="55" 
+                                >
+                            55 Којник - Велес                        </option>
+                                            <option value="56" 
+                                >
+                            56 Аеродром Поликлиника -Скопје                        </option>
+                                            <option value="57" 
+                                >
+                            57-Петровец - Скопје                        </option>
+                                            <option value="58" 
+                                >
+                            58 Битола-2                        </option>
+                                            <option value="59" 
+                                >
+                            59 Куманово                        </option>
+                                            <option value="60" 
+                                >
+                            60 Македонска Каменица                        </option>
+                                            <option value="61" 
+                                >
+                            61 Автокоманда - Скопје                        </option>
+                                            <option value="62" 
+                                >
+                            62  Гимназија                        </option>
+                                            <option value="63" 
+                                >
+                            63 Гимназија-Дом                        </option>
+                                            <option value="64" 
+                                >
+                            64 Битола-3                        </option>
+                                            <option value="65" 
+                                >
+                            65 Илинден 2                        </option>
+                                            <option value="66" 
+                                >
+                            66 Волково - Скопје                        </option>
+                                            <option value="67" 
+                                >
+                            67 Ламели Кичево                        </option>
+                                            <option value="68" 
+                                >
+                            68 Девеана Кичево                        </option>
+                                            <option value="69" 
+                                >
+                            69 жито Гостивар Автобуска                        </option>
+                                            <option value="70" 
+                                >
+                            70 Гевгелија                        </option>
+                                            <option value="71" 
+                                >
+                            71 Жито Свети Николе Автобуска                        </option>
+                                            <option value="72" 
+                                >
+                            72 Жито Кочани Излез                        </option>
+                                            <option value="73" 
+                                >
+                            73 Жито ПробиШтип Автобуска                        </option>
+                                            <option value="74" 
+                                >
+                            74 Жито Струмица 2                        </option>
+                                            <option value="75" 
+                                >
+                            75 Жито Штип 2 Влез                        </option>
+                                            <option value="76" 
+                                >
+                            76 Жито Штип Центар                        </option>
+                                            <option value="78" 
+                                >
+                            78 Ла Фамилиа Велес                        </option>
+                                            <option value="79" 
+                                >
+                            79 Ла Фамилиа Центар                        </option>
+                                            <option value="80" 
+                                >
+                            80 Ла Фамилиа ЕАСТ ГАТЕ                        </option>
+                                            <option value="81" 
+                                >
+                            81 Ла Фамилиа Кавадарци                        </option>
+                                            <option value="82" 
+                                >
+                            82 Жито Којник                        </option>
+                                            <option value="83" 
+                                >
+                            83 Жито Дос Велес                        </option>
+                                            <option value="84" 
+                                >
+                            84 Куманово 3                        </option>
+                                            <option value="85" 
+                                >
+                            85 Струмица 3                        </option>
+                                            <option value="86" 
+                                >
+                            86 Струга                        </option>
+                                            <option value="87" 
+                                >
+                            87 Охрид                        </option>
+                                            <option value="88" 
+                                >
+                            88 Ла Фамилија Охрид                        </option>
+                                            <option value="89" 
+                                >
+                            89 Штип градинка                        </option>
+                                            <option value="90" 
+                                >
+                            90 Чашка                        </option>
+                                            <option value="91" 
+                                >
+                            91 Тетово тетовчанка                        </option>
+                                            <option value="92" 
+                                >
+                            92 Тетово општина                        </option>
+                                            <option value="93" 
+                                >
+                            93 Бауман                        </option>
+                                            <option value="94" 
+                                >
+                            94 Кавадарци                        </option>
+                                            <option value="95" 
+                                >
+                            95 Драчево 2                        </option>
+                                            <option value="96" 
+                                >
+                            96 Радовиш                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="search" class="form-control" placeholder="Пребарај по име" 
+                       value="">
+            </div>
+            <div class="col-md-2">
+                <select name="perPage" class="form-select" onchange="this.form.submit()">
+                                            <option value="10" >
+                            10 / страница
+                        </option>
+                                            <option value="20" >
+                            20 / страница
+                        </option>
+                                            <option value="50" >
+                            50 / страница
+                        </option>
+                                            <option value="100" selected>
+                            100 / страница
+                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Пребарај</button>
+            </div>
+        </form>
+
+                    <p class="text-muted">
+    Прикажи 2401 - 2500 од 4963 артикли
+</p>
+		<span>Датум и време на последно ажурирање на цените: 
+            28/10/2026 21:35</span>
+            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-light" style="font-size:15px;">
+                        <tr>
+                                                        <th rowspan="2">Назив на стока-производ</th>
+                                                        <th rowspan="2">Продажна цена</th>
+                                                        <th rowspan="2">Единечна цена</th>
+                                                        <th rowspan="2">Опис на стока</th>
+                            <th rowspan="2">Достапност во продажен објект</th>
+                            <th rowspan="2">Редовна цена </th>
+                            
+                            
+                        
+                                                        <th colspan="3" id="col">Промотивна или попустна цена</th>
+                        
+
+                            
+                        </tr>
+                        <tr>
+
+                        <th id="col">Цена со попуст</th>
+                        <th id="col">Вид на продажно поттикнување</th>
+                        <th id="col">Времетраење на промоција</th>
+                            </tr>
+                                                </thead>
+                    <tbody style="font-size:14px;">
+                        <!-- test -->
+
+                                                                                <tr>
+                                                                    <td>ЧОКОЛ ЗА ГОТВЕЊЕ ДР ЕТКЕР 150гр</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 90.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади за готвење                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 155 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    135 ден.
+                                    <br>
+                                Попуст:13%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 22.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН БУСТО 110гр ХХЛ КАКАО</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 35.45 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОК ЈАЈЦЕ ЗАИНИ 20гр ПАТРОЛ</td>
+                                                                        <td>
+                                    79 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 395.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 79 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛИЖАВЧЕ ЧУНГА ЛУНГА 15гр СО МАСТИКА</td>
+                                                                        <td>
+                                    10 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 66.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 10 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ПОРТОКАЛ 28гр ПАРАЌИНКА</td>
+                                                                        <td>
+                                    15 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 53.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 15 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ АГРОКРЕМ БЛОК 80гр</td>
+                                                                        <td>
+                                    44 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 55.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 44 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКО БАР ДАРЕ 30гр МЛЕЧНО СО ФСТАК</td>
+                                                                        <td>
+                                    54 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 180.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 54 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ДУПЛО Т1х24х2 26гр</td>
+                                                                        <td>
+                                    41 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 157.69 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 41 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЕУРОДЕСЕРТ 300гр СВИСЛИОН</td>
+                                                                        <td>
+                                    222 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 74.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбониера                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 222 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ СИРИУС 27гр КОКОС</td>
+                                                                        <td>
+                                    20 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 74.07 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 20 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ СИРИУС 27гр БЕЛ КРЕМ</td>
+                                                                        <td>
+                                    20 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 74.07 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулсни производи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 20 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОНДОМ ДУРЕКС СЕНЗИТИВ 3/1</td>
+                                                                        <td>
+                                    133 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 133.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 133 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОНДОМ ДУРЕКС ПЛЕЖЕРМАКС 6/1</td>
+                                                                        <td>
+                                    245 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 81.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 245 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ НАЈ ЖЕЛБИ 85гр СО КЕКС</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 104.71 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ЈАЈЦЕ ЛАКИ ГРЛ 35гр</td>
+                                                                        <td>
+                                    102 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 291.43 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 138 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    102 ден.
+                                    <br>
+                                Попуст:26%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>Б-РЕДИ НУТЕЛА Т2 45.3гр</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 143.49 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 65 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН 5КА 60гр КАКАО</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 30.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 18 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МИЊОН КОЦКА ПИОНИР 260гр КЛАСИК</td>
+                                                                        <td>
+                                    189 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 72.69 ден.
+                                    </td>
+                                                                        <td>
+                                    Слатки                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 189 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ЈАЈЦЕ ЛАКИ БОЈ 15гр ИГРАЧКА</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 433.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 65 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ БОНБОНИ ПРАЛИНЕ 250гр ЈАГОДА</td>
+                                                                        <td>
+                                    115 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 46.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 115 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОЊЕРА ШЕРИ 204гр ЕВРОПА</td>
+                                                                        <td>
+                                    269 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 131.86 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбониера                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 269 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ПИОНИР 200гр ЛЕШНИК</td>
+                                                                        <td>
+                                    235 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 117.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 235 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ЗА ГОТВЕЊЕ ЛЕОНА ПОСНО 90гр БЕЛО</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 33.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади за готвење                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ИНСТАНТ КАПУЧИНО ГРАНД 18гр ИРСКИ КРЕМ</td>
+                                                                        <td>
+                                    19 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 105.56 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 19 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН 7 ДЕЈС 80гр ДАБЛ КАКАО&amp;ВАНИЛА</td>
+                                                                        <td>
+                                    40 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 50.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 40 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ХАРИБО 100гр СТАРМИКС</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 62.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Гумени бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ГУМЕНИ ТРОЛИ 100гр КИСЕЛИ ШПАГЕТ</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 89.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Гумени бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ МОНИ СО ОРИЗ 75гр ПИОНИР</td>
+                                                                        <td>
+                                    42 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 56.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 42 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ КИНДЕР ДЕЛИЧЕ Т1х20 39гр</td>
+                                                                        <td>
+                                    38 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 97.44 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 38 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОЊЕРА ШЕРИ 147гр ЕВРОПА</td>
+                                                                        <td>
+                                    179 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 121.77 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбониера                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 179 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ МИЛКА 80гр МЛЕЧНО</td>
+                                                                        <td>
+                                    79 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 98.75 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 79 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ МОНИ СО ОРИЗ 150гр ПИОНИР</td>
+                                                                        <td>
+                                    80 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 53.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 80 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ХЕРБА 48гр ОРИГИНАЛ</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 81.25 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>РУМ ПЛОЧКИ КАНДИТ 45гр</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 66.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОНДОМ ДУРЕКС ЕКСТРА СЕИВ 6/1</td>
+                                                                        <td>
+                                    245 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 245.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 245 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БАКЛАВА САНДЕЈ 500гр РОЛОВАНА</td>
+                                                                        <td>
+                                    219 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 43.80 ден.
+                                    </td>
+                                                                        <td>
+                                    Сезонски слатки и чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 219 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ РОНДО ЦЕ 28гр КЛАСИК</td>
+                                                                        <td>
+                                    36 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 128.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 36 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОЊЕРА НУГАТ 188гр КРЕМ ЛЕШНИК</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 159.04 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбониера                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 299 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ВИТАНОВА 30гр ЈАГОДА И ЧОКОЛАДО</td>
+                                                                        <td>
+                                    27 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 90.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 27 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЕРВЕИС ЕКСТРИМ 14гр</td>
+                                                                        <td>
+                                    25 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    25 ден.
+                                    <br>
+                                Попуст:14%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 14.10.2026 до <br>09.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН МИЛКА 50гр ЧОКО</td>
+                                                                        <td>
+                                    43 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 86.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 43 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКО БАР ДАРЕ 30гр МЛЕЧНО СО ЛЕШНИК</td>
+                                                                        <td>
+                                    48 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 160.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 48 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КИНДЕР КРИСПИ 34гр</td>
+                                                                        <td>
+                                    57 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 167.65 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулсни производи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 57 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ХАРИБО 85гр ПИКО БАЛА</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 72.94 ден.
+                                    </td>
+                                                                        <td>
+                                    Гумени бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛАДА НАЈ ЖЕЛБИ 184гр БАНАНИЦА</td>
+                                                                        <td>
+                                    143 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 77.72 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 205 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    143 ден.
+                                    <br>
+                                Попуст:30%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 14.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ГУМА ЗА ЏВАК ЧУНГА ЛУНГА МЕГА ТУТИ ФРУТИ</td>
+                                                                        <td>
+                                    10 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 2.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 10 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ЗОЗОЛЕ 75гр ЈАБОЛКО,ВИШЊА,ЈАГОДА</td>
+                                                                        <td>
+                                    26 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 34.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 26 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ АТЛАНТИС БАР 35гр</td>
+                                                                        <td>
+                                    27 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 77.14 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулсни производи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 27 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ КИНДЕР КАНТРИ 23.5г.</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 139.13 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ОРБИТ БОТЛ СПЕАРМИНТ ДРАЖЕИ 64гр</td>
+                                                                        <td>
+                                    145 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 145.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 145 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКО КИНДЕР БУЕНО БЕЛО Т2 40гр</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 147.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 59 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАПАЛКА Ј5 МИНИ 50/1</td>
+                                                                        <td>
+                                    63 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 63.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 63 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ЕУКАЛИПТУС 150гр</td>
+                                                                        <td>
+                                    60 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 40.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 60 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН 7 ДЕЈС МАКС 80гр КАКАО</td>
+                                                                        <td>
+                                    40 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 50.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 40 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ МИЛКА 300гр ОРЕО</td>
+                                                                        <td>
+                                    315 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 105.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 315 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ МИЛКА 280гр ТРИОЛАДЕ</td>
+                                                                        <td>
+                                    315 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 112.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 315 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ НЕГРО 400гр</td>
+                                                                        <td>
+                                    159 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 39.75 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 159 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОЛАЧИ ОРЕО 110гр</td>
+                                                                        <td>
+                                    67 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 60.91 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 67 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХАНУТА ФЕРЕРО 45гр</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 137.78 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулсни производи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ГУМЕНИ ЗОЗОЛЕ 75гр КОЛА</td>
+                                                                        <td>
+                                    35 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 46.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Гумени бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 35 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ПЕПЕРМИНТ 28гр ПАРАЌИНКА</td>
+                                                                        <td>
+                                    15 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 53.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 15 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ЖИВОТИНСКО ЦАРСТВО 75гр СЕТ 5*15</td>
+                                                                        <td>
+                                    145 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 193.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 145 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛИЖАВЧИЊА ЗОЗОЛЕ КИСЕЛИ 8гр СО МАСТИКА</td>
+                                                                        <td>
+                                    10 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 10.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 10 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГУМА ЗА ЏВАКАЊЕ МЕНТОС ТУТИ-ФРУТИ 15.5гр</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 251.61 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ХАРИБО 175гр ЛЕМОН ФРЕШ КОЛА</td>
+                                                                        <td>
+                                    97 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 55.43 ден.
+                                    </td>
+                                                                        <td>
+                                    Гумени бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 97 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН 7ДЕЈС 80гр ДАБЛ КАКАО-КОКОС</td>
+                                                                        <td>
+                                    40 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 50.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 40 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ НЕЛИНО КИДС 100гр ЈАГОДА И ЧИЗКЕЈК</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 69.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЕТ КРОАСАНИ 7ДЕЈС КАКАО 5*50гр МУЛТИПАК</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ РОШЕН БАБЛ 80гр КАРАМЕЛА</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКО ФИНЕ УНО 25гр</td>
+                                                                        <td>
+                                    15 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 60.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулсни производи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 15 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ БАНЖЕ 30гр</td>
+                                                                        <td>
+                                    12 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 40.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулсни производи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 12 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ЈАЈЦЕ ЛАКИ ГРЛ 15гр ИГРАЧКА</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 433.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 65 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НУТЕЛА &amp; ГО Т1х24 54гр</td>
+                                                                        <td>
+                                    104 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 104 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН 5КА 60гр КАКАО И ВАНИЛА</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 30.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 18 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАФЛА ЕТИ 50гр ДАРЕ</td>
+                                                                        <td>
+                                    43 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 86.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулсни производи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 43 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛАДЕН ПРЕЛИВ КИМ 350гр</td>
+                                                                        <td>
+                                    85 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 24.29 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади за готвење                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ТИК ТАК 18гр ПОРТОКАЛ</td>
+                                                                        <td>
+                                    35 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 194.44 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 35 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ОРБИТ ВАЈТ СПЕАРМИНТ ДРАЖЕИ</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 18.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 25 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    18 ден.
+                                    <br>
+                                Попуст:28%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 02.10.2026 до <br>01.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ЕРВЕИС БЛЕК МИНТ ДРАЖЕИ 14гр</td>
+                                                                        <td>
+                                    25 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 25.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 25 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН 7 ДЕЈС 60гр ДАБЛ КАКАО-ВАНИ МИНИ</td>
+                                                                        <td>
+                                    40 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 66.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 40 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ДУО 40гр ЛЕШНИК</td>
+                                                                        <td>
+                                    29 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 72.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулсни производи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАДАИФ ХАСТЕЛ 400гр</td>
+                                                                        <td>
+                                    180 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 45.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Сезонски слатки и чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 180 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИЕРА МЕРСИ 250гр ЗЕЛЕНО</td>
+                                                                        <td>
+                                    445 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 178.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбониера                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 445 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ МИЛКА 92гр ОРЕО СЕНДВИЧ</td>
+                                                                        <td>
+                                    109 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 118.48 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 109 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КИНДЕР КАРТИ 2/1</td>
+                                                                        <td>
+                                    38 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 19.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 38 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН КАРУЗО 82гр ТИРАМИСУ</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 47.56 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ОРБИТ ЛУБЕНИЦА ДРАЖЕИ</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 18.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    18 ден.
+                                    <br>
+                                Попуст:38%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 14.10.2026 до <br>09.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ МИЛКА 250гр МЛЕЧНО</td>
+                                                                        <td>
+                                    205 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 82.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 205 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ИНСТАНТ КАФЕ ГРАНД 2во1 СЛИМ&amp;ФИТ 12.5гр</td>
+                                                                        <td>
+                                    15 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 120.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 15 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ОРБИТ МИНТС СТРОНГ 28гр</td>
+                                                                        <td>
+                                    29 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЕРВЕИС МЕНТОЛ И ЕУКАЛИПТУС ДРАЖЕИ 14гр</td>
+                                                                        <td>
+                                    40 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 40.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 40 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ОРБИТ ЈАГОДА ДРАЖЕИ 14гр</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Импулс каса кондиторија                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    18 ден.
+                                    <br>
+                                Попуст:38%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 14.10.2026 до <br>09.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ЕУКАЛИПТУС 150гр СТРОНГ</td>
+                                                                        <td>
+                                    72 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 48.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 72 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ЗА ГОТВЕЊЕ ДР ЕТКЕР 150гр ЦРНА</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 90.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади за готвење                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 155 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    135 ден.
+                                    <br>
+                                Попуст:13%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 22.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ НЕЛИНО ДУБАИ 62гр</td>
+                                                                        <td>
+                                    139 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 224.19 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 139 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ ХАРИБО 100гр КИСЕЛ ПОМФРИТ</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 62.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Гумени бонбони                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН 7 ДЕЈС 150гр КАКАО</td>
+                                                                        <td>
+                                    63 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 42.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 63 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОАСАН БУСТО 110гр ХХЛ КАКАО/ВАНИЛА</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 35.45 ден.
+                                    </td>
+                                                                        <td>
+                                    Кроасани и теста                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ГАЛЕБ 200гр ЛЕШНИК</td>
+                                                                        <td>
+                                    255 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 127.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 255 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛ ЗА ГОТВЕЊЕ ЛЕОНА ПОСНО 90гр КАКАО</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 33.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Чоколади за готвење                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                                        </tbody>
+                </table>
+            </div>
+
+            <nav class="d-flex justify-content-center"><ul class="pagination"><li class="page-item"><a class="page-link" href="?page=24&perPage=100&search=&org=2">&laquo;</a></li><li class="page-item"><a class="page-link" href="?page=1&perPage=100&search=&org=2">1</a></li><li class="page-item disabled"><span class="page-link">...</span></li><li class="page-item "><a class="page-link" href="?page=23&perPage=100&search=&org=2">23</a></li><li class="page-item "><a class="page-link" href="?page=24&perPage=100&search=&org=2">24</a></li><li class="page-item active"><a class="page-link" href="?page=25&perPage=100&search=&org=2">25</a></li><li class="page-item "><a class="page-link" href="?page=26&perPage=100&search=&org=2">26</a></li><li class="page-item "><a class="page-link" href="?page=27&perPage=100&search=&org=2">27</a></li><li class="page-item disabled"><span class="page-link">...</span></li><li class="page-item"><a class="page-link" href="?page=50&perPage=100&search=&org=2">50</a></li><li class="page-item"><a class="page-link" href="?page=26&perPage=100&search=&org=2">&raquo;</a></li></ul></nav>            </div>
+</div>
+
+</body>
+</html>

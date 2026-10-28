@@ -1,0 +1,2372 @@
+﻿
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка на цени</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color:rgb(255, 255, 255);
+            color: black;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        table {
+            background: white;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        table {
+            user-select: none;
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none; 
+        }
+        
+        * {
+    user-select: none;
+    -webkit-user-select: none; 
+    -webkit-touch-callout: none;
+    }
+
+
+
+    </style>
+</head>
+<body>
+
+
+<script>
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener("keydown", function(event) {
+    
+    if (
+        event.key === "F12" || 
+        (event.ctrlKey && event.shiftKey && (event.key === "I" || event.key === "J")) || 
+        (event.ctrlKey && (event.key === "U" || event.key === "S"))
+    ) {
+        event.preventDefault();
+        
+    }
+});
+
+</script>
+
+
+<div class="container my-4">
+<div class="header d-flex align-items-center p-3" style="background-color:rgb(233 233 233);
+ color: black;">
+
+        <a href="index.php" style="margin-right: 19%;">
+    <img src="logo.png" alt="Logo" id="logo" style="height: 65px; margin-right: 19%;">
+    </a>
+ 
+    <h1 class="mb-0" style="font-size: 34px; font-weight: bold;">ПРОВЕРКА НА ЦЕНИ</h1>
+</div>
+    </div>
+
+
+<div class="container my-4">
+    <div class="card p-3 shadow-sm">
+        <form class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <select name="org" class="form-select" onchange="this.form.submit()">
+                    <option value="">Одберете маркет</option>
+                                            <option value="2" 
+                                selected>
+                            2 Трговски - Велес                        </option>
+                                            <option value="3" 
+                                >
+                            3 Струмица 4                        </option>
+                                            <option value="4" 
+                                >
+                            4 Пазар - Кочани                        </option>
+                                            <option value="5" 
+                                >
+                            5 Делчево 2                        </option>
+                                            <option value="6" 
+                                >
+                            6 Куманово - Трговски                        </option>
+                                            <option value="7" 
+                                >
+                            7 Интернат - Велес                        </option>
+                                            <option value="8" 
+                                >
+                            8 Бутел1 - Скопје                        </option>
+                                            <option value="9" 
+                                >
+                            9 Жито Ване - Велес                        </option>
+                                            <option value="10" 
+                                >
+                            10 Жито Ване Кат                        </option>
+                                            <option value="11" 
+                                >
+                            11 Ѓорче - Скопје                        </option>
+                                            <option value="12" 
+                                >
+                            12 Демир капија                        </option>
+                                            <option value="13" 
+                                >
+                            13 Центар ЗОИЛ - Скопје                        </option>
+                                            <option value="14" 
+                                >
+                            14 Мичурин - Скопје                        </option>
+                                            <option value="15" 
+                                >
+                            15 Соколана - Велес                        </option>
+                                            <option value="16" 
+                                >
+                            16 Центар - Велес                        </option>
+                                            <option value="17" 
+                                >
+                            17 Автобуска - Кочани                        </option>
+                                            <option value="18" 
+                                >
+                            18 Баумаркет - Скопје                        </option>
+                                            <option value="19" 
+                                >
+                            19 Фонтана - Велес                        </option>
+                                            <option value="20" 
+                                >
+                            20 Багремче - Велес                        </option>
+                                            <option value="21" 
+                                >
+                            21 Градско                        </option>
+                                            <option value="22" 
+                                >
+                            22 Илинден - Скопје                        </option>
+                                            <option value="23" 
+                                >
+                            23 Рид - Прилеп                        </option>
+                                            <option value="24" 
+                                >
+                            24 Штип Сењак                        </option>
+                                            <option value="25" 
+                                >
+                            25 Виница                        </option>
+                                            <option value="26" 
+                                >
+                            26 Неготино                        </option>
+                                            <option value="27" 
+                                >
+                            27 Делчево                        </option>
+                                            <option value="28" 
+                                >
+                            28 Росоман                        </option>
+                                            <option value="29" 
+                                >
+                            29 Општина - Велес                        </option>
+                                            <option value="30" 
+                                >
+                            30 Струмица 1                        </option>
+                                            <option value="31" 
+                                >
+                            95 Кавадарци 2                        </option>
+                                            <option value="32" 
+                                >
+                            32 Поток - Тетово                        </option>
+                                            <option value="33" 
+                                >
+                            33 Валандово                        </option>
+                                            <option value="34" 
+                                >
+                            34 Гостивар                        </option>
+                                            <option value="35" 
+                                >
+                            35 Ново Лисиче - Скопје                        </option>
+                                            <option value="36" 
+                                >
+                            96 К.Вода Расадник 2                        </option>
+                                            <option value="37" 
+                                >
+                            37 Градски Саат - Велес                        </option>
+                                            <option value="38" 
+                                >
+                            38 Аеродром Пазар - Скопје                        </option>
+                                            <option value="39" 
+                                >
+                            39 Кисела Вода 2 - Скопје                        </option>
+                                            <option value="40" 
+                                >
+                            40 Бутел2 - Скопје                        </option>
+                                            <option value="41" 
+                                >
+                            41 Кеј - Прилеп                        </option>
+                                            <option value="42" 
+                                >
+                            42 Облешево                        </option>
+                                            <option value="43" 
+                                >
+                            43 Железара - Скопје                        </option>
+                                            <option value="44" 
+                                >
+                            44 Драчево1 - Скопје                        </option>
+                                            <option value="45" 
+                                >
+                            45 Превалец                        </option>
+                                            <option value="46" 
+                                >
+                            46 Аеродром Тобако - Скопје                        </option>
+                                            <option value="47" 
+                                >
+                            47 Аеродром Капитол - Скопје                        </option>
+                                            <option value="48" 
+                                >
+                            48 Влае - Скопје                        </option>
+                                            <option value="49" 
+                                >
+                            49 Чашка                        </option>
+                                            <option value="50" 
+                                >
+                            50 Влез - Кочани                        </option>
+                                            <option value="51" 
+                                >
+                            51 КиМ - Велес                        </option>
+                                            <option value="52" 
+                                >
+                            52 Касарна - Битола                        </option>
+                                            <option value="53" 
+                                >
+                            53 Градинка - Велес                        </option>
+                                            <option value="54" 
+                                >
+                            54 Брвеница - Тетово                        </option>
+                                            <option value="55" 
+                                >
+                            55 Којник - Велес                        </option>
+                                            <option value="56" 
+                                >
+                            56 Аеродром Поликлиника -Скопје                        </option>
+                                            <option value="57" 
+                                >
+                            57-Петровец - Скопје                        </option>
+                                            <option value="58" 
+                                >
+                            58 Битола-2                        </option>
+                                            <option value="59" 
+                                >
+                            59 Куманово                        </option>
+                                            <option value="60" 
+                                >
+                            60 Македонска Каменица                        </option>
+                                            <option value="61" 
+                                >
+                            61 Автокоманда - Скопје                        </option>
+                                            <option value="62" 
+                                >
+                            62  Гимназија                        </option>
+                                            <option value="63" 
+                                >
+                            63 Гимназија-Дом                        </option>
+                                            <option value="64" 
+                                >
+                            64 Битола-3                        </option>
+                                            <option value="65" 
+                                >
+                            65 Илинден 2                        </option>
+                                            <option value="66" 
+                                >
+                            66 Волково - Скопје                        </option>
+                                            <option value="67" 
+                                >
+                            67 Ламели Кичево                        </option>
+                                            <option value="68" 
+                                >
+                            68 Девеана Кичево                        </option>
+                                            <option value="69" 
+                                >
+                            69 жито Гостивар Автобуска                        </option>
+                                            <option value="70" 
+                                >
+                            70 Гевгелија                        </option>
+                                            <option value="71" 
+                                >
+                            71 Жито Свети Николе Автобуска                        </option>
+                                            <option value="72" 
+                                >
+                            72 Жито Кочани Излез                        </option>
+                                            <option value="73" 
+                                >
+                            73 Жито ПробиШтип Автобуска                        </option>
+                                            <option value="74" 
+                                >
+                            74 Жито Струмица 2                        </option>
+                                            <option value="75" 
+                                >
+                            75 Жито Штип 2 Влез                        </option>
+                                            <option value="76" 
+                                >
+                            76 Жито Штип Центар                        </option>
+                                            <option value="78" 
+                                >
+                            78 Ла Фамилиа Велес                        </option>
+                                            <option value="79" 
+                                >
+                            79 Ла Фамилиа Центар                        </option>
+                                            <option value="80" 
+                                >
+                            80 Ла Фамилиа ЕАСТ ГАТЕ                        </option>
+                                            <option value="81" 
+                                >
+                            81 Ла Фамилиа Кавадарци                        </option>
+                                            <option value="82" 
+                                >
+                            82 Жито Којник                        </option>
+                                            <option value="83" 
+                                >
+                            83 Жито Дос Велес                        </option>
+                                            <option value="84" 
+                                >
+                            84 Куманово 3                        </option>
+                                            <option value="85" 
+                                >
+                            85 Струмица 3                        </option>
+                                            <option value="86" 
+                                >
+                            86 Струга                        </option>
+                                            <option value="87" 
+                                >
+                            87 Охрид                        </option>
+                                            <option value="88" 
+                                >
+                            88 Ла Фамилија Охрид                        </option>
+                                            <option value="89" 
+                                >
+                            89 Штип градинка                        </option>
+                                            <option value="90" 
+                                >
+                            90 Чашка                        </option>
+                                            <option value="91" 
+                                >
+                            91 Тетово тетовчанка                        </option>
+                                            <option value="92" 
+                                >
+                            92 Тетово општина                        </option>
+                                            <option value="93" 
+                                >
+                            93 Бауман                        </option>
+                                            <option value="94" 
+                                >
+                            94 Кавадарци                        </option>
+                                            <option value="95" 
+                                >
+                            95 Драчево 2                        </option>
+                                            <option value="96" 
+                                >
+                            96 Радовиш                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="search" class="form-control" placeholder="Пребарај по име" 
+                       value="">
+            </div>
+            <div class="col-md-2">
+                <select name="perPage" class="form-select" onchange="this.form.submit()">
+                                            <option value="10" >
+                            10 / страница
+                        </option>
+                                            <option value="20" >
+                            20 / страница
+                        </option>
+                                            <option value="50" >
+                            50 / страница
+                        </option>
+                                            <option value="100" selected>
+                            100 / страница
+                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Пребарај</button>
+            </div>
+        </form>
+
+                    <p class="text-muted">
+    Прикажи 1 - 100 од 4963 артикли
+</p>
+		<span>Датум и време на последно ажурирање на цените: 
+            28/10/2026 21:27</span>
+            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-light" style="font-size:15px;">
+                        <tr>
+                                                        <th rowspan="2">Назив на стока-производ</th>
+                                                        <th rowspan="2">Продажна цена</th>
+                                                        <th rowspan="2">Единечна цена</th>
+                                                        <th rowspan="2">Опис на стока</th>
+                            <th rowspan="2">Достапност во продажен објект</th>
+                            <th rowspan="2">Редовна цена </th>
+                            
+                            
+                        
+                                                        <th colspan="3" id="col">Промотивна или попустна цена</th>
+                        
+
+                            
+                        </tr>
+                        <tr>
+
+                        <th id="col">Цена со попуст</th>
+                        <th id="col">Вид на продажно поттикнување</th>
+                        <th id="col">Времетраење на промоција</th>
+                            </tr>
+                                                </thead>
+                    <tbody style="font-size:14px;">
+                        <!-- test -->
+
+                                                                                <tr>
+                                                                    <td>МАИЦА М НА КРАТОК РАКАВ</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 299.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Маица м пролет-лето                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 299 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАИЦА ПОЛО Ж НА КРАТОК РАКАВ</td>
+                                                                        <td>
+                                    499 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 499.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Маица ж пролет-лето                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 499 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОСТИМ ЗА КАПЕЊЕ Д.ДЕЛ</td>
+                                                                        <td>
+                                    199 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Акцесоари ж пролет-лето                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 199 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОСТИМ ЗА КАПЕЊЕ ДВОДЕЛЕН</td>
+                                                                        <td>
+                                    399 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 399.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Акцесоари ж пролет-лето                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 399 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОСТИМ ЗА КАПЕЊЕ Г.ДЕЛ</td>
+                                                                        <td>
+                                    199 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 199.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Акцесоари ж пролет-лето                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 199 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОСТИМ ЗА КАПЕЊЕ ЕДНОДЕЛЕН</td>
+                                                                        <td>
+                                    499 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 499.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Акцесоари ж пролет-лето                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 499 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НАМЕТКИ ЗА ПЛАЖА ПОЛТАН</td>
+                                                                        <td>
+                                    499 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 499.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Акцесоари ж пролет-лето                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 499 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАИЦА Ж НА КРАТОК РАКАВ</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 299.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Маица ж пролет-лето                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 299 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОРБА ЖИТО ЗА ПАЗАРЕЊЕ</td>
+                                                                        <td>
+                                    29 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕСИ ЖИТО ШТАМПАНИ</td>
+                                                                        <td>
+                                    15 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 15 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДЕПОЗИТ ЗА ПРАЗНА ГАЈБА СКОПСКО</td>
+                                                                        <td>
+                                    360 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 360 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТУБИ МАСЛИНКИ МАЛИ</td>
+                                                                        <td>
+                                    60 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 60 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>АМБАЛАЖА ЗА ХРАНА 750 МЛ ПЕТ</td>
+                                                                        <td>
+                                    5 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 5 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>АМБАЛАЖА ЗА ХРАНА 500мл ПЕТ</td>
+                                                                        <td>
+                                    4 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 4 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>АМБАЛАЖА ЗА ХРАНА 1000МЛ ПЕТ</td>
+                                                                        <td>
+                                    6 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 6 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕСА ХАРТИЕНА ЖИТО</td>
+                                                                        <td>
+                                    9 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 9 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕСИ ЖИТО ШТАМПАНИ 50МИК.БИО</td>
+                                                                        <td>
+                                    5 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 5 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДЕПОЗИТ ЗА ШИШИЊА ОД ПИВО</td>
+                                                                        <td>
+                                    10 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 10 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕСЕ ХАРТИЕНО БЕЛО 22*36 3л</td>
+                                                                        <td>
+                                    2 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Материјали за маркети                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 2 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА МАЧКА ГОЛДЕН КЕТ 415гр ДИВЕЧ</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 11.81 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СТРАЧЕТИ МОРАНДО ЗА МАЧЕ 100гр ПИЛ.МИСИР</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 39.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СТРАЧЕТИ МОРАНДО 100гр ОД ЛОСОС И ТУНА</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 39.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОНЗЕРВА ТЕО МАЧЕ 415гр РИБА</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    59 ден.
+                                    <br>
+                                Попуст:31%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КОНЗЕРВА ТЕО КУЧЕ 1.250гр</td>
+                                                                        <td>
+                                    139 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 189 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    139 ден.
+                                    <br>
+                                Попуст:26%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КОНЗЕРВА ТЕО КУЧЕ 1250гр ПИЛЕШКО</td>
+                                                                        <td>
+                                    139 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 189 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    139 ден.
+                                    <br>
+                                Попуст:26%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КОНЗЕРВА ТЕО КУЧЕ 415гр ГОВЕДСКО</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    59 ден.
+                                    <br>
+                                Попуст:31%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА МАЧКА ГОЛДЕН КЕТ 415гр ЏИГЕР</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЕТ ПАУЧ МАЈ ЛАВ 4*85гр РИБА</td>
+                                                                        <td>
+                                    109 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 27.25 ден.
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 109 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ ГОЛДЕН ДОГ 3кг ПИЛЕШКО</td>
+                                                                        <td>
+                                    209 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 6.97 ден.
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 209 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА МАЧКА ГОЛДЕН КЕТ 415гр РИБА</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ МОРАНДО 405гр ПИЛЕШКО,МИС.</td>
+                                                                        <td>
+                                    72 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.78 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 72 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГРАНУЛИ ЕЛВИ КЛЕВЕР ЧОИС 10кг КУЧЕ</td>
+                                                                        <td>
+                                    399 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 3.99 ден.
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 399 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ МОРАНДО 1250гр ПИЛЕШКО,МИС</td>
+                                                                        <td>
+                                    182 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 44.94 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 182 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА МАЧКИ МОРАНДО 405гр ПИЛЕШКО,МИС</td>
+                                                                        <td>
+                                    72 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.78 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 72 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА МАЧКИ МОРАНДО 405гр СО ЛОСОС</td>
+                                                                        <td>
+                                    72 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.78 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 72 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА МАЧКИ МОРАНДО 405гр СО ГОВЕДСКО</td>
+                                                                        <td>
+                                    72 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.78 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 72 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ МОРАНДО 1.25кг СО ГОВЕДСКО</td>
+                                                                        <td>
+                                    182 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 14.56 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 182 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ МОРАНДО 405гр СО ГОВЕДСКО</td>
+                                                                        <td>
+                                    72 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.78 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 72 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОКЕТИ МОРАНДО ПИЛЕШКИ 400гр ЗА МАЧКИ</td>
+                                                                        <td>
+                                    122 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 122 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАУЧ МАЈ ЛАВ 85гр РИБА</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 35.29 ден.
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ ГОЛДЕН ДОГ 415гр ЖИВИНА</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 11.81 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ ГОЛДЕН ДОГ 10кг ПИЛЕШКО</td>
+                                                                        <td>
+                                    519 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 5.19 ден.
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 599 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    519 ден.
+                                    <br>
+                                Попуст:13%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ ГОЛДЕН ДОГ 10кг ГОВЕДСКО</td>
+                                                                        <td>
+                                    519 ден.
+                                    </td>
+                                                                        <td>
+                                         = 5.19 ден.
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 599 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    519 ден.
+                                    <br>
+                                Попуст:13%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ ГОЛДЕН ДОГ 1240гр ЖИВИНА</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 7.98 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАШТЕТА МИГЛИОР МАЧЕ 100гр ЛОСОС</td>
+                                                                        <td>
+                                    55 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 55 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ ГОЛДЕН ДОГ 3кг ГОВЕДСКО</td>
+                                                                        <td>
+                                    209 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 6.97 ден.
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 209 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЕТ ПАУЧ МАЈ ЛАВ 4*85гр ПИЛЕ</td>
+                                                                        <td>
+                                    109 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 27.25 ден.
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 109 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ ГОЛДЕН ДОГ 415гр ГОВЕДСКА</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 11.81 ден.
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ ГОЛДЕН ДОГ 415гр ЏИГЕР</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ МОРАНДО 4кг КРОКЕТИ СПЕЦ.</td>
+                                                                        <td>
+                                    625 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 15.63 ден.
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 625 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАУЧ МАЈ ЛАВ 85гр ПИЛЕ</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 35.29 ден.
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ХРАНА ЗА КУЧЕ МОРАНДО 4кг КРОКЕТИ</td>
+                                                                        <td>
+                                    625 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 15.63 ден.
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 625 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАУЧ МАЈ ЛАВ 85гр ТЕЛЕ</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 35.29 ден.
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОНЗЕРВА ТЕО МАЧЕ 415гр ГОВЕДСКО</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    59 ден.
+                                    <br>
+                                Попуст:31%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КОНЗЕРВА ТЕО МАЧЕ 415гр ПИЛЕШКО</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    59 ден.
+                                    <br>
+                                Попуст:31%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>СТРАЧЕТИ МОРАНДО ЗА МАЧЕ 100гр ГОВЕДСКО</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 39.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОНЗЕРВА ТЕО КУЧЕ 415гр ПИЛЕШКО</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Конзервирана храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    59 ден.
+                                    <br>
+                                Попуст:31%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ПАШТЕТА МИГЛИОР МАЧЕ 100гр ЗАЈАК/ПИЛ</td>
+                                                                        <td>
+                                    55 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 55 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАШТЕТА МИГЛИОР МАЧЕ 100гр ГОВЕДСКО</td>
+                                                                        <td>
+                                    55 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Течна храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 55 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГРАНУЛИ МИГЛИОР МАЧЕ 400гр КОКТЕЛ/РИБА</td>
+                                                                        <td>
+                                    122 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Сува храна за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 122 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДЕНТА СТИК ЗА КУЧЕ КЛУБ 4 ПРЕМИУМ 77гр</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 128.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Галантерија за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДЕНТА СТИК ЗА КУЧЕ КЛУБ 4 ПРЕМИУМ 117гр</td>
+                                                                        <td>
+                                    130 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 111.11 ден.
+                                    </td>
+                                                                        <td>
+                                    Галантерија за миленици                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 130 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАУЧЕР ШИНСКИ ВОЗИЛА КОЛСКА</td>
+                                                                        <td>
+                                    0.1 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Ваучер                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 0.1 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ФРИТЕЗА БАУЕР АФ-100 КРИСПУЛИНО 7154</td>
+                                                                        <td>
+                                    2999 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Мала бела техника                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 2999 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАУЧЕР СИНДИКАЛ.ОРГ.ЈП ДРЖАВ.ПАТ.СКОПЈЕ</td>
+                                                                        <td>
+                                    0.1 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Ваучер                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 0.1 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРЧКО БАУЕР СЦ-100 КУКИНО 7160</td>
+                                                                        <td>
+                                    2899 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Мала бела техника                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 2899 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАУЧЕР СУТКОЗ ЈКП ДЕРВЕН ВЕЛЕС</td>
+                                                                        <td>
+                                    0.1 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Ваучер                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 0.1 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАУЧЕР САДУ НА СО НА ФЗОМ</td>
+                                                                        <td>
+                                    0.1 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Ваучер                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 0.1 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛОЈАЛНА КЛУБ КАРТИЧКА</td>
+                                                                        <td>
+                                    29 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Клуб картичка                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАУЧЕР СОВРШЕНА.МК</td>
+                                                                        <td>
+                                    0.01 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Ваучер                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 0.01 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАУЧЕР ЕКСПАНДА 500ден.</td>
+                                                                        <td>
+                                    0.1 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Ваучер                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 0.1 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СРЕД ЗА СТАКЛО 5КА 5л ВЕТРОБРАНСКО</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 1.98 ден.
+                                    </td>
+                                                                        <td>
+                                    Средства за ветробранско стакл                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАТОСНИЦА ГУМА Е6769</td>
+                                                                        <td>
+                                    549 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Патосници за автомобили                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 549 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДЕСТИЛИРАНА ВОДА АНДРОС 1л</td>
+                                                                        <td>
+                                    57 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Течност за ладење на мотор                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 57 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДЕМИНЕРАЛИЗИРАНА ВОДА 1л АЛКАЛОИД</td>
+                                                                        <td>
+                                    37 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Течност за ладење на мотор                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 37 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СРЕД ЗА СТАКЛО 5КА ВЕТРОБРАН.3л ЗИМСКО</td>
+                                                                        <td>
+                                    105 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 3.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Средства за ветробранско стакл                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 105 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ОСВЕЖУВАЧ ЗА АВТОМОБИЛ МИКРОН 8млКРИСТАЛ</td>
+                                                                        <td>
+                                    85 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 85.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Освежувачи за автомобили                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СРЕД ЗА СТАКЛО ВЕТРОБРАН.ДАНАИ 5л ЗИМСКО</td>
+                                                                        <td>
+                                    185 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Средства за ветробранско стакл                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 185 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ОДМРЗНУВАЧ СО ГРЕБАЛКА ФАЛКОН 650мл97022</td>
+                                                                        <td>
+                                    249 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Средства за ветробранско стакл                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 249 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОЦКИ ЗА ПОТПАЛУВАЊЕ ФЛАМАТ 48бр</td>
+                                                                        <td>
+                                    85 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Скари и камини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГАРДИНО - САКСИЈА САХАРА 24см 2422</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Саксии за балкон                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 135 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГАРДИНО - САКСИЈА МЕЛРОУС ГЛАМУР 14*15</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 69.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Саксии за балкон                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГАРДИНО-САКСИЈА ЛИЕГИ 14см 2062</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Саксии за балкон                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>РАНЕЦ - МОДЕЛ дп 001 16инч</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 299.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Ранци                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 299 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДОР ГОЛЕМ 80цм ПЛАТНО</td>
+                                                                        <td>
+                                    185 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Куфери                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 185 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДОР КРАТОК 100</td>
+                                                                        <td>
+                                    175 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Куфери                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 175 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>РАНЕЦ - МОДЕЛ 261 18инч</td>
+                                                                        <td>
+                                    699 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 699.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Ранци                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 699 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>РАНЕЦ - МОДЕЛ 0202 18инч</td>
+                                                                        <td>
+                                    799 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 799.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Ранци                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 799 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГУМА ЗА ПЛАЖА 90см АБЦ СО РАЧКИ</td>
+                                                                        <td>
+                                    399 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 399 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВОДЕН ПИШТОЛ ИГРАЧКА</td>
+                                                                        <td>
+                                    149 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 149 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СТОЛ ДЕТСКИ Д4005 190091</td>
+                                                                        <td>
+                                    699 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Столчиња за кампување                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 699 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГУМА ЗА ПЛАЖА 80см ДОНУТ</td>
+                                                                        <td>
+                                    199 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 199 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОЛАРЕН ПАНЕЛ</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВОДЕН ПИШТОЛ ЗА МЕУРЧИЊА СО СВЕТЛО 50мл</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 299 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГУМА ЗА ПЛАЖА ПАТКА 70см</td>
+                                                                        <td>
+                                    399 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 399 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВОДЕН ПИШТОЛ ЗА ВШМУКУВАЊЕ - ШАРК</td>
+                                                                        <td>
+                                    199 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 199 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВОДЕН ПИШТОЛ ЗА МЕУРЧИЊА 2*100мл</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 299 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВЛЕЧКИ ЗА ПЛАЖА (34)</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Опрема за плажа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 299 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>УКРАСНИ КЕСИ Т-8 ВИНО</td>
+                                                                        <td>
+                                    46 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Украсни кеси                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 46 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОЈА ЗА ЈАЈЦА ЖОЛТА ТАНИМАК</td>
+                                                                        <td>
+                                    9 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Велигденски програм                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 9 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                                        </tbody>
+                </table>
+            </div>
+
+            <nav class="d-flex justify-content-center"><ul class="pagination"><li class="page-item active"><a class="page-link" href="?page=1&perPage=100&search=&org=2">1</a></li><li class="page-item "><a class="page-link" href="?page=2&perPage=100&search=&org=2">2</a></li><li class="page-item "><a class="page-link" href="?page=3&perPage=100&search=&org=2">3</a></li><li class="page-item disabled"><span class="page-link">...</span></li><li class="page-item"><a class="page-link" href="?page=50&perPage=100&search=&org=2">50</a></li><li class="page-item"><a class="page-link" href="?page=2&perPage=100&search=&org=2">&raquo;</a></li></ul></nav>            </div>
+</div>
+
+</body>
+</html>

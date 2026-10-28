@@ -99,7 +99,8 @@ WITH src AS (
 SELECT 'observations_inserted' AS metric, count(*)::bigint AS value FROM ins;
 
 WITH src AS (
-    SELECT sr.doc,
+    SELECT DISTINCT ON (st.id, rp.id)
+           sr.doc,
            rp.id AS rp_id,
            st.id AS st_id
     FROM stage_records sr
@@ -111,6 +112,7 @@ WITH src AS (
         AND st.external_key = sr.doc->>'store_external_key'
     WHERE (sr.doc->>'published_ts') IS NOT NULL
       AND (sr.doc->>'price_current') IS NOT NULL
+    ORDER BY st.id, rp.id, (sr.doc->>'published_ts')::timestamptz DESC, (sr.doc->>'fetched_ts')::timestamptz DESC
 ), ins AS (
     INSERT INTO offers_current
         (store_id, retailer_product_id, currency, price_current,

@@ -1,0 +1,2238 @@
+﻿
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка на цени</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color:rgb(255, 255, 255);
+            color: black;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        table {
+            background: white;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        table {
+            user-select: none;
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none; 
+        }
+        
+        * {
+    user-select: none;
+    -webkit-user-select: none; 
+    -webkit-touch-callout: none;
+    }
+	  .active>.page-link, .page-link.active {
+        background-color:#fcd900!important;
+    }
+
+
+    </style>
+</head>
+<body>
+
+
+<script>
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener("keydown", function(event) {
+    
+    if (
+        event.key === "F12" || 
+        (event.ctrlKey && event.shiftKey && (event.key === "I" || event.key === "J")) || 
+        (event.ctrlKey && (event.key === "U" || event.key === "S"))
+    ) {
+        event.preventDefault();
+        
+    }
+});
+
+</script>
+
+<!-- <div class="container my-4">
+<div class="header d-flex align-items-center p-3" style="background-color:rgb(233 233 233);
+ color: black;">
+
+        <a href="index.php" style="margin-right: 24%;">
+    <img src="logo.png" alt="Logo" id="logo" style="height: 65px; margin-right: 19%;">
+    </a>
+ 
+    <h1 class="mb-0" style="font-size: 34px; font-weight: bold;">ПРОВЕРКА НА ЦЕНИ</h1>
+</div>
+    </div> -->
+
+
+<div class="container my-4">
+    <div class="card p-3 shadow-sm">
+        <form class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <select name="org" class="form-select" onchange="this.form.submit()">
+                    <option value="">Одберете маркет</option>
+                                            <option value="1" 
+                                selected>
+                            КИСЕЛА ВОДА                        </option>
+                                            <option value="2" 
+                                >
+                            КУМАНОВО 2                        </option>
+                                            <option value="3" 
+                                >
+                            КАРПОШ 2                        </option>
+                                            <option value="4" 
+                                >
+                            АВТОКОМАНДА                        </option>
+                                            <option value="5" 
+                                >
+                            БУТЕЛ                        </option>
+                                            <option value="6" 
+                                >
+                            АЕРОДРОМ 2                        </option>
+                                            <option value="7" 
+                                >
+                            ТАФТАЛИЏЕ                        </option>
+                                            <option value="8" 
+                                >
+                            МЛЕЧЕН                        </option>
+                                            <option value="9" 
+                                >
+                            ОХРИД 1                        </option>
+                                            <option value="10" 
+                                >
+                            КУМАНОВО 3                        </option>
+                                            <option value="11" 
+                                >
+                            АЕРОДРОМ 1                        </option>
+                                            <option value="12" 
+                                >
+                            КАРПОШ 4                        </option>
+                                            <option value="13" 
+                                >
+                            СИНГЕЛИЧ                        </option>
+                                            <option value="14" 
+                                >
+                            ЦЕНТАР                        </option>
+                                            <option value="16" 
+                                >
+                            КАПИШТЕЦ                        </option>
+                                            <option value="17" 
+                                >
+                            ЃОРЧЕ ПЕТРОВ 2                        </option>
+                                            <option value="18" 
+                                >
+                            ДРАЧЕВО                        </option>
+                                            <option value="19" 
+                                >
+                            КУМАНОВО 1                        </option>
+                                            <option value="20" 
+                                >
+                            ВОДЊАНСКА                        </option>
+                                            <option value="21" 
+                                >
+                            БУЊАКОВЕЦ                        </option>
+                                            <option value="22" 
+                                >
+                            НОВО ЛИСИЧЕ                        </option>
+                                            <option value="23" 
+                                >
+                            ХИПОДРОМ                        </option>
+                                            <option value="24" 
+                                >
+                            РАСАДНИК                        </option>
+                                            <option value="25" 
+                                >
+                            НОВО ЛИСИЧЕ 2                        </option>
+                                            <option value="26" 
+                                >
+                            ТОПАНСКО ПОЛЕ                        </option>
+                                            <option value="27" 
+                                >
+                            ЧАИР                        </option>
+                                            <option value="28" 
+                                >
+                            КОЗЛЕ                        </option>
+                                            <option value="29" 
+                                >
+                            МИЧУРИН                        </option>
+                                            <option value="30" 
+                                >
+                            ШТИП                        </option>
+                                            <option value="31" 
+                                >
+                            ГОРЧЕ ДЕКСИОН                        </option>
+                                            <option value="32" 
+                                >
+                            ТЕТОВО                        </option>
+                                            <option value="33" 
+                                >
+                            СЕВЕР                        </option>
+                                            <option value="34" 
+                                >
+                            РАДИШАНИ                        </option>
+                                            <option value="35" 
+                                >
+                            ЧЕНТО 2                        </option>
+                                            <option value="36" 
+                                >
+                            ИЛИНДЕН                        </option>
+                                            <option value="37" 
+                                >
+                            КУМАНОВО 4                        </option>
+                                            <option value="38" 
+                                >
+                            ПРИЛЕП                        </option>
+                                            <option value="39" 
+                                >
+                            КОЧАНИ                        </option>
+                                            <option value="40" 
+                                >
+                            ТЕТОВО 2                        </option>
+                                            <option value="41" 
+                                >
+                            ВЕЛЕС                        </option>
+                                            <option value="42" 
+                                >
+                            НЕГОТИНО                        </option>
+                                            <option value="43" 
+                                >
+                            ВЛАЕ                        </option>
+                                            <option value="44" 
+                                >
+                            РЕСЕН                        </option>
+                                            <option value="45" 
+                                >
+                            ПРОБИШТИП                        </option>
+                                            <option value="46" 
+                                >
+                            ШТИП 2                        </option>
+                                            <option value="47" 
+                                >
+                            ГЕВГЕЛИЈА                        </option>
+                                            <option value="48" 
+                                >
+                            СТРУМИЦА                        </option>
+                                            <option value="49" 
+                                >
+                            ГОСТИВАР                        </option>
+                                            <option value="50" 
+                                >
+                            БИТОЛА                        </option>
+                                            <option value="51" 
+                                >
+                            ОХРИД  2                        </option>
+                                            <option value="52" 
+                                >
+                            РАДОВИШ                        </option>
+                                            <option value="53" 
+                                >
+                            БИТОЛА 2                        </option>
+                                            <option value="54" 
+                                >
+                            КИЧЕВО                        </option>
+                                            <option value="55" 
+                                >
+                            СТРУМИЦА 2                        </option>
+                                            <option value="56" 
+                                >
+                            КАВАДАРЦИ                        </option>
+                                            <option value="57" 
+                                >
+                            СТРУГА                        </option>
+                                            <option value="58" 
+                                >
+                            ДЕЛЧЕВО                        </option>
+                                            <option value="59" 
+                                >
+                            ВИНИЦА                        </option>
+                                            <option value="60" 
+                                >
+                            ТЕТОВО 3                        </option>
+                                            <option value="61" 
+                                >
+                            КРИВА ПАЛАНКА                        </option>
+                                            <option value="62" 
+                                >
+                            ПРИЛЕП 2                        </option>
+                                            <option value="63" 
+                                >
+                            КИСЕЛА ВОДА 2                        </option>
+                                            <option value="64" 
+                                >
+                            ПЕТРОВЕЦ                        </option>
+                                            <option value="65" 
+                                >
+                            ВЕЛЕС 2                        </option>
+                                            <option value="66" 
+                                >
+                            НОВОСЕЛСКИ ПАТ                        </option>
+                                            <option value="67" 
+                                >
+                            СВЕТИ НИКОЛЕ                        </option>
+                                            <option value="68" 
+                                >
+                            БЕРОВО                        </option>
+                                            <option value="69" 
+                                >
+                            КРАТОВО                        </option>
+                                            <option value="70" 
+                                >
+                            ДЕБАР                        </option>
+                                            <option value="71" 
+                                >
+                            ШТИП  3                        </option>
+                                            <option value="72" 
+                                >
+                            ДРАЧЕВО  2                        </option>
+                                            <option value="73" 
+                                >
+                            ВЛАЕ 2  АЛЕКСАНДРИЈА                        </option>
+                                            <option value="74" 
+                                >
+                            ЧАИР 2                        </option>
+                                            <option value="75" 
+                                >
+                            СТРУГА 2                        </option>
+                                            <option value="76" 
+                                >
+                            КУМАНОВО 5                        </option>
+                                            <option value="77" 
+                                >
+                            КОЧАНИ 2                        </option>
+                                            <option value="78" 
+                                >
+                            МАРКЕТ МАЏАРИ                        </option>
+                                            <option value="79" 
+                                >
+                            СТРУМИЦА 3                        </option>
+                                            <option value="80" 
+                                >
+                            МАК. КАМЕНИЦА                        </option>
+                                            <option value="81" 
+                                >
+                            ЈУЖЕН БУЛЕВАР                        </option>
+                                            <option value="82" 
+                                >
+                            МАРКЕТ ЗЛОКУЌАНИ                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="search" class="form-control" placeholder="Пребарај по име" 
+                       value="">
+            </div>
+            <div class="col-md-2">
+                <select name="perPage" class="form-select" onchange="this.form.submit()">
+                                            <option value="10" >
+                            10 / страница
+                        </option>
+                                            <option value="20" >
+                            20 / страница
+                        </option>
+                                            <option value="50" >
+                            50 / страница
+                        </option>
+                                            <option value="100" selected>
+                            100 / страница
+                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary"style="background-color:#fcd900!important; color:black!important;">Пребарај</button>
+            </div>
+        </form>
+
+                    <p class="text-muted">
+    Прикажи 1 - 100 од 2689 артикли
+</p>
+		<span>Датум и време на последно ажурирање на цените: 
+            28/10/2026 21:27</span>
+            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-light" style="font-size:15px;">
+                        <tr>
+                                                        <th rowspan="2">Назив на стока-производ</th>
+                                                        <th rowspan="2">Продажна цена</th>
+                                                        <th rowspan="2">Единечна цена</th>
+                                                        <th rowspan="2">Опис на стока</th>
+                            <th rowspan="2">Достапност во продажен објект</th>
+                            <th rowspan="2">Редовна цена </th>
+                            
+                            
+                        
+                                                        <th colspan="3" id="col">Промотивна или попустна цена</th>
+                        
+
+                            
+                        </tr>
+                        <tr>
+
+                        <th id="col">Цена со попуст</th>
+                        <th id="col">Вид на продажно поттикнување</th>
+                        <th id="col">Времетраење на промоција</th>
+                            </tr>
+                                                </thead>
+                    <tbody style="font-size:14px;">
+                        <!-- test -->
+
+                                                                                <tr>
+                                                                    <td>КОРИ ЗА ПИТА И БАКЛАВА 500гр. ДОМАШНИ</td>
+                                                                        <td>
+                                    71 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 142.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖИ КОРИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 71 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛЕБ СУСАМКА ЦВЕТ ДАЛ ФОРНО</td>
+                                                                        <td>
+                                    45 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 112.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 45 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БИОЛОШКИ ЛЕБ 400гр</td>
+                                                                        <td>
+                                    37 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 92.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 37 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>РЖАН ЛЕБ 400гр</td>
+                                                                        <td>
+                                    37 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 92.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 37 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ИНТЕГРАЛЕН ЛЕБ 400гр</td>
+                                                                        <td>
+                                    37 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 92.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 37 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БАГЕТ БЕЛ 320гр</td>
+                                                                        <td>
+                                    38 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 118.75 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 38 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДОМАШЕН ЛЕБ ПЕЧЕН НА ДРВА 420гр.</td>
+                                                                        <td>
+                                    38 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 84.44 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 38 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПРЕМИУМ ДИЕТ 100% Р‘ЖАН ЛЕБ 400Г</td>
+                                                                        <td>
+                                    55 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 137.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 55 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЕЛСКА ЛЕПИЊА 4/1 480Г НОВИТО</td>
+                                                                        <td>
+                                    46 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 95.83 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 46 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАНИЛИЦИ СО ЏЕМ ОД ШУМСКО ОВОШЈЕ 350ГР</td>
+                                                                        <td>
+                                    82 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 234.29 ден.
+                                    </td>
+                                                                        <td>
+                                    ПЕЦИВА ЧАЈНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 82 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРУША /кгр сорта: ВИЛЈАМОВКА</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 89.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЈАБОЛКО СОРТА ГРЕНИ СМИТ кгр</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 49.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДУЊА РЕФУС кгр</td>
+                                                                        <td>
+                                    109 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 109.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 109 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЈАБОЛКА ПАКУВАНИ 2-ра класа 1,5кгр</td>
+                                                                        <td>
+                                    34 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 22.67 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 34 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МОРКОВ ПАКУВАН 1кгр. КЕСА</td>
+                                                                        <td>
+                                    40 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 40.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 40 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЦВЕКЛО ПАКУВАНО 1кгр. КЕСА</td>
+                                                                        <td>
+                                    29 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 29.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРОМИД 1кгр РЕФУС</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 30.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СВЕЖ ПРАЗ СНОПЧЕ 3/1</td>
+                                                                        <td>
+                                    55 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 55.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 55 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КИВИ СВЕЖИ ВО КУТИЈА</td>
+                                                                        <td>
+                                    75 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 75.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 75 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БАНАНИ СОРТА КАВЕНДИШ кгр РЕФУС</td>
+                                                                        <td>
+                                    67 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 67.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 67 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЦИТРОН ЦРВЕН СВЕЖ кгр</td>
+                                                                        <td>
+                                    88 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 88.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 88 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛИМОН СВЕЖ КГР</td>
+                                                                        <td>
+                                    52 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 52.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 52 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПИЛЕШКИ КРАТОК КОПАН кгр АНА КОМ</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 135.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПИЛЕШКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 135 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПИЛЕШКИ КРИЛЦА /кгр</td>
+                                                                        <td>
+                                    119 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 119.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПИЛЕШКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 119 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПИЛЕШКИ ЏИГЕР СО СРЦЕ АРТА-кеса/кгр</td>
+                                                                        <td>
+                                    88 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 88.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПИЛЕШКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 88 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СМРЗНАТ СВИНСКИ БУТ БЕЗ КОСКА ВАКУМ</td>
+                                                                        <td>
+                                    345 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 345.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВИНСКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 345 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВЕНЕЦ ОД СВИНСКО КАРЕ СМРЗ.ПАК. /кгр</td>
+                                                                        <td>
+                                    289 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 289.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВИНСКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 289 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПЛЕШКА СВИНСКА СМРЗНАТА пак./кгр</td>
+                                                                        <td>
+                                    309 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 309.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВИНСКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 309 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПИЛЕШКИ КРАТОК КОПАН  кеса кгр</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 89.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПИЛЕШКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГРИЛ ПИЛЕ СМРЗНАТО 1кгр куалико</td>
+                                                                        <td>
+                                    155 ден.
+                                    </td>
+                                                                        <td>
+                                        1КГР = 155.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПИЛЕШКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 155 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ФИЛЕ СВИНСКО ЗАМРЗНАТО кгр ВАКУМ</td>
+                                                                        <td>
+                                    499 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 499.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВИНСКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 499 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НАДКОПАН ПИЛЕШКИ 1 КГР</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 135.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПИЛЕШКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 135 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАРЕ СВИНСКО/СЛАЈС/ КГР</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 299.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВИНСКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 389 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    299 ден.
+                                    <br>
+                                Попуст:23%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    акциска цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 23.10.2026 до <br>29.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>СМРЗН.СВИН.МЕСН.РЕБРО БЕЗ КОС И КОЖА/кг</td>
+                                                                        <td>
+                                    369 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 369.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВИНСКО СМРЗНАТО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 369 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПИПЕРКА ЦРВЕНА КАПИЈА /кгр</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 89.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЛИВА СВЕЖА /кгр</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 59.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    59 ден.
+                                    <br>
+                                Попуст:14%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    акциска цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 23.10.2026 до <br>29.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>СВИНСКИ КРЕМЕНДАЛИ СВЕЖИ кгр</td>
+                                                                        <td>
+                                    399 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 399.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО СВИНСКО МЕСО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 399 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СВИНСКИ ВРАТ СО КОСКА</td>
+                                                                        <td>
+                                    375 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 375.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО СВИНСКО МЕСО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 375 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СВИНСКИ БУТ СВЕЖ кгр</td>
+                                                                        <td>
+                                    439 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 439.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО СВИНСКО МЕСО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 439 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАНИРАНИ ПИЛЕШКИ ПРСТИ 500гр.</td>
+                                                                        <td>
+                                    239 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 478.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАНИРАНИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 239 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАНИРАНИ ПИЛЕШКИ МЕДАЉОНИ 500гр.</td>
+                                                                        <td>
+                                    239 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 478.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАНИРАНИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 239 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАНИРАНИ ПИЛЕШКИ ШНИЦЛИ 500гр.</td>
+                                                                        <td>
+                                    229 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 458.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАНИРАНИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 229 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СВЕЖ НАДКОПАН ПИЛЕШКИ тацна АМЕТА</td>
+                                                                        <td>
+                                    178 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 178.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖИ ПИЛЕШКИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 178 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЦЕЛО ПИЛЕ СВЕЖО кгр АМЕТА</td>
+                                                                        <td>
+                                    167 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 167.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖИ ПИЛЕШКИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 167 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРАСТАВИЦА СВЕЖА 1кгр</td>
+                                                                        <td>
+                                    75 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 75.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 75 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДОМАТ СВЕЖ 1 КГР</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 99.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 122 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    99 ден.
+                                    <br>
+                                Попуст:19%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    акциска цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 23.10.2026 до <br>29.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ЗЕЛКА МЛАДА 1КГР</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 49.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ОСЛИЧ АРГЕНТИНСКИ 150-250гр. 1кгр КЕПТАН</td>
+                                                                        <td>
+                                    219 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 219.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СМРЗНАТА РИБА И МОРСКИ ПЛОДОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 219 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАСТРМКА СО БЕЛО МЕСО ЧИСТЕНА КГР</td>
+                                                                        <td>
+                                    419 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 419.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СМРЗНАТА РИБА И МОРСКИ ПЛОДОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 419 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАНИРАНИ РИБИНИ ПРСТИ 500гр фишфингерс</td>
+                                                                        <td>
+                                    139 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 278.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СМРЗНАТА РИБА И МОРСКИ ПЛОДОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 139 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПИПЕР БЛАГ 1КГР</td>
+                                                                        <td>
+                                    115 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 115.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 115 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТИКВИЦА СВЕЖА 1кгр</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 99.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДОМАТ РОЗЕВ 1КГР</td>
+                                                                        <td>
+                                    114 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 114.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 114 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПИПЕРКА ЛУТА 1кгр</td>
+                                                                        <td>
+                                    129 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 129.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 129 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАНИРАН КРОМИД 450ГР ЛЕДУЦ</td>
+                                                                        <td>
+                                    119 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 264.44 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАНИРАНИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 119 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БУТИК КЕСА ЗА КУПУВАЧИ 47ЦМ</td>
+                                                                        <td>
+                                    8 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 8.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КЕСИ/РОЛНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 8 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДЕНА СУВА СВИНСКА ПРШУТА 100г.МАРТЕКС</td>
+                                                                        <td>
+                                    129 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 1290.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПВОДИ (вакум)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 129 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДЕНА СУВА СВИНСКА ПАНЦЕТА 100г.МАРТЕКС</td>
+                                                                        <td>
+                                    95 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 950.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПВОДИ (вакум)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 95 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДЕНА СУВА СВИНСКА ПЕЧЕНИЦА 100гМАРТЕКС</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 990.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПВОДИ (вакум)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДЕН СУВ СВИНСКИ ВРАТ 100гр. МАРТЕКС</td>
+                                                                        <td>
+                                    95 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 950.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПВОДИ (вакум)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 95 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛУК СТАР ПАРЧЕ</td>
+                                                                        <td>
+                                    21 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 21.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 21 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>САЛАТА СВЕЖА КАЛЕ МИКС 130гр</td>
+                                                                        <td>
+                                    115 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 766.67 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖ ЗЕЛЕНЧУК                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 115 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>АВОКАДО /парче</td>
+                                                                        <td>
+                                    79 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 316.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 79 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАНГО СВЕЖО 500гр.</td>
+                                                                        <td>
+                                    119 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 264.44 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 119 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАНДАРИНА КЛЕМЕНТИНА КГР</td>
+                                                                        <td>
+                                    75 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 75.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 75 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЈАБОЛКА СОРТА: ГАЛА /кгр</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        1КГР = 49.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАШКАВАЛ КРАВЈИ ВАКУМ кгр КОРАБ ТРНИЦА</td>
+                                                                        <td>
+                                    555 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 555.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАШКАВАЛИ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 555 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАШКАВАЛ КРАВЈИ ВАРДАРЕЦ</td>
+                                                                        <td>
+                                    509 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 509.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАШКАВАЛИ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 509 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАШКАВАЛ КРАВЈИ кгр МИЛКАНО</td>
+                                                                        <td>
+                                    419 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 419.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАШКАВАЛИ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 419 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>УРДА МЛЕЧНА вакум ЗДРАВЈЕ</td>
+                                                                        <td>
+                                    235 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 235.00 ден.
+                                    </td>
+                                                                        <td>
+                                    УРДА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 235 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>УРДА КРАВЈА ВАКУМ 1КГ ВАРДАРЕЦ</td>
+                                                                        <td>
+                                    209 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 209.00 ден.
+                                    </td>
+                                                                        <td>
+                                    УРДА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 209 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДЕЈЛИ МУ СИРЕЊЕ КРАВЈО /кгр</td>
+                                                                        <td>
+                                    339 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 339.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СИРЕЊЕ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 339 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАРМЕЗАН ГРАНА ПАДАНО 200гр. ТРЕНТИН</td>
+                                                                        <td>
+                                    235 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 1175.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАШКАВАЛИ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 235 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>УРДА ОВЧА ВАКУМ 1кгр ИНТЕРМАК</td>
+                                                                        <td>
+                                    265 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 265.00 ден.
+                                    </td>
+                                                                        <td>
+                                    УРДА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 265 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>АЈРАН 1л. СУТАШ</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 69.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЈОГУРТИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРАВЈО СИРЕЊЕ ВАКУМ кгр ВАРДАРЕЦ</td>
+                                                                        <td>
+                                    445 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 445.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СИРЕЊЕ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 445 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТИКВА СВЕЖА кгр РЕФУС</td>
+                                                                        <td>
+                                    28 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 28.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 28 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГРОЗЈЕ ЦРНО КГР</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 65.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 65 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТИКВА ХАЛОВЕЕН /кгр</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 59.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СВЕЖО ОВОШЈЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 59 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БИЕНО СИРЕЊЕ вакуум МАСКО</td>
+                                                                        <td>
+                                    469 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 469.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СИРЕЊЕ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 469 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПОГАЧА СО СУСАМ 480Г ДЕЛ ГУСТО</td>
+                                                                        <td>
+                                    45 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 93.75 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕБОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 45 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУРУТКА КОЗЈА 1л. МИЛКАНО</td>
+                                                                        <td>
+                                    52 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 52.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЈОГУРТИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 52 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЈОГУРТ ШИШЕ 1.5кгр  БУЧЕН КОЗЈАК</td>
+                                                                        <td>
+                                    108 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 72.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЈОГУРТИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 108 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРАВЈО КИСЕЛО МЛЕКО 500гр. БУЧЕН КОЗЈАК</td>
+                                                                        <td>
+                                    41 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 82.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КИСЕЛИ МЛЕКА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 41 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛАДНО МЛЕКО ПОПИ 200мл</td>
+                                                                        <td>
+                                    26 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 130.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧОКОЛАДНИ МЛЕКА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 26 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЈУХОР ПИЛЕШКА ПАШТЕТА 150гр</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 260.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАШТЕТИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈНА ОД СВИНСКО МЕСО 230гр ГУРМЕС</td>
+                                                                        <td>
+                                    129 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 560.87 ден.
+                                    </td>
+                                                                        <td>
+                                    ТРАЈНИ КОЛБАСИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 129 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДЕН ПИЛЕШКИ КРАТОК КОПАН вакум ГЛОБУС</td>
+                                                                        <td>
+                                    199 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 199.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПВОДИ (вакум)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 199 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДЕНИ ШПИЦ РЕБРА КГР вакум ГЛОБУС</td>
+                                                                        <td>
+                                    319 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 319.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПРОИЗВОДИ (рефус)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 319 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СВИНСКА ВИРШЛА 250ГР ГЛОБУС</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 128.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ВИРШЛИ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СВИНСКИ БУТ ЧАДЕН ВАКУМ кгр ГУРМЕС</td>
+                                                                        <td>
+                                    419 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 419.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПВОДИ (вакум)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 419 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НОВОСАДСКИ КОЛБАС ВАКУУМ 390гр</td>
+                                                                        <td>
+                                    149 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 382.05 ден.
+                                    </td>
+                                                                        <td>
+                                    САЛАМИ рефус                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 149 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЦАРСКО МЕСО ВАКУМ кгр ГУРМЕС</td>
+                                                                        <td>
+                                    345 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 345.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПРОИЗВОДИ (рефус)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 345 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КУЛЕН ВАКУМ 300ГР ГУРМЕС</td>
+                                                                        <td>
+                                    159 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 530.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ТРАЈНИ КОЛБАСИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 159 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ШУНКА СПЕЦИЈАЛ 400гр. ГЛОБУС</td>
+                                                                        <td>
+                                    95 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 237.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ШУНКИ / ПОСЕБНИ (вакум)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 95 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАНИРАН ПИЛЕШКИ КОРДОН БЛУ 500гр.</td>
+                                                                        <td>
+                                    255 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 510.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАНИРАНИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 255 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАНИРАН МИСИРКИН НАГЕТС 1000гр ГАЛИКОП</td>
+                                                                        <td>
+                                    259 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 259.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАНИРАНИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 259 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГИФТ ВАУЧЕР 500</td>
+                                                                        <td>
+                                    500 ден.
+                                    </td>
+                                                                        <td>
+                                        1ПАР = 500.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАНЦЕЛАРИСКИ МАТЕРИЈАЛ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 500 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАДЕН СВИНСКИ БУТ вакуум кгр ПЕКАБЕСКО</td>
+                                                                        <td>
+                                    459 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 459.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАДЕНИ ПРОИЗВОДИ (рефус)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 459 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>САЛАМА ПИЦА ПЕПЕРОНИ 500гр.</td>
+                                                                        <td>
+                                    289 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 578.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ТРАЈНИ КОЛБАСИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 289 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                                        </tbody>
+                </table>
+            </div>
+
+            <nav class="d-flex justify-content-center"><ul class="pagination"><li class="page-item active"><a class="page-link" href="?page=1&perPage=100&search=&org=1">1</a></li><li class="page-item "><a class="page-link" href="?page=2&perPage=100&search=&org=1">2</a></li><li class="page-item "><a class="page-link" href="?page=3&perPage=100&search=&org=1">3</a></li><li class="page-item disabled"><span class="page-link">...</span></li><li class="page-item"><a class="page-link" href="?page=27&perPage=100&search=&org=1">27</a></li><li class="page-item"><a class="page-link" href="?page=2&perPage=100&search=&org=1">&raquo;</a></li></ul></nav>            </div>
+</div>
+
+</body>
+</html>

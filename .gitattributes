@@ -6,3 +6,5 @@
 *.pdf binary
 *.gz binary
 tests/fixtures/vero/*.html -text
+tests/fixtures/stokomak/*.html -text
+tests/fixtures/zito/*.html -text

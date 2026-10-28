@@ -69,7 +69,7 @@ Invoke-Assert 'published_ts_roundtrip' "SELECT CASE WHEN count(*) = 1000 THEN 1 
 Invoke-Assert 'offers_match_observations' "SELECT CASE WHEN (SELECT count(*) FROM offers_current) = (SELECT count(DISTINCT (store_id, retailer_product_id)) FROM price_observations) THEN 1 ELSE 0 END;"
 Invoke-Assert 'promotions_present' "SELECT CASE WHEN count(*) > 0 THEN 1 ELSE 0 END FROM promotions;"
 Invoke-Assert 'snapshots_linked' "SELECT CASE WHEN count(*) = 1000 THEN 1 ELSE 0 END FROM price_observations WHERE raw_snapshot_id IS NOT NULL;"
-Invoke-Assert 'stores_seeded_17' "SELECT CASE WHEN count(*) = 17 THEN 1 ELSE 0 END FROM stores;"
+Invoke-Assert 'stores_seeded_17' "SELECT CASE WHEN count(*) = 17 THEN 1 ELSE 0 END FROM stores WHERE retailer_id = (SELECT id FROM retailers WHERE slug = 'vero');"
 Invoke-Assert 'run_completed' "SELECT CASE WHEN count(*) = 1 THEN 1 ELSE 0 END FROM ingestion_runs WHERE run_key = 'm1-replay-test' AND status = 'completed' AND rows_stored = 1000;"
 
 # 8. Sample record for the evidence log

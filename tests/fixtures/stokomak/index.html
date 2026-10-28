@@ -1,0 +1,354 @@
+﻿
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка на цени</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color:rgb(255, 255, 255);
+            color: black;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        table {
+            background: white;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        table {
+            user-select: none;
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none; 
+        }
+        
+        * {
+    user-select: none;
+    -webkit-user-select: none; 
+    -webkit-touch-callout: none;
+    }
+	  .active>.page-link, .page-link.active {
+        background-color:#fcd900!important;
+    }
+
+
+    </style>
+</head>
+<body>
+
+
+<script>
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener("keydown", function(event) {
+    
+    if (
+        event.key === "F12" || 
+        (event.ctrlKey && event.shiftKey && (event.key === "I" || event.key === "J")) || 
+        (event.ctrlKey && (event.key === "U" || event.key === "S"))
+    ) {
+        event.preventDefault();
+        
+    }
+});
+
+</script>
+
+<!-- <div class="container my-4">
+<div class="header d-flex align-items-center p-3" style="background-color:rgb(233 233 233);
+ color: black;">
+
+        <a href="index.php" style="margin-right: 24%;">
+    <img src="logo.png" alt="Logo" id="logo" style="height: 65px; margin-right: 19%;">
+    </a>
+ 
+    <h1 class="mb-0" style="font-size: 34px; font-weight: bold;">ПРОВЕРКА НА ЦЕНИ</h1>
+</div>
+    </div> -->
+
+
+<div class="container my-4">
+    <div class="card p-3 shadow-sm">
+        <form class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <select name="org" class="form-select" onchange="this.form.submit()">
+                    <option value="">Одберете маркет</option>
+                                            <option value="1" 
+                                >
+                            КИСЕЛА ВОДА                        </option>
+                                            <option value="2" 
+                                >
+                            КУМАНОВО 2                        </option>
+                                            <option value="3" 
+                                >
+                            КАРПОШ 2                        </option>
+                                            <option value="4" 
+                                >
+                            АВТОКОМАНДА                        </option>
+                                            <option value="5" 
+                                >
+                            БУТЕЛ                        </option>
+                                            <option value="6" 
+                                >
+                            АЕРОДРОМ 2                        </option>
+                                            <option value="7" 
+                                >
+                            ТАФТАЛИЏЕ                        </option>
+                                            <option value="8" 
+                                >
+                            МЛЕЧЕН                        </option>
+                                            <option value="9" 
+                                >
+                            ОХРИД 1                        </option>
+                                            <option value="10" 
+                                >
+                            КУМАНОВО 3                        </option>
+                                            <option value="11" 
+                                >
+                            АЕРОДРОМ 1                        </option>
+                                            <option value="12" 
+                                >
+                            КАРПОШ 4                        </option>
+                                            <option value="13" 
+                                >
+                            СИНГЕЛИЧ                        </option>
+                                            <option value="14" 
+                                >
+                            ЦЕНТАР                        </option>
+                                            <option value="16" 
+                                >
+                            КАПИШТЕЦ                        </option>
+                                            <option value="17" 
+                                >
+                            ЃОРЧЕ ПЕТРОВ 2                        </option>
+                                            <option value="18" 
+                                >
+                            ДРАЧЕВО                        </option>
+                                            <option value="19" 
+                                >
+                            КУМАНОВО 1                        </option>
+                                            <option value="20" 
+                                >
+                            ВОДЊАНСКА                        </option>
+                                            <option value="21" 
+                                >
+                            БУЊАКОВЕЦ                        </option>
+                                            <option value="22" 
+                                >
+                            НОВО ЛИСИЧЕ                        </option>
+                                            <option value="23" 
+                                >
+                            ХИПОДРОМ                        </option>
+                                            <option value="24" 
+                                >
+                            РАСАДНИК                        </option>
+                                            <option value="25" 
+                                >
+                            НОВО ЛИСИЧЕ 2                        </option>
+                                            <option value="26" 
+                                >
+                            ТОПАНСКО ПОЛЕ                        </option>
+                                            <option value="27" 
+                                >
+                            ЧАИР                        </option>
+                                            <option value="28" 
+                                >
+                            КОЗЛЕ                        </option>
+                                            <option value="29" 
+                                >
+                            МИЧУРИН                        </option>
+                                            <option value="30" 
+                                >
+                            ШТИП                        </option>
+                                            <option value="31" 
+                                >
+                            ГОРЧЕ ДЕКСИОН                        </option>
+                                            <option value="32" 
+                                >
+                            ТЕТОВО                        </option>
+                                            <option value="33" 
+                                >
+                            СЕВЕР                        </option>
+                                            <option value="34" 
+                                >
+                            РАДИШАНИ                        </option>
+                                            <option value="35" 
+                                >
+                            ЧЕНТО 2                        </option>
+                                            <option value="36" 
+                                >
+                            ИЛИНДЕН                        </option>
+                                            <option value="37" 
+                                >
+                            КУМАНОВО 4                        </option>
+                                            <option value="38" 
+                                >
+                            ПРИЛЕП                        </option>
+                                            <option value="39" 
+                                >
+                            КОЧАНИ                        </option>
+                                            <option value="40" 
+                                >
+                            ТЕТОВО 2                        </option>
+                                            <option value="41" 
+                                >
+                            ВЕЛЕС                        </option>
+                                            <option value="42" 
+                                >
+                            НЕГОТИНО                        </option>
+                                            <option value="43" 
+                                >
+                            ВЛАЕ                        </option>
+                                            <option value="44" 
+                                >
+                            РЕСЕН                        </option>
+                                            <option value="45" 
+                                >
+                            ПРОБИШТИП                        </option>
+                                            <option value="46" 
+                                >
+                            ШТИП 2                        </option>
+                                            <option value="47" 
+                                >
+                            ГЕВГЕЛИЈА                        </option>
+                                            <option value="48" 
+                                >
+                            СТРУМИЦА                        </option>
+                                            <option value="49" 
+                                >
+                            ГОСТИВАР                        </option>
+                                            <option value="50" 
+                                >
+                            БИТОЛА                        </option>
+                                            <option value="51" 
+                                >
+                            ОХРИД  2                        </option>
+                                            <option value="52" 
+                                >
+                            РАДОВИШ                        </option>
+                                            <option value="53" 
+                                >
+                            БИТОЛА 2                        </option>
+                                            <option value="54" 
+                                >
+                            КИЧЕВО                        </option>
+                                            <option value="55" 
+                                >
+                            СТРУМИЦА 2                        </option>
+                                            <option value="56" 
+                                >
+                            КАВАДАРЦИ                        </option>
+                                            <option value="57" 
+                                >
+                            СТРУГА                        </option>
+                                            <option value="58" 
+                                >
+                            ДЕЛЧЕВО                        </option>
+                                            <option value="59" 
+                                >
+                            ВИНИЦА                        </option>
+                                            <option value="60" 
+                                >
+                            ТЕТОВО 3                        </option>
+                                            <option value="61" 
+                                >
+                            КРИВА ПАЛАНКА                        </option>
+                                            <option value="62" 
+                                >
+                            ПРИЛЕП 2                        </option>
+                                            <option value="63" 
+                                >
+                            КИСЕЛА ВОДА 2                        </option>
+                                            <option value="64" 
+                                >
+                            ПЕТРОВЕЦ                        </option>
+                                            <option value="65" 
+                                >
+                            ВЕЛЕС 2                        </option>
+                                            <option value="66" 
+                                >
+                            НОВОСЕЛСКИ ПАТ                        </option>
+                                            <option value="67" 
+                                >
+                            СВЕТИ НИКОЛЕ                        </option>
+                                            <option value="68" 
+                                >
+                            БЕРОВО                        </option>
+                                            <option value="69" 
+                                >
+                            КРАТОВО                        </option>
+                                            <option value="70" 
+                                >
+                            ДЕБАР                        </option>
+                                            <option value="71" 
+                                >
+                            ШТИП  3                        </option>
+                                            <option value="72" 
+                                >
+                            ДРАЧЕВО  2                        </option>
+                                            <option value="73" 
+                                >
+                            ВЛАЕ 2  АЛЕКСАНДРИЈА                        </option>
+                                            <option value="74" 
+                                >
+                            ЧАИР 2                        </option>
+                                            <option value="75" 
+                                >
+                            СТРУГА 2                        </option>
+                                            <option value="76" 
+                                >
+                            КУМАНОВО 5                        </option>
+                                            <option value="77" 
+                                >
+                            КОЧАНИ 2                        </option>
+                                            <option value="78" 
+                                >
+                            МАРКЕТ МАЏАРИ                        </option>
+                                            <option value="79" 
+                                >
+                            СТРУМИЦА 3                        </option>
+                                            <option value="80" 
+                                >
+                            МАК. КАМЕНИЦА                        </option>
+                                            <option value="81" 
+                                >
+                            ЈУЖЕН БУЛЕВАР                        </option>
+                                            <option value="82" 
+                                >
+                            МАРКЕТ ЗЛОКУЌАНИ                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="search" class="form-control" placeholder="Пребарај по име" 
+                       value="">
+            </div>
+            <div class="col-md-2">
+                <select name="perPage" class="form-select" onchange="this.form.submit()">
+                                            <option value="10" >
+                            10 / страница
+                        </option>
+                                            <option value="20" selected>
+                            20 / страница
+                        </option>
+                                            <option value="50" >
+                            50 / страница
+                        </option>
+                                            <option value="100" >
+                            100 / страница
+                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary"style="background-color:#fcd900!important; color:black!important;">Пребарај</button>
+            </div>
+        </form>
+
+                    <p class="text-muted mt-3">Ве молиме изберете маркет за да ги видите артиклите.</p>
+            </div>
+</div>
+
+</body>
+</html>

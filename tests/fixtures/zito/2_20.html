@@ -1,0 +1,2516 @@
+﻿
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка на цени</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color:rgb(255, 255, 255);
+            color: black;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        table {
+            background: white;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        table {
+            user-select: none;
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none; 
+        }
+        
+        * {
+    user-select: none;
+    -webkit-user-select: none; 
+    -webkit-touch-callout: none;
+    }
+
+
+
+    </style>
+</head>
+<body>
+
+
+<script>
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener("keydown", function(event) {
+    
+    if (
+        event.key === "F12" || 
+        (event.ctrlKey && event.shiftKey && (event.key === "I" || event.key === "J")) || 
+        (event.ctrlKey && (event.key === "U" || event.key === "S"))
+    ) {
+        event.preventDefault();
+        
+    }
+});
+
+</script>
+
+
+<div class="container my-4">
+<div class="header d-flex align-items-center p-3" style="background-color:rgb(233 233 233);
+ color: black;">
+
+        <a href="index.php" style="margin-right: 19%;">
+    <img src="logo.png" alt="Logo" id="logo" style="height: 65px; margin-right: 19%;">
+    </a>
+ 
+    <h1 class="mb-0" style="font-size: 34px; font-weight: bold;">ПРОВЕРКА НА ЦЕНИ</h1>
+</div>
+    </div>
+
+
+<div class="container my-4">
+    <div class="card p-3 shadow-sm">
+        <form class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <select name="org" class="form-select" onchange="this.form.submit()">
+                    <option value="">Одберете маркет</option>
+                                            <option value="2" 
+                                selected>
+                            2 Трговски - Велес                        </option>
+                                            <option value="3" 
+                                >
+                            3 Струмица 4                        </option>
+                                            <option value="4" 
+                                >
+                            4 Пазар - Кочани                        </option>
+                                            <option value="5" 
+                                >
+                            5 Делчево 2                        </option>
+                                            <option value="6" 
+                                >
+                            6 Куманово - Трговски                        </option>
+                                            <option value="7" 
+                                >
+                            7 Интернат - Велес                        </option>
+                                            <option value="8" 
+                                >
+                            8 Бутел1 - Скопје                        </option>
+                                            <option value="9" 
+                                >
+                            9 Жито Ване - Велес                        </option>
+                                            <option value="10" 
+                                >
+                            10 Жито Ване Кат                        </option>
+                                            <option value="11" 
+                                >
+                            11 Ѓорче - Скопје                        </option>
+                                            <option value="12" 
+                                >
+                            12 Демир капија                        </option>
+                                            <option value="13" 
+                                >
+                            13 Центар ЗОИЛ - Скопје                        </option>
+                                            <option value="14" 
+                                >
+                            14 Мичурин - Скопје                        </option>
+                                            <option value="15" 
+                                >
+                            15 Соколана - Велес                        </option>
+                                            <option value="16" 
+                                >
+                            16 Центар - Велес                        </option>
+                                            <option value="17" 
+                                >
+                            17 Автобуска - Кочани                        </option>
+                                            <option value="18" 
+                                >
+                            18 Баумаркет - Скопје                        </option>
+                                            <option value="19" 
+                                >
+                            19 Фонтана - Велес                        </option>
+                                            <option value="20" 
+                                >
+                            20 Багремче - Велес                        </option>
+                                            <option value="21" 
+                                >
+                            21 Градско                        </option>
+                                            <option value="22" 
+                                >
+                            22 Илинден - Скопје                        </option>
+                                            <option value="23" 
+                                >
+                            23 Рид - Прилеп                        </option>
+                                            <option value="24" 
+                                >
+                            24 Штип Сењак                        </option>
+                                            <option value="25" 
+                                >
+                            25 Виница                        </option>
+                                            <option value="26" 
+                                >
+                            26 Неготино                        </option>
+                                            <option value="27" 
+                                >
+                            27 Делчево                        </option>
+                                            <option value="28" 
+                                >
+                            28 Росоман                        </option>
+                                            <option value="29" 
+                                >
+                            29 Општина - Велес                        </option>
+                                            <option value="30" 
+                                >
+                            30 Струмица 1                        </option>
+                                            <option value="31" 
+                                >
+                            95 Кавадарци 2                        </option>
+                                            <option value="32" 
+                                >
+                            32 Поток - Тетово                        </option>
+                                            <option value="33" 
+                                >
+                            33 Валандово                        </option>
+                                            <option value="34" 
+                                >
+                            34 Гостивар                        </option>
+                                            <option value="35" 
+                                >
+                            35 Ново Лисиче - Скопје                        </option>
+                                            <option value="36" 
+                                >
+                            96 К.Вода Расадник 2                        </option>
+                                            <option value="37" 
+                                >
+                            37 Градски Саат - Велес                        </option>
+                                            <option value="38" 
+                                >
+                            38 Аеродром Пазар - Скопје                        </option>
+                                            <option value="39" 
+                                >
+                            39 Кисела Вода 2 - Скопје                        </option>
+                                            <option value="40" 
+                                >
+                            40 Бутел2 - Скопје                        </option>
+                                            <option value="41" 
+                                >
+                            41 Кеј - Прилеп                        </option>
+                                            <option value="42" 
+                                >
+                            42 Облешево                        </option>
+                                            <option value="43" 
+                                >
+                            43 Железара - Скопје                        </option>
+                                            <option value="44" 
+                                >
+                            44 Драчево1 - Скопје                        </option>
+                                            <option value="45" 
+                                >
+                            45 Превалец                        </option>
+                                            <option value="46" 
+                                >
+                            46 Аеродром Тобако - Скопје                        </option>
+                                            <option value="47" 
+                                >
+                            47 Аеродром Капитол - Скопје                        </option>
+                                            <option value="48" 
+                                >
+                            48 Влае - Скопје                        </option>
+                                            <option value="49" 
+                                >
+                            49 Чашка                        </option>
+                                            <option value="50" 
+                                >
+                            50 Влез - Кочани                        </option>
+                                            <option value="51" 
+                                >
+                            51 КиМ - Велес                        </option>
+                                            <option value="52" 
+                                >
+                            52 Касарна - Битола                        </option>
+                                            <option value="53" 
+                                >
+                            53 Градинка - Велес                        </option>
+                                            <option value="54" 
+                                >
+                            54 Брвеница - Тетово                        </option>
+                                            <option value="55" 
+                                >
+                            55 Којник - Велес                        </option>
+                                            <option value="56" 
+                                >
+                            56 Аеродром Поликлиника -Скопје                        </option>
+                                            <option value="57" 
+                                >
+                            57-Петровец - Скопје                        </option>
+                                            <option value="58" 
+                                >
+                            58 Битола-2                        </option>
+                                            <option value="59" 
+                                >
+                            59 Куманово                        </option>
+                                            <option value="60" 
+                                >
+                            60 Македонска Каменица                        </option>
+                                            <option value="61" 
+                                >
+                            61 Автокоманда - Скопје                        </option>
+                                            <option value="62" 
+                                >
+                            62  Гимназија                        </option>
+                                            <option value="63" 
+                                >
+                            63 Гимназија-Дом                        </option>
+                                            <option value="64" 
+                                >
+                            64 Битола-3                        </option>
+                                            <option value="65" 
+                                >
+                            65 Илинден 2                        </option>
+                                            <option value="66" 
+                                >
+                            66 Волково - Скопје                        </option>
+                                            <option value="67" 
+                                >
+                            67 Ламели Кичево                        </option>
+                                            <option value="68" 
+                                >
+                            68 Девеана Кичево                        </option>
+                                            <option value="69" 
+                                >
+                            69 жито Гостивар Автобуска                        </option>
+                                            <option value="70" 
+                                >
+                            70 Гевгелија                        </option>
+                                            <option value="71" 
+                                >
+                            71 Жито Свети Николе Автобуска                        </option>
+                                            <option value="72" 
+                                >
+                            72 Жито Кочани Излез                        </option>
+                                            <option value="73" 
+                                >
+                            73 Жито ПробиШтип Автобуска                        </option>
+                                            <option value="74" 
+                                >
+                            74 Жито Струмица 2                        </option>
+                                            <option value="75" 
+                                >
+                            75 Жито Штип 2 Влез                        </option>
+                                            <option value="76" 
+                                >
+                            76 Жито Штип Центар                        </option>
+                                            <option value="78" 
+                                >
+                            78 Ла Фамилиа Велес                        </option>
+                                            <option value="79" 
+                                >
+                            79 Ла Фамилиа Центар                        </option>
+                                            <option value="80" 
+                                >
+                            80 Ла Фамилиа ЕАСТ ГАТЕ                        </option>
+                                            <option value="81" 
+                                >
+                            81 Ла Фамилиа Кавадарци                        </option>
+                                            <option value="82" 
+                                >
+                            82 Жито Којник                        </option>
+                                            <option value="83" 
+                                >
+                            83 Жито Дос Велес                        </option>
+                                            <option value="84" 
+                                >
+                            84 Куманово 3                        </option>
+                                            <option value="85" 
+                                >
+                            85 Струмица 3                        </option>
+                                            <option value="86" 
+                                >
+                            86 Струга                        </option>
+                                            <option value="87" 
+                                >
+                            87 Охрид                        </option>
+                                            <option value="88" 
+                                >
+                            88 Ла Фамилија Охрид                        </option>
+                                            <option value="89" 
+                                >
+                            89 Штип градинка                        </option>
+                                            <option value="90" 
+                                >
+                            90 Чашка                        </option>
+                                            <option value="91" 
+                                >
+                            91 Тетово тетовчанка                        </option>
+                                            <option value="92" 
+                                >
+                            92 Тетово општина                        </option>
+                                            <option value="93" 
+                                >
+                            93 Бауман                        </option>
+                                            <option value="94" 
+                                >
+                            94 Кавадарци                        </option>
+                                            <option value="95" 
+                                >
+                            95 Драчево 2                        </option>
+                                            <option value="96" 
+                                >
+                            96 Радовиш                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="search" class="form-control" placeholder="Пребарај по име" 
+                       value="">
+            </div>
+            <div class="col-md-2">
+                <select name="perPage" class="form-select" onchange="this.form.submit()">
+                                            <option value="10" >
+                            10 / страница
+                        </option>
+                                            <option value="20" >
+                            20 / страница
+                        </option>
+                                            <option value="50" >
+                            50 / страница
+                        </option>
+                                            <option value="100" selected>
+                            100 / страница
+                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">Пребарај</button>
+            </div>
+        </form>
+
+                    <p class="text-muted">
+    Прикажи 1901 - 2000 од 4963 артикли
+</p>
+		<span>Датум и време на последно ажурирање на цените: 
+            28/10/2026 21:32</span>
+            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-light" style="font-size:15px;">
+                        <tr>
+                                                        <th rowspan="2">Назив на стока-производ</th>
+                                                        <th rowspan="2">Продажна цена</th>
+                                                        <th rowspan="2">Единечна цена</th>
+                                                        <th rowspan="2">Опис на стока</th>
+                            <th rowspan="2">Достапност во продажен објект</th>
+                            <th rowspan="2">Редовна цена </th>
+                            
+                            
+                        
+                                                        <th colspan="3" id="col">Промотивна или попустна цена</th>
+                        
+
+                            
+                        </tr>
+                        <tr>
+
+                        <th id="col">Цена со попуст</th>
+                        <th id="col">Вид на продажно поттикнување</th>
+                        <th id="col">Времетраење на промоција</th>
+                            </tr>
+                                                </thead>
+                    <tbody style="font-size:14px;">
+                        <!-- test -->
+
+                                                                                <tr>
+                                                                    <td>СОС КИМ САМУРАЈ 350мл</td>
+                                                                        <td>
+                                    125 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 35.71 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 125 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАЧИН ЗАЧИНАЛ 300гр (250гр+50гр подарок)</td>
+                                                                        <td>
+                                    79 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 26.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 79 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОС 5КА 370гр ГРИЛ</td>
+                                                                        <td>
+                                    72 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 19.46 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 72 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ВИТАМИНКА 300гр БЛАГ</td>
+                                                                        <td>
+                                    71 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 23.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Кечап                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 71 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МИКС ЗЕЛЕНЧУК 5КА 40гр ЗА ПЕЧЕЊЕ</td>
+                                                                        <td>
+                                    39 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 97.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 39 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МЕЛЕНА СОЛ БЛАГА 100гр 5КА</td>
+                                                                        <td>
+                                    35 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 35.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 35 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУСАМ 5КА 100гр</td>
+                                                                        <td>
+                                    22 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 22.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 22 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ФАНТ ВЕГЕТА 58гр ШПАГЕТИ БОЛОЊЕЗЕ</td>
+                                                                        <td>
+                                    79 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 136.21 ден.
+                                    </td>
+                                                                        <td>
+                                    Сос за печење                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 79 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАЧИН КОТАНИ МЕЛНИЦА 48гр ИТАЛИАНСКА МЕШ</td>
+                                                                        <td>
+                                    163 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 339.58 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 163 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОС БАРИЛА-11 БОЛОНЕЗЕ 400гр</td>
+                                                                        <td>
+                                    229 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 57.25 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 229 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТАРТАР СОС ПОЛИМАРК 300гр ДОЈПАК</td>
+                                                                        <td>
+                                    92 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 30.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Мајонез,сенф,ладен сос                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 92 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЦРВЕН ПИПЕР АЛЕВА 200гр</td>
+                                                                        <td>
+                                    169 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 84.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 169 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЦИМЕТ КОТАНИ 45гр ТЕГЛИЧКА</td>
+                                                                        <td>
+                                    120 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 266.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 120 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОС ХАЈНЦ 150мл СОЈА</td>
+                                                                        <td>
+                                    142 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 94.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 142 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАЧИН КОТАНИ 70гр ЛУК ВО ТЕГЛИЧКА</td>
+                                                                        <td>
+                                    153 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 218.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 153 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДОМАТНО САЛЦЕ КИМ 700гр</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 14.14 ден.
+                                    </td>
+                                                                        <td>
+                                                                        </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАЈОНЕЗ ТОМИ 170гр ДОЈПАК</td>
+                                                                        <td>
+                                    85 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 50.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Мајонез,сенф,ладен сос                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ВИТАМИНКА 90гр БЛАГ</td>
+                                                                        <td>
+                                    23 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 25.56 ден.
+                                    </td>
+                                                                        <td>
+                                    Кечап                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 23 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОМАТИНО ПОЛИМАРК 500гр СО ЛУТА ПИПЕРКА</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 9.80 ден.
+                                    </td>
+                                                                        <td>
+                                    Останати сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАЧИН КОТАНИ 50гр ЧИЛИ ВО ТЕГЛИЧКА</td>
+                                                                        <td>
+                                    107 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 214.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 107 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ПОЛИМАРК 1кг ЛУТ</td>
+                                                                        <td>
+                                    109 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 10.90 ден.
+                                    </td>
+                                                                        <td>
+                                    Кечап                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 137 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    109 ден.
+                                    <br>
+                                Попуст:20%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>29.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ПОЛИМАРК 45гр БЛАГ</td>
+                                                                        <td>
+                                    12 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 26.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Кечап                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 12 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЦРВЕН ПИПЕР АЛЕВА 100гр</td>
+                                                                        <td>
+                                    95 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 95.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 95 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ПОЛИМАРК 1кг ПИЦА</td>
+                                                                        <td>
+                                    109 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 10.90 ден.
+                                    </td>
+                                                                        <td>
+                                    Кечап                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 137 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    109 ден.
+                                    <br>
+                                Попуст:20%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>29.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП 5КА 1л</td>
+                                                                        <td>
+                                    82 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 8.20 ден.
+                                    </td>
+                                                                        <td>
+                                    Кечап                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 82 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОС 5КА 370гр ТЕСТЕНИНИ</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 65 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАКАЛО РАЈСКА ГРАДИНА 180гр ЛУК БОСИЛЕК</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 75.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 135 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ВИТАМИНКА 300гр ЛУТ</td>
+                                                                        <td>
+                                    71 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 23.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Кечап                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 71 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БУКОВЕЦ 5КА 100гр БЛАГ</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 59.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 59 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДОМАТНО ПИРЕ 5КА 370гр</td>
+                                                                        <td>
+                                    50 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 13.51 ден.
+                                    </td>
+                                                                        <td>
+                                    Останати сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 68 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    50 ден.
+                                    <br>
+                                Попуст:26%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ДОМАТНО ПИРЕ 5КА 370гр</td>
+                                                                        <td>
+                                    50 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 13.51 ден.
+                                    </td>
+                                                                        <td>
+                                    Останати сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 68 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    50 ден.
+                                    <br>
+                                Попуст:26%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ЛОВОРОВ ЛИСТ СУПРИМО 10гр</td>
+                                                                        <td>
+                                    8 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 80.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 8 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАЈОНЕЗ ВИТАНЕЗ 260гр ДОЈПАК</td>
+                                                                        <td>
+                                    85 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 32.69 ден.
+                                    </td>
+                                                                        <td>
+                                    Мајонез,сенф,ладен сос                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАЧИН ВЕГЕТА НАТУР 30гр КРЦКАВИ КОМПИР.</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 106.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОС КИМ ЧЕДАР 350мл</td>
+                                                                        <td>
+                                    125 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 35.71 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 125 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОС ЗА СКАРА ХАЈНЦ 400гр БЛАГ</td>
+                                                                        <td>
+                                    119 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 29.75 ден.
+                                    </td>
+                                                                        <td>
+                                    Сос за печење                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 185 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    119 ден.
+                                    <br>
+                                Попуст:36%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>КАРАНФИЛЧЕ КОТАНИ 18гр ВО КЕСА</td>
+                                                                        <td>
+                                    86 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 477.78 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 86 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАЈОНЕЗ ТОМИ 380гр ДОЈПАК</td>
+                                                                        <td>
+                                    149 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 39.21 ден.
+                                    </td>
+                                                                        <td>
+                                    Мајонез,сенф,ладен сос                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 149 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАЧИН ЕКО ЈУМИС 500гр КЕСА</td>
+                                                                        <td>
+                                    85 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЕНФ ТОМИ 280гр ДОЈПАК</td>
+                                                                        <td>
+                                    139 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 49.64 ден.
+                                    </td>
+                                                                        <td>
+                                    Мајонез,сенф,ладен сос                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 139 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОС КИМ 360гр НАПОЛИТАНА</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 24.72 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАЧИН 5КА 450гр КУТИЈА</td>
+                                                                        <td>
+                                    82 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 18.22 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 82 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАЈОНЕЗ ДИЈАМАНТ 285мл КЛАСИК СО ЧЕП</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 31.23 ден.
+                                    </td>
+                                                                        <td>
+                                    Мајонез,сенф,ладен сос                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ПОЛИМАРК 500гр ЛУТ</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.80 ден.
+                                    </td>
+                                                                        <td>
+                                    Кечап                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПРЕЛИВ КИМ 350мл БУРГЕР СОС</td>
+                                                                        <td>
+                                    108 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 30.86 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 108 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЗАЧИН ЗАЧИНАЛ 600гр(500гр+100гр подарок)</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 22.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Зачини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 135 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОС 5КА 300мл БУРГЕР</td>
+                                                                        <td>
+                                    88 ден.
+                                    </td>
+                                                                        <td>
+                                        100ml = 29.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Преливи и сосови                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 88 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТЕСТЕНИНИ ПОДРАВКА 160гр БОЛОЊЕЗЕ</td>
+                                                                        <td>
+                                    131 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 81.88 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 131 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА ПОДРАВКА 52гр КОКОШКА ТЕСТ/ЗЕЛЕН</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 61.54 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА КОЦКА ПОДРАВКА 10гр ЗЕЛЕНЧУК</td>
+                                                                        <td>
+                                    10 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 100.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 10 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛАЗАЊИ ДИВЕЛА 500гр 109</td>
+                                                                        <td>
+                                    105 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 21.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 129 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    105 ден.
+                                    <br>
+                                Попуст:19%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>СУПА ЈУМИС 52гр ПОСНА</td>
+                                                                        <td>
+                                    24 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 46.15 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 24 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА ЈУМИС 60гр ФРАНЦУСКА</td>
+                                                                        <td>
+                                    24 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 40.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 24 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОРТИЉА МЕКСИКАНА 390гр ЧИА 6/1</td>
+                                                                        <td>
+                                    95 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 24.36 ден.
+                                    </td>
+                                                                        <td>
+                                    Тортиљи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 95 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НУДЛИ ПОДРАВКА 75гр КОКОШКИНИ</td>
+                                                                        <td>
+                                    19 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 25.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Нудли                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 19 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОРТИЉА ЕЛ ГРИТО 360гр ПРОТЕИНСКА</td>
+                                                                        <td>
+                                    90 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 25.00 ден.
+                                    </td>
+                                                                        <td>
+                                                                        </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 90 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА КОЦКА ЈУМИС 40гр ПОСНА 4*10гр</td>
+                                                                        <td>
+                                    24 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 6.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 24 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОРТИЉА ЈАМИ 390гр ИНТЕГРАЛНИ 6/1</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 11.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Тортиљи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 93 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    69 ден.
+                                    <br>
+                                Попуст:26%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ТОРТИЉА ЈАМИ 390гр СПАНАЌ И ЧИА 6/1</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 16.50 ден.
+                                    </td>
+                                                                        <td>
+                                    Тортиљи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ 5КА 350гр ПЕНЕ</td>
+                                                                        <td>
+                                    29 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 8.29 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 38 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    29 ден.
+                                    <br>
+                                Попуст:24%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ 5КА 350гр ПЕНЕ</td>
+                                                                        <td>
+                                    29 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 8.29 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 38 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    29 ден.
+                                    <br>
+                                Попуст:24%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ПИРЕ КОМПИР КИБЕЛА 120гр</td>
+                                                                        <td>
+                                    36 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 30.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Пире                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 36 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТЕСТЕНИНИ ИНДОМИ 75гр СУПЕР ПИЛЕШКО</td>
+                                                                        <td>
+                                    19 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 25.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Нудли                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 19 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ФИДЕ 5КА 350гр</td>
+                                                                        <td>
+                                    37 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 10.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 37 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ ДИВЕЛА 500гр 53</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 12.40 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЕТ СУПИ ЈУМИС 3+1 ГРАТИС</td>
+                                                                        <td>
+                                    81 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 81 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОРТИЉА ГРИТО 360гр ПЧЕНКАРНА КЛАСИК</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 24.72 ден.
+                                    </td>
+                                                                        <td>
+                                                                        </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТАРАНА 350гр СЕНТЕЛА</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 9.14 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА ЈУМИС 54гр КРЕМ ПИЛЕШКА</td>
+                                                                        <td>
+                                    25 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 46.30 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 25 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА КОЦКА ПОДРАВКА 10гр КОКОШЈА</td>
+                                                                        <td>
+                                    11 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 110.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 11 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА МАГИ 49гр ШВАЈЦАРСКА</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 120.41 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 59 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ СЕНТЕЛА 350гр РЕБРАСТИ</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 8.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ ДИВЕЛА 500гр 40</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 12.40 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ ДИВЕЛА 500гр 27</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 12.40 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА ПОДРАВКА 60гр ПИЛЕШКА АБЦ</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 45.71 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛАЗАЊИ БАРИЛА 500гр 99</td>
+                                                                        <td>
+                                    229 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 45.80 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 229 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА КОЦКА ЈУМИС 40гр КОКОШКИНА 4*10гр</td>
+                                                                        <td>
+                                    24 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 60.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 24 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОРТИЉА ЈАМИ 390гр КЛАСИК 6/1</td>
+                                                                        <td>
+                                    66 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 11.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Тортиљи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 85 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    66 ден.
+                                    <br>
+                                Попуст:22%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>СУПА МАГИ КОЦКА 60гр ПИЛЕШКА</td>
+                                                                        <td>
+                                    55 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 91.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 55 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТЕСТЕНИНИ ИНДОМИ 5Х70гр ГОВЕДСКО</td>
+                                                                        <td>
+                                    95 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 25.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Нудли                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 95 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОРТИЉА ЕЛ ГРИТО 360гр ИНТЕГРАЛНА</td>
+                                                                        <td>
+                                    99 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 27.50 ден.
+                                    </td>
+                                                                        <td>
+                                                                        </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 99 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТЕСТЕНИНИ ИНДОМИ 10*75гр СУПЕР ПИЛЕШКО</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 18.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Нудли                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 189 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    135 ден.
+                                    <br>
+                                Попуст:29%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ТЕСТЕНИНИ ИНДОМИ 10*75гр СУПЕР ПИЛЕШКО</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 18.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Нудли                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 189 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    135 ден.
+                                    <br>
+                                Попуст:29%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>СУПА КОЦКА ЈУМИС 40гр ГОВЕДСКА 4*10гр</td>
+                                                                        <td>
+                                    24 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 60.00 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 24 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТЕСТЕНИНИ ИНДОМИ 5Х75гр СУПЕР ПИЛЕШКО</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.33 ден.
+                                    </td>
+                                                                        <td>
+                                    Нудли                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 93 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    65 ден.
+                                    <br>
+                                Попуст:30%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ СЕНТЕЛА350гр РОШЧИЌИ 7ММ</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 8.57 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТЕСТЕНИНИ ИНДОМИ 10*70гр ПИЛЕШКО</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 19.29 ден.
+                                    </td>
+                                                                        <td>
+                                    Нудли                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 189 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    135 ден.
+                                    <br>
+                                Попуст:29%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ТЕСТЕНИНИ ИНДОМИ 10*70гр ПИЛЕШКО</td>
+                                                                        <td>
+                                    135 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 19.29 ден.
+                                    </td>
+                                                                        <td>
+                                    Нудли                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 189 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    135 ден.
+                                    <br>
+                                Попуст:29%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>СУПА ПОДРАВКА 64гр АЛПСКА</td>
+                                                                        <td>
+                                    45 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 70.31 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 53 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    45 ден.
+                                    <br>
+                                Попуст:15%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 01.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>СУПА ПОДРАВКА ГОВЕДСКА 65грСО ТЕСТЕНИНИ</td>
+                                                                        <td>
+                                    38 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 38 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА МАГИ 47гр АЛПСКА</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 125.53 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 59 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА ПОДРАВКА ШВАЈЦАРСКА</td>
+                                                                        <td>
+                                    58 ден.
+                                    </td>
+                                                                        <td>
+                                        
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 58 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА ПОДРАВКА 62гр ПЕТЕЛ</td>
+                                                                        <td>
+                                    28 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 45.16 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 34 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    28 ден.
+                                    <br>
+                                Попуст:18%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    промотивна цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 28.10.2026 до <br>10.11.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ ДИВЕЛА 500гр 48</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 12.40 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОРТИЉА МЕКСИКАНА 780гр ГРАНДИСИМО</td>
+                                                                        <td>
+                                    149 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 19.10 ден.
+                                    </td>
+                                                                        <td>
+                                    Тортиљи                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 149 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА КОЦКА ПОДРАВКА 60гр ГОВЕДСКА РЕТРО</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 81.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА КОЦКА ПОДРАВКА 60гр КОКОШКИНА РЕТРО</td>
+                                                                        <td>
+                                    49 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 81.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 49 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЈУФКИ СКАЛИНАДА 400гр</td>
+                                                                        <td>
+                                    105 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 26.25 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 105 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЕТ СУПА ЈУМИС ГОВЕДСКА 120гр МУЛТИПАК</td>
+                                                                        <td>
+                                    47 ден.
+                                    </td>
+                                                                        <td>
+                                        1par = 15.67 ден.
+                                    </td>
+                                                                        <td>
+                                    Супи и коцки за супа                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 47 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ФИДЕ ДИВЕЛА 500гр 93</td>
+                                                                        <td>
+                                    88 ден.
+                                    </td>
+                                                                        <td>
+                                        100gr = 17.60 ден.
+                                    </td>
+                                                                        <td>
+                                    Тестенини                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 108 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    88 ден.
+                                    <br>
+                                Попуст:19%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    клуб цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 16.10.2026 до <br>31.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                                        </tbody>
+                </table>
+            </div>
+
+            <nav class="d-flex justify-content-center"><ul class="pagination"><li class="page-item"><a class="page-link" href="?page=19&perPage=100&search=&org=2">&laquo;</a></li><li class="page-item"><a class="page-link" href="?page=1&perPage=100&search=&org=2">1</a></li><li class="page-item disabled"><span class="page-link">...</span></li><li class="page-item "><a class="page-link" href="?page=18&perPage=100&search=&org=2">18</a></li><li class="page-item "><a class="page-link" href="?page=19&perPage=100&search=&org=2">19</a></li><li class="page-item active"><a class="page-link" href="?page=20&perPage=100&search=&org=2">20</a></li><li class="page-item "><a class="page-link" href="?page=21&perPage=100&search=&org=2">21</a></li><li class="page-item "><a class="page-link" href="?page=22&perPage=100&search=&org=2">22</a></li><li class="page-item disabled"><span class="page-link">...</span></li><li class="page-item"><a class="page-link" href="?page=50&perPage=100&search=&org=2">50</a></li><li class="page-item"><a class="page-link" href="?page=21&perPage=100&search=&org=2">&raquo;</a></li></ul></nav>            </div>
+</div>
+
+</body>
+</html>

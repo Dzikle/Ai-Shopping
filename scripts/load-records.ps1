@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory = $true)][string]$RunKey,
     [string]$Database = '',
     [string]$DbUser = '',
-    [string]$SourceSlug = 'vero',
+    [string]$SourceSlug = '',
     [switch]$Force
 )
 $ErrorActionPreference = 'Stop'
@@ -27,6 +27,8 @@ foreach ($p in @($recordsPath, $snapshotsPath, $manifestPath)) {
 }
 
 $manifest = Get-Content $manifestPath -Raw | ConvertFrom-Json
+if (-not $SourceSlug) { $SourceSlug = $manifest.source_slug }
+if (-not $SourceSlug) { $SourceSlug = 'vero' }
 if ($manifest.quarantined -and -not $Force) {
     Write-Output "QUARANTINED run refused: $($manifest.quarantine_reason)"
     exit 2

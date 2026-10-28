@@ -28,13 +28,13 @@
 ## Other candidates (unverified)
 | Retailer | Starting URL | Status |
 |---|---|---|
-| Tinex | https://www.tinex.com.mk/ | Inspect linked full-list destination |
-| Stokomak | https://stokomak.proverkanaceni.mk/?org=5 | Structured paginated listing candidate |
+| Tinex | https://www.tinex.com.mk/ (`ceni.tinex.mk`) | Self-hosted statutory price site unreachable (TCP timeout 2026-10-28); deferred |
+| Stokomak | https://stokomak.proverkanaceni.mk/ | **VALIDATED & INGESTED (M2)** — 81 stores in selector, `?org={org}&perPage={n}&page={k}`, 6/9-col HTML table, no robots restrictions |
 | Kipper | https://kipper.mk/ | Store-specific listing candidate |
 | Konto | https://www.kontomarket.com.mk/cenovnik | Store-level listing candidate |
 | Reptil | https://www.reptilmarketi.mk/ | Store-level links; verify |
 | Elida | https://www.elida.com.mk/Products | Product catalog; full legal price list unconfirmed |
-| Zito | https://zito.com.mk/ | Full list unresolved |
+| Zito | https://zito.proverkanaceni.mk/ | **VALIDATED & INGESTED (M2)** — 94 stores in selector (sparse `org` IDs starting at 2; `org=1` returns empty `Нема податоци` table), same `*.proverkanaceni.mk` platform |
 | Zur | https://zurmarket.mk/ | Full list unresolved |
 | Tamaro | official URL to discover | Full list unresolved |
 

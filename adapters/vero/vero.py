@@ -7,178 +7,44 @@ tests/fixtures/vero/). Standard library only - no third-party dependencies.
 Contract (see docs/contracts/vero-adapter-contract.md):
 - parse_page()   -> (records, info) for one {storeId}_{page}.html document
 - parse_index()  -> list of store descriptors for index.html
-- normalization helpers shared with the CLI record builder
+- normalization helpers re-exported from adapters.common
 """
 
 from __future__ import annotations
 
-import hashlib
 import re
-import unicodedata
-from datetime import datetime, timedelta, timezone
-from decimal import Decimal, InvalidOperation
-from html.parser import HTMLParser
-from zoneinfo import ZoneInfo
+import sys
+from pathlib import Path
 
-try:
-    _SKOPJE = ZoneInfo("Europe/Skopje")
-    _TZ_SOURCE = "zoneinfo:Europe/Skopje"
-except Exception:  # pragma: no cover - tzdata missing in minimal images
-    _SKOPJE = timezone(timedelta(hours=1), "CET")
-    _TZ_SOURCE = "fallback:UTC+01:00"
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from adapters.common import (
+    CURRENCY,
+    RowParser as _RowParser,
+    _ALL_WS_RE,
+    _SKOPJE,
+    _SPACES_RE,
+    _TZ_SOURCE,
+    content_hash_sha256,
+    derive_sku_key,
+    normalize_name,
+    parse_availability,
+    parse_date_range,
+    parse_pct,
+    parse_price,
+    parse_rows,
+    parse_unit_price,
+    parse_updated,
+    url_hash_sha256,
+)
 
 BASE_URL = "https://pricelist.vero.com.mk"
-
-# Prices are published in MKD (denari); the pages do not repeat the currency.
-CURRENCY = "MKD"
 
 _PAGE_FILE_RE = re.compile(r"(\d+)_(\d+)\.(?:html|htm)$")
 _STORE_LINK_RE = re.compile(r"(\d+)_1\.(?:html|htm)$")
 _DASH_RE = re.compile(r"\s+[–-]\s*")
-_SPACES_RE = re.compile(r"[ \t]+")
-_ALL_WS_RE = re.compile(r"\s+")
-_UNIT_RE = re.compile(r"^([0-9][0-9.,]*)\s*(.*)$")
-_RANGE_SEP = re.compile(r"\s*[-–]\s*")
-_KNOWN_AVAILABILITY = {"Да": "in_stock", "Не": "out_of_stock"}
-
-
-def parse_price(text):
-    """Parse '879', '879.50', '1.255,50 ден' style values to Decimal or None."""
-    raw = _ALL_WS_RE.sub(" ", (text or "").strip())
-    m = re.match(r"([0-9][0-9.,]*)", raw)
-    if not m:
-        return None
-    num = m.group(1).strip(".,")
-    if "," in num and "." in num:
-        num = num.replace(".", "").replace(",", ".")
-    elif "," in num:
-        num = num.replace(",", ".")
-    try:
-        return Decimal(num)
-    except InvalidOperation:
-        return None
-
-
-def parse_pct(text):
-    """Parse '10 %' style percentages to Decimal or None."""
-    return parse_price((text or "").replace("%", "").strip())
-
-
-def parse_unit_price(text):
-    """Parse '1255 ден/парче' -> (Decimal, 'ден/парче') or (None, None)."""
-    raw = _ALL_WS_RE.sub(" ", (text or "").strip())
-    m = _UNIT_RE.match(raw)
-    if not m:
-        return None, None
-    value = parse_price(m.group(1))
-    label = m.group(2).strip() or None
-    return value, label
-
-
-def parse_date_range(text):
-    """Parse '28/10/2026 - 10/11/2026' -> (date, date) or (None, None)."""
-    if not text:
-        return None, None
-    parts = _RANGE_SEP.split(text.strip())
-    if len(parts) != 2:
-        return None, None
-    try:
-        start = datetime.strptime(parts[0], "%d/%m/%Y").date()
-        end = datetime.strptime(parts[1], "%d/%m/%Y").date()
-    except ValueError:
-        return None, None
-    return start, end
-
-
-def parse_updated(text):
-    """Parse 'Последно ажурирање: 28/10/2026 8:02' -> tz-aware datetime or None."""
-    if not text:
-        return None
-    m = re.search(r"(\d{2}/\d{2}/\d{4})\s+(\d{1,2}):(\d{2})", text)
-    if not m:
-        return None
-    dt = datetime.strptime(f"{m.group(1)} {m.group(2)}:{m.group(3)}", "%d/%m/%Y %H:%M")
-    return dt.replace(tzinfo=_SKOPJE)
-
-
-def normalize_name(text):
-    """Normalization for the M1 sku_key derivation.
-
-    NFC-normalizes, collapses whitespace, uppercases, trims.
-    Deliberately does NOT unify Cyrillic/Latin homoglyphs - identity
-    resolution is M2 work (ADR-0003).
-    """
-    raw = unicodedata.normalize("NFC", text or "")
-    raw = raw.replace("\u00a0", " ").replace("\u2009", " ")
-    return _ALL_WS_RE.sub(" ", raw).strip().upper()
-
-
-def derive_sku_key(name, category):
-    """M1 product key: sha256 of normalized name + category (documented limitation)."""
-    basis = "\x1f".join([normalize_name(name), normalize_name(category or "")])
-    return hashlib.sha256(basis.encode("utf-8")).hexdigest()
-
-
-class _RowParser(HTMLParser):
-    """Collects <tr>/<td> structure with per-cell text and first href,
-    tolerating malformed markup (missing </tr>, <b> spanning cells, <br>,
-    <font> wrappers). Cell text keeps '\\n' as segment separators."""
-
-    def __init__(self):
-        super().__init__(convert_charrefs=True)
-        self.rows: list[list[dict]] = []
-        self._row: list[dict] | None = None
-        self._cell: dict | None = None
-
-    def _flush_cell(self):
-        if self._cell is not None:
-            self._cell["text"] = _SPACES_RE.sub(" ", self._cell["text"]).strip()
-            if self._row is None:
-                self._row = []
-            self._row.append(self._cell)
-            self._cell = None
-
-    def _flush_row(self):
-        self._flush_cell()
-        if self._row is not None:
-            self.rows.append(self._row)
-            self._row = None
-
-    def handle_starttag(self, tag, attrs):
-        if tag == "tr":
-            self._flush_row()
-            self._row = []
-        elif tag in ("td", "th"):
-            self._flush_cell()
-            self._cell = {"text": "", "hrefs": []}
-        elif tag == "br" and self._cell is not None:
-            self._cell["text"] += "\n"
-        elif tag == "a" and self._cell is not None:
-            href = dict(attrs).get("href")
-            if href:
-                self._cell["hrefs"].append(href)
-
-    def handle_endtag(self, tag):
-        if tag in ("td", "th"):
-            self._flush_cell()
-        elif tag == "tr":
-            self._flush_row()
-
-    def handle_data(self, data):
-        if self._cell is not None:
-            self._cell["text"] += data
-
-    def close(self):
-        self._flush_row()
-        super().close()
-
-
-def parse_rows(html_text):
-    """Split a page into rows: list of cells, each {'text', 'href'}."""
-    parser = _RowParser()
-    parser.feed(html_text)
-    parser.close()
-    return parser.rows
 
 
 def parse_page(html_text, url):
@@ -241,7 +107,7 @@ def parse_page(html_text, url):
         name = row[0]["text"]
         price = parse_price(row[1]["text"])
         unit_price, unit_label = parse_unit_price(row[2]["text"])
-        availability = _KNOWN_AVAILABILITY.get(row[3]["text"].strip(), "unknown")
+        availability = parse_availability(row[3]["text"])
         category = row[4]["text"] or None
         regular_price = parse_price(row[5]["text"])
         discount_price = parse_price(row[6]["text"])
@@ -312,11 +178,3 @@ def parse_index(html_text):
                 {"external_key": ext, "name": name, "address": address, "city": city}
             )
     return stores
-
-
-def content_hash_sha256(data: bytes) -> str:
-    return hashlib.sha256(data).hexdigest()
-
-
-def url_hash_sha256(url: str) -> str:
-    return hashlib.sha256(url.encode("utf-8")).hexdigest()

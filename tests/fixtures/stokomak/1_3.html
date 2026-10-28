@@ -1,0 +1,2206 @@
+﻿
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <title>Проверка на цени</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .header {
+            background-color:rgb(255, 255, 255);
+            color: black;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        table {
+            background: white;
+        }
+        table th, table td {
+            vertical-align: middle;
+        }
+        table {
+            user-select: none;
+            -webkit-user-select: none; 
+            -webkit-touch-callout: none; 
+        }
+        
+        * {
+    user-select: none;
+    -webkit-user-select: none; 
+    -webkit-touch-callout: none;
+    }
+	  .active>.page-link, .page-link.active {
+        background-color:#fcd900!important;
+    }
+
+
+    </style>
+</head>
+<body>
+
+
+<script>
+  document.addEventListener('contextmenu', event => event.preventDefault());
+  document.addEventListener("keydown", function(event) {
+    
+    if (
+        event.key === "F12" || 
+        (event.ctrlKey && event.shiftKey && (event.key === "I" || event.key === "J")) || 
+        (event.ctrlKey && (event.key === "U" || event.key === "S"))
+    ) {
+        event.preventDefault();
+        
+    }
+});
+
+</script>
+
+<!-- <div class="container my-4">
+<div class="header d-flex align-items-center p-3" style="background-color:rgb(233 233 233);
+ color: black;">
+
+        <a href="index.php" style="margin-right: 24%;">
+    <img src="logo.png" alt="Logo" id="logo" style="height: 65px; margin-right: 19%;">
+    </a>
+ 
+    <h1 class="mb-0" style="font-size: 34px; font-weight: bold;">ПРОВЕРКА НА ЦЕНИ</h1>
+</div>
+    </div> -->
+
+
+<div class="container my-4">
+    <div class="card p-3 shadow-sm">
+        <form class="row g-3 align-items-center">
+            <div class="col-md-3">
+                <select name="org" class="form-select" onchange="this.form.submit()">
+                    <option value="">Одберете маркет</option>
+                                            <option value="1" 
+                                selected>
+                            КИСЕЛА ВОДА                        </option>
+                                            <option value="2" 
+                                >
+                            КУМАНОВО 2                        </option>
+                                            <option value="3" 
+                                >
+                            КАРПОШ 2                        </option>
+                                            <option value="4" 
+                                >
+                            АВТОКОМАНДА                        </option>
+                                            <option value="5" 
+                                >
+                            БУТЕЛ                        </option>
+                                            <option value="6" 
+                                >
+                            АЕРОДРОМ 2                        </option>
+                                            <option value="7" 
+                                >
+                            ТАФТАЛИЏЕ                        </option>
+                                            <option value="8" 
+                                >
+                            МЛЕЧЕН                        </option>
+                                            <option value="9" 
+                                >
+                            ОХРИД 1                        </option>
+                                            <option value="10" 
+                                >
+                            КУМАНОВО 3                        </option>
+                                            <option value="11" 
+                                >
+                            АЕРОДРОМ 1                        </option>
+                                            <option value="12" 
+                                >
+                            КАРПОШ 4                        </option>
+                                            <option value="13" 
+                                >
+                            СИНГЕЛИЧ                        </option>
+                                            <option value="14" 
+                                >
+                            ЦЕНТАР                        </option>
+                                            <option value="16" 
+                                >
+                            КАПИШТЕЦ                        </option>
+                                            <option value="17" 
+                                >
+                            ЃОРЧЕ ПЕТРОВ 2                        </option>
+                                            <option value="18" 
+                                >
+                            ДРАЧЕВО                        </option>
+                                            <option value="19" 
+                                >
+                            КУМАНОВО 1                        </option>
+                                            <option value="20" 
+                                >
+                            ВОДЊАНСКА                        </option>
+                                            <option value="21" 
+                                >
+                            БУЊАКОВЕЦ                        </option>
+                                            <option value="22" 
+                                >
+                            НОВО ЛИСИЧЕ                        </option>
+                                            <option value="23" 
+                                >
+                            ХИПОДРОМ                        </option>
+                                            <option value="24" 
+                                >
+                            РАСАДНИК                        </option>
+                                            <option value="25" 
+                                >
+                            НОВО ЛИСИЧЕ 2                        </option>
+                                            <option value="26" 
+                                >
+                            ТОПАНСКО ПОЛЕ                        </option>
+                                            <option value="27" 
+                                >
+                            ЧАИР                        </option>
+                                            <option value="28" 
+                                >
+                            КОЗЛЕ                        </option>
+                                            <option value="29" 
+                                >
+                            МИЧУРИН                        </option>
+                                            <option value="30" 
+                                >
+                            ШТИП                        </option>
+                                            <option value="31" 
+                                >
+                            ГОРЧЕ ДЕКСИОН                        </option>
+                                            <option value="32" 
+                                >
+                            ТЕТОВО                        </option>
+                                            <option value="33" 
+                                >
+                            СЕВЕР                        </option>
+                                            <option value="34" 
+                                >
+                            РАДИШАНИ                        </option>
+                                            <option value="35" 
+                                >
+                            ЧЕНТО 2                        </option>
+                                            <option value="36" 
+                                >
+                            ИЛИНДЕН                        </option>
+                                            <option value="37" 
+                                >
+                            КУМАНОВО 4                        </option>
+                                            <option value="38" 
+                                >
+                            ПРИЛЕП                        </option>
+                                            <option value="39" 
+                                >
+                            КОЧАНИ                        </option>
+                                            <option value="40" 
+                                >
+                            ТЕТОВО 2                        </option>
+                                            <option value="41" 
+                                >
+                            ВЕЛЕС                        </option>
+                                            <option value="42" 
+                                >
+                            НЕГОТИНО                        </option>
+                                            <option value="43" 
+                                >
+                            ВЛАЕ                        </option>
+                                            <option value="44" 
+                                >
+                            РЕСЕН                        </option>
+                                            <option value="45" 
+                                >
+                            ПРОБИШТИП                        </option>
+                                            <option value="46" 
+                                >
+                            ШТИП 2                        </option>
+                                            <option value="47" 
+                                >
+                            ГЕВГЕЛИЈА                        </option>
+                                            <option value="48" 
+                                >
+                            СТРУМИЦА                        </option>
+                                            <option value="49" 
+                                >
+                            ГОСТИВАР                        </option>
+                                            <option value="50" 
+                                >
+                            БИТОЛА                        </option>
+                                            <option value="51" 
+                                >
+                            ОХРИД  2                        </option>
+                                            <option value="52" 
+                                >
+                            РАДОВИШ                        </option>
+                                            <option value="53" 
+                                >
+                            БИТОЛА 2                        </option>
+                                            <option value="54" 
+                                >
+                            КИЧЕВО                        </option>
+                                            <option value="55" 
+                                >
+                            СТРУМИЦА 2                        </option>
+                                            <option value="56" 
+                                >
+                            КАВАДАРЦИ                        </option>
+                                            <option value="57" 
+                                >
+                            СТРУГА                        </option>
+                                            <option value="58" 
+                                >
+                            ДЕЛЧЕВО                        </option>
+                                            <option value="59" 
+                                >
+                            ВИНИЦА                        </option>
+                                            <option value="60" 
+                                >
+                            ТЕТОВО 3                        </option>
+                                            <option value="61" 
+                                >
+                            КРИВА ПАЛАНКА                        </option>
+                                            <option value="62" 
+                                >
+                            ПРИЛЕП 2                        </option>
+                                            <option value="63" 
+                                >
+                            КИСЕЛА ВОДА 2                        </option>
+                                            <option value="64" 
+                                >
+                            ПЕТРОВЕЦ                        </option>
+                                            <option value="65" 
+                                >
+                            ВЕЛЕС 2                        </option>
+                                            <option value="66" 
+                                >
+                            НОВОСЕЛСКИ ПАТ                        </option>
+                                            <option value="67" 
+                                >
+                            СВЕТИ НИКОЛЕ                        </option>
+                                            <option value="68" 
+                                >
+                            БЕРОВО                        </option>
+                                            <option value="69" 
+                                >
+                            КРАТОВО                        </option>
+                                            <option value="70" 
+                                >
+                            ДЕБАР                        </option>
+                                            <option value="71" 
+                                >
+                            ШТИП  3                        </option>
+                                            <option value="72" 
+                                >
+                            ДРАЧЕВО  2                        </option>
+                                            <option value="73" 
+                                >
+                            ВЛАЕ 2  АЛЕКСАНДРИЈА                        </option>
+                                            <option value="74" 
+                                >
+                            ЧАИР 2                        </option>
+                                            <option value="75" 
+                                >
+                            СТРУГА 2                        </option>
+                                            <option value="76" 
+                                >
+                            КУМАНОВО 5                        </option>
+                                            <option value="77" 
+                                >
+                            КОЧАНИ 2                        </option>
+                                            <option value="78" 
+                                >
+                            МАРКЕТ МАЏАРИ                        </option>
+                                            <option value="79" 
+                                >
+                            СТРУМИЦА 3                        </option>
+                                            <option value="80" 
+                                >
+                            МАК. КАМЕНИЦА                        </option>
+                                            <option value="81" 
+                                >
+                            ЈУЖЕН БУЛЕВАР                        </option>
+                                            <option value="82" 
+                                >
+                            МАРКЕТ ЗЛОКУЌАНИ                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-5">
+                <input type="text" name="search" class="form-control" placeholder="Пребарај по име" 
+                       value="">
+            </div>
+            <div class="col-md-2">
+                <select name="perPage" class="form-select" onchange="this.form.submit()">
+                                            <option value="10" >
+                            10 / страница
+                        </option>
+                                            <option value="20" >
+                            20 / страница
+                        </option>
+                                            <option value="50" >
+                            50 / страница
+                        </option>
+                                            <option value="100" selected>
+                            100 / страница
+                        </option>
+                                    </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary"style="background-color:#fcd900!important; color:black!important;">Пребарај</button>
+            </div>
+        </form>
+
+                    <p class="text-muted">
+    Прикажи 201 - 300 од 2689 артикли
+</p>
+		<span>Датум и време на последно ажурирање на цените: 
+            28/10/2026 21:35</span>
+            <div class="table-responsive">
+                                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-light" style="font-size:15px;">
+                        <tr>
+                                                        <th rowspan="2">Назив на стока-производ</th>
+                                                        <th rowspan="2">Продажна цена</th>
+                                                        <th rowspan="2">Единечна цена</th>
+                                                        <th rowspan="2">Опис на стока</th>
+                            <th rowspan="2">Достапност во продажен објект</th>
+                            <th rowspan="2">Редовна цена </th>
+                            
+                            
+                        
+                                                        <th colspan="3" id="col">Промотивна или попустна цена</th>
+                        
+
+                            
+                        </tr>
+                        <tr>
+
+                        <th id="col">Цена со попуст</th>
+                        <th id="col">Вид на продажно поттикнување</th>
+                        <th id="col">Времетраење на промоција</th>
+                            </tr>
+                                                </thead>
+                    <tbody style="font-size:14px;">
+                        <!-- test -->
+
+                                                                                <tr>
+                                                                    <td>ЛОКУМ СО ОРЕВ 400гр. ВАФЛИНИ</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 162.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛОКУМИ / ЖЕЛЕ БОНБОНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 65 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БРАШНО Т-500 1кг ДАЛ ФОРНО</td>
+                                                                        <td>
+                                    25 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 25.00 ден.
+                                    </td>
+                                                                        <td>
+                                    БРАШНО                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 25 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОРНЕТИ МИНИ ЕУРОКРЕМ 65 ГР</td>
+                                                                        <td>
+                                    29 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 446.15 ден.
+                                    </td>
+                                                                        <td>
+                                    ИМПУЛСНИ ЧОКОЛАДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЛИПСИ ФЛИПС СО ВКУС НА ХОТ-ДОГ 80гр</td>
+                                                                        <td>
+                                    36 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 450.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СМОКИ / ФЛИПСОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 36 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЖИТЕН БАР СО ВКУС НА ЧОКОЛАДО 30ГР БОН В</td>
+                                                                        <td>
+                                    10 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 333.33 ден.
+                                    </td>
+                                                                        <td>
+                                    ЖИТНИ БАРОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 10 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОЛ ШАРЕНА 100гр</td>
+                                                                        <td>
+                                    27 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 270.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СОЛ ЈОДИРАНА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 27 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БЕСТ КОЛА СОК ГАЗИРАН 2л.</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 16.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СОКОВИ ГАЗИРАНИ БЕЗ ШЕЌЕР                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БЕСТ ЛИМОН СОК ГАЗИРАН 2л.</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 16.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СОКОВИ ГАЗИРАНИ БЕЗ ШЕЌЕР                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВОДА МИНЕР. ЕКО 6л. ВИЗИАНА</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 11.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ВОДА НЕГАЗИРАНА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МИНЕРАЛНА ВОДА БОЖИЦА 1,5л.</td>
+                                                                        <td>
+                                    22 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 14.67 ден.
+                                    </td>
+                                                                        <td>
+                                    ВОДА МИНЕРАЛНА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 22 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КИКИРИКИ ПЕЧЕНИ ЗАЧИНЕТИ 300гр. АПЕТИНИ</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 196.67 ден.
+                                    </td>
+                                                                        <td>
+                                    АПЕТИСАНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 59 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КИКИРИКИ ЛУШПА 400гр.</td>
+                                                                        <td>
+                                    68 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 170.00 ден.
+                                    </td>
+                                                                        <td>
+                                    АПЕТИСАНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 68 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧИПС КИКИРИКА 80гр.</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 225.00 ден.
+                                    </td>
+                                                                        <td>
+                                    АПЕТИСАНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 18 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАГДОНОС СУВ 50гр</td>
+                                                                        <td>
+                                    15 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 300.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗАЧИНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 15 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЖИТЕН БАР СО ВКУС НА ЛЕШНИК 30ГР БОН ВИВ</td>
+                                                                        <td>
+                                    10 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 333.33 ден.
+                                    </td>
+                                                                        <td>
+                                    ЖИТНИ БАРОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 10 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧИА СЕМЕ 100гр.</td>
+                                                                        <td>
+                                    26 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 260.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗРНЕСТИ ПЛОДОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 29 ден.
+                                 </td>
+                                                                                                         
+                                    <td headers="col">
+                                        <!-- Цена со попуст: -->
+                                    26 ден.
+                                    <br>
+                                Попуст:10%
+
+                                    </td>
+                                    <td headers="col">
+                                        <!-- Понуда: -->
+                                    акциска цена 
+                                     
+                                    </td>
+                                    <td headers="col">
+                                    <span> 23.10.2026 до <br>29.10.2026</span>
+                                    </td>
+                                                                                                        </tr>
+                                                            <tr>
+                                                                    <td>ЛЕНЕНО СЕМЕ 100гр.</td>
+                                                                        <td>
+                                    13 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 130.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗРНЕСТИ ПЛОДОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 13 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>АНАНАС СУВ РЕЗАНКИ 100гр</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 590.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СУШЕНИ ОВОШЈА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 59 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БРУСНИЦА СУШЕНА 100гр.</td>
+                                                                        <td>
+                                    54 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 540.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СУШЕНИ ОВОШЈА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 54 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СОНЧОГЛЕД ЦРН СОЛЕН СУШЕН 200гр.</td>
+                                                                        <td>
+                                    26 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 130.00 ден.
+                                    </td>
+                                                                        <td>
+                                    АПЕТИСАНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 26 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СЕМКА ВО ЛУШПА КРУПНА ПЕЧЕНА 200гр</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 310.00 ден.
+                                    </td>
+                                                                        <td>
+                                    АПЕТИСАНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ДОМАТЕН БЛАГ 1кгр ДЕЛИЦИОСА</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1КГР = 69.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ДОМАТНИ ПВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЧАП ДОМАТЕН ЛУТ 1кгр ДЕЛИЦИОСА</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1КГР = 69.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ДОМАТНИ ПВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПИЦА ИТАЛИЈАНА 70гр</td>
+                                                                        <td>
+                                    22 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 314.29 ден.
+                                    </td>
+                                                                        <td>
+                                    СМОКИ / ФЛИПСОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 22 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАКАО ТАБЛА ЗА ГОТВЕЊЕ ЦРНО 100гр</td>
+                                                                        <td>
+                                    22 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 220.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧОКОЛАДИ ЗА ГОТВЕЊЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 22 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАКАО ТАБЛА ЗА ГОТВЕЊЕ БЕЛО 100гр</td>
+                                                                        <td>
+                                    23 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 230.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧОКОЛАДИ ЗА ГОТВЕЊЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 23 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДУО РАЈС СО ОРИЗ 70ГР ЧОКОМИЛ</td>
+                                                                        <td>
+                                    20 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 285.71 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧОКОЛАДИ МЛЕЧНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 20 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГАЛАКСИ СО ОРИЗ 325ГР ЧОКОМИЛ</td>
+                                                                        <td>
+                                    80 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 246.15 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧОКОЛАДИ МЛЕЧНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 80 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СВЕЖ КВАСЕЦ 40ГР</td>
+                                                                        <td>
+                                    14 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 350.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КВАСЕЦ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 14 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СВЕЖ КВАСЕЦ 500ГР Битолски</td>
+                                                                        <td>
+                                    37 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 74.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КВАСЕЦ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 37 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НЕСКАФЕ ДГ КАПСУЛИ КОРТАДО 16пар</td>
+                                                                        <td>
+                                    389 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 3890.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАФЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 389 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЖИТЕН БАР СО ВКУС НА БРУСНИЦА 30ГР БОН В</td>
+                                                                        <td>
+                                    10 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 333.33 ден.
+                                    </td>
+                                                                        <td>
+                                    ЖИТНИ БАРОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 10 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОЛФРЕШ МАСТИКИ ВО ШИШЕ СПЕАРМИНТ</td>
+                                                                        <td>
+                                    68 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 68.00 ден.
+                                    </td>
+                                                                        <td>
+                                    МАСТИКИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 68 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАФЕ ИНСТАНТ ОРИГИНАЛ 200гр. МЕЛИТА</td>
+                                                                        <td>
+                                    309 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 1545.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАФЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 309 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРЕМ СИР СВЕЖ 100гр. АБЦ</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 690.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАВЛАКИ/НАМАЗИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГОВЕДСКИ МЕСЕН НАРЕЗОК 100гр. ГУРМЕС</td>
+                                                                        <td>
+                                    36 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 360.00 ден.
+                                    </td>
+                                                                        <td>
+                                    МЕСНИ КОНЗЕРВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 36 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ФРАНЦУСКИ ПРЕХРАМБЕН ПРОДУКТ 500ГР. даут</td>
+                                                                        <td>
+                                    103 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 206.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СИРЕЊЕ вакуум                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 103 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОПЕНО СИРЕЊЕ 8 ПОРЦИИ ГАУДА 140гр</td>
+                                                                        <td>
+                                    74 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 528.57 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗДЕНКИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 74 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПРЕЛИВ САЛАТЕН СО ЗАЧИНИ 500мл. МАУТНЕР</td>
+                                                                        <td>
+                                    156 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 312.00 ден.
+                                    </td>
+                                                                        <td>
+                                    МАЈОНЕЗИ И СОСОВИ / ПРЕЛИВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 156 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ШАМПОН БРЕЗА 930мл. ХЕРБА</td>
+                                                                        <td>
+                                    98 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 105.38 ден.
+                                    </td>
+                                                                        <td>
+                                    ШАМПОНИ ЗА КОСА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 98 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ШАМПОН КОПРИВА 930мл. ХЕРБА</td>
+                                                                        <td>
+                                    98 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 105.38 ден.
+                                    </td>
+                                                                        <td>
+                                    ШАМПОНИ ЗА КОСА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 98 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВЛАЖНИ МАРАМИЦИ 72ком. БЕКУТАН</td>
+                                                                        <td>
+                                    63 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 0.88 ден.
+                                    </td>
+                                                                        <td>
+                                    ВЛАЖНИ МАРАМИЦИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 63 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈ ФИЛТ.КАМИЛИЦА 20х1гр. ГООД НАТУРЕ</td>
+                                                                        <td>
+                                    59 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 2.95 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАЕВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 59 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈ ФИЛТ.НАНЕ 20х1,5гр. ГООД НАТУРЕ</td>
+                                                                        <td>
+                                    62 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 3.10 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАЕВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 62 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈ ФИЛТЕР АЛКАЛАКС 20*1гр. ГООД НАТУРЕ</td>
+                                                                        <td>
+                                    89 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 4.45 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАЕВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 89 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈ ФИЛТЕР УВЕ-МИКС 20*1.5гр ГООД НАТУРЕ</td>
+                                                                        <td>
+                                    84 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 4.20 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАЕВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 84 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈ ФИЛТ.ПЛАНИНСКИ 20х1,5гр. ГООД НАТУРЕ</td>
+                                                                        <td>
+                                    67 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 3.35 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАЕВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 67 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈ ФИЛТ.МАЈЧ.ДУШ. 20х1,5гр. ГООД НАТУРЕ</td>
+                                                                        <td>
+                                    64 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 3.20 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАЕВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 64 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈ ФИЛТ.ШУМСКО ОВОШ.20х2гр. ГООД НАТУРЕ</td>
+                                                                        <td>
+                                    68 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 3.40 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧАЕВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 68 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ШПАГЕТИ 400гр. ДЕЛ ГУСТО</td>
+                                                                        <td>
+                                    25 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 62.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ШПАГЕТИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 25 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАКАРОНИ КОСО СЕЧЕНИ 350гр. ДАЛ ФОРНО</td>
+                                                                        <td>
+                                    22 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 62.86 ден.
+                                    </td>
+                                                                        <td>
+                                    МАКАРОНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 22 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВИВА НЕКТАР ПОРТОКАЛ 1Л. 50%</td>
+                                                                        <td>
+                                    79 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 79.00 ден.
+                                    </td>
+                                                                        <td>
+                                    СОКОВИ НЕГАЗИРАНИ (тетрапак)                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 79 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАЈМАК СРПСКИ 200гр. ЛАЗАР БЛАЦЕ</td>
+                                                                        <td>
+                                    185 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 925.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАВЛАКИ/НАМАЗИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 185 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КОЛАЧИ СО КАКАО ПРЕЛ.180гр КЛАСИК</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 405.88 ден.
+                                    </td>
+                                                                        <td>
+                                    ПЕЦИВА ЧАЈНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МЕДЕНКИ 50ГР ТАРГЕТ</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 360.00 ден.
+                                    </td>
+                                                                        <td>
+                                    МЕДЕНИ ПРОИЗВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 18 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГРАВ 400ГР</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 172.50 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗРНЕСТИ ПЛОДОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДЕТЕР.ЗА АЛИШТА 9КГР БИОАКТИВ</td>
+                                                                        <td>
+                                    619 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 68.78 ден.
+                                    </td>
+                                                                        <td>
+                                    ДЕТЕРГЕНТИ ЗА ЧИСТЕЊЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 619 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ФАНТ ЗА ГУЛАШ И ПАПРИКАШ 65ГР ПОДРАВКА</td>
+                                                                        <td>
+                                    68 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 1046.15 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗАЧИНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 68 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА КОКОШКИНА СО ТЕСТ.62ГР ПОДРАВКА</td>
+                                                                        <td>
+                                    27 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 435.48 ден.
+                                    </td>
+                                                                        <td>
+                                    СУПИ ИНСТАНТ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 27 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА ГОВЕДСКА СО ТЕСТ. 65ГР ПОДРАВКА</td>
+                                                                        <td>
+                                    30 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 461.54 ден.
+                                    </td>
+                                                                        <td>
+                                    СУПИ ИНСТАНТ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 30 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА АЛПСКА 64гр. ПОДРАВКА</td>
+                                                                        <td>
+                                    52 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 812.50 ден.
+                                    </td>
+                                                                        <td>
+                                    СУПИ ИНСТАНТ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 52 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПАШТЕТА ПИЛЕШКА 130гр. ПКБ</td>
+                                                                        <td>
+                                    26 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 200.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПАШТЕТИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 26 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ГОВЕДСКИ ГУЛАШ 200ГР ПОДРАВКА</td>
+                                                                        <td>
+                                    109 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 545.00 ден.
+                                    </td>
+                                                                        <td>
+                                    МЕСНИ КОНЗЕРВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 109 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА СО МЕСНИ И ГРИЗ КНЕДЛИ ПОДРАВКА</td>
+                                                                        <td>
+                                    57 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 1096.15 ден.
+                                    </td>
+                                                                        <td>
+                                    СУПИ ИНСТАНТ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 57 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НЕГРО БОНБОНИ 100гр.</td>
+                                                                        <td>
+                                    42 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 420.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ТВРДИ БОНБОНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 42 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЃУВЕЧ 800гр ЛИМЕНКА ДЕЛИЦИОСА</td>
+                                                                        <td>
+                                    125 ден.
+                                    </td>
+                                                                        <td>
+                                        1КГР = 156.25 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗИМНИЦИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 125 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КРЕМ СУПА ОД БРОКУЛИ 57гр.</td>
+                                                                        <td>
+                                    56 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 1513.51 ден.
+                                    </td>
+                                                                        <td>
+                                    СУПИ ИНСТАНТ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 56 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МАСТИКИ ТОПЧИЊА 10пар. 30гр.</td>
+                                                                        <td>
+                                    14 ден.
+                                    </td>
+                                                                        <td>
+                                        1пар = 0.47 ден.
+                                    </td>
+                                                                        <td>
+                                    МАСТИКИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 14 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛАДО СО ЦЕЛ ЛЕШНИК 95гр. МИЛКА</td>
+                                                                        <td>
+                                    79 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 831.58 ден.
+                                    </td>
+                                                                        <td>
+                                    ЧОКОЛАДИ МЛЕЧНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 79 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПЕСОК ЗА МАЧКИ 10л.</td>
+                                                                        <td>
+                                    299 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 29.90 ден.
+                                    </td>
+                                                                        <td>
+                                    ХРАНА ЗА МАЧКИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 299 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧАЈ ЛЕДЕН ПРАСКА 1л. ФРУКТАЛ</td>
+                                                                        <td>
+                                    45 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 45.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЛЕДЕНИ ЧАЕВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 45 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НЕКТАР СОК ЗЕЛЕН ПРАСКА 200мл.</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 90.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ДОЈПАК СОКОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 18 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НЕКТАР СОК ЗЕЛЕН ЈАБОЛКА 200мл.</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 90.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ДОЈПАК СОКОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 18 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ТОМАТЕЛО 1Л. НЕКТАР</td>
+                                                                        <td>
+                                    75 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 75.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ДОМАТНИ ПВОДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 75 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАРАМЕЛА ОВОШНА 300ГР КЕНДИ ЛАНД</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 216.67 ден.
+                                    </td>
+                                                                        <td>
+                                    ГУМЕНИ БОНБОНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 65 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВАФЛИНИ КОЛАЧЕ ЧОКО КОКОС 300 ГР</td>
+                                                                        <td>
+                                    75 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 250.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ПЕЦИВА ЧАЈНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 75 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>БОНБОНИ  СО ОВОШЕН СОК 120гр</td>
+                                                                        <td>
+                                    42 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 350.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ТВРДИ БОНБОНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 42 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КУБЕТИ 35гр.</td>
+                                                                        <td>
+                                    20 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 571.43 ден.
+                                    </td>
+                                                                        <td>
+                                    ДВОПЕК / ИНТЕГР.ХРАНА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 20 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ДУЕЛ ОМЕКНУВ. ЗА АЛИШТА 2.45л СОФТ ЛОТУС</td>
+                                                                        <td>
+                                    245 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 100.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ОМЕКНУВАЧИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 245 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ОМЕКНУВАЧ ЗА АЛИШТА 2.45л ДУЕЛ ДАЈМОНД</td>
+                                                                        <td>
+                                    209 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 85.31 ден.
+                                    </td>
+                                                                        <td>
+                                    ОМЕКНУВАЧИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 209 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ПОСНА СУПА СО ТЕСТЕНИНИ 52гр. КУЗИНА</td>
+                                                                        <td>
+                                    11 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 211.54 ден.
+                                    </td>
+                                                                        <td>
+                                    СУПИ ИНСТАНТ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 11 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СУПА КРЕМ ПИЛЕШКА 54гр. КУЗИНА</td>
+                                                                        <td>
+                                    12 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 222.22 ден.
+                                    </td>
+                                                                        <td>
+                                    СУПИ ИНСТАНТ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 12 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МИЛКА КРОАСАН ЧОКО 50гр</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 640.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КРОАСАНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ШЛАГ КРЕМ ВАНИЛА 58гр.</td>
+                                                                        <td>
+                                    33 ден.
+                                    </td>
+                                                                        <td>
+                                        1КГР = 568.97 ден.
+                                    </td>
+                                                                        <td>
+                                    ШЛАГ ПЕНА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 33 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ШЛАГ КРЕМ ЧОКОЛАДО 60гр.</td>
+                                                                        <td>
+                                    33 ден.
+                                    </td>
+                                                                        <td>
+                                        1КГР = 550.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ШЛАГ ПЕНА                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 33 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЛОВОРОВ ЛИСТ 10ГР</td>
+                                                                        <td>
+                                    7 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 700.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗАЧИНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 7 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЦВЕКЛО 680гр (720мл)</td>
+                                                                        <td>
+                                    53 ден.
+                                    </td>
+                                                                        <td>
+                                        1л = 73.61 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗИМНИЦИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 53 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ФЕФЕРОНИ 630гр ДЕЛИЦИОСА</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1КГР = 109.52 ден.
+                                    </td>
+                                                                        <td>
+                                    ЗИМНИЦИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ИНДИСКИ ОРЕВ НЕПЕЧЕН НЕСОЛЕН 100гр.</td>
+                                                                        <td>
+                                    65 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 650.00 ден.
+                                    </td>
+                                                                        <td>
+                                    АПЕТИСАНИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 65 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ВИТАНОВА ЖИТО + Ц.РИБИЗЛА 35г.</td>
+                                                                        <td>
+                                    28 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 800.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЖИТНИ БАРОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 28 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЖИТАР. КАПИНА СО ЧОКОЛАДО 25гр. ВИТАНОВА</td>
+                                                                        <td>
+                                    18 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 720.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ЖИТНИ БАРОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 18 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>НАПОЛ. СО МЛЕЧ.И КАКАО ФИЛ 375гр ВАФЛИНИ</td>
+                                                                        <td>
+                                    60 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 160.00 ден.
+                                    </td>
+                                                                        <td>
+                                    ВАФЛИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 60 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАФЕ БРАВО ПРЕМИУМ 200ГР РИО</td>
+                                                                        <td>
+                                    159 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 795.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАФЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 159 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАФЕ О‘ДОР 200гр. ПРЕМИУМ</td>
+                                                                        <td>
+                                    129 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 645.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАФЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 129 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КАФЕ О‘ДОР 200гр. КЛАСИК</td>
+                                                                        <td>
+                                    117 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 585.00 ден.
+                                    </td>
+                                                                        <td>
+                                    КАФЕ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 117 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МИНИ РОЛ СО ЛЕШНИК 120гр ВАФЛИНИ</td>
+                                                                        <td>
+                                    32 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 266.67 ден.
+                                    </td>
+                                                                        <td>
+                                    РОЛАТИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 32 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>ЧОКОЛАДИРАНА БРУСНИЦА МИКС 70гр.</td>
+                                                                        <td>
+                                    69 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 985.71 ден.
+                                    </td>
+                                                                        <td>
+                                    ИМПУЛСНИ ЧОКОЛАДИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 69 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>КЕЈК ОВОШЕН 300гр ВИЕНЕСЕ</td>
+                                                                        <td>
+                                    82 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 273.33 ден.
+                                    </td>
+                                                                        <td>
+                                    ТОРТИЦИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 82 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>СТОБИ ФЛИПС 150ГР ВИТАМИНКА</td>
+                                                                        <td>
+                                    43 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 286.67 ден.
+                                    </td>
+                                                                        <td>
+                                    СМОКИ / ФЛИПСОВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 43 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                            <tr>
+                                                                    <td>МЕСЕН НАРЕЗОК 100гр. ГУРМЕС</td>
+                                                                        <td>
+                                    33 ден.
+                                    </td>
+                                                                        <td>
+                                        1кгр = 330.00 ден.
+                                    </td>
+                                                                        <td>
+                                    МЕСНИ КОНЗЕРВИ                                    </td>
+                                    <td>
+                                    Да                                    </td>
+
+                                 
+                                 <td>
+                                 33 ден.
+                                 </td>
+                                                                                                                                      </tr>
+                                                                        </tbody>
+                </table>
+            </div>
+
+            <nav class="d-flex justify-content-center"><ul class="pagination"><li class="page-item"><a class="page-link" href="?page=2&perPage=100&search=&org=1">&laquo;</a></li><li class="page-item "><a class="page-link" href="?page=1&perPage=100&search=&org=1">1</a></li><li class="page-item "><a class="page-link" href="?page=2&perPage=100&search=&org=1">2</a></li><li class="page-item active"><a class="page-link" href="?page=3&perPage=100&search=&org=1">3</a></li><li class="page-item "><a class="page-link" href="?page=4&perPage=100&search=&org=1">4</a></li><li class="page-item "><a class="page-link" href="?page=5&perPage=100&search=&org=1">5</a></li><li class="page-item disabled"><span class="page-link">...</span></li><li class="page-item"><a class="page-link" href="?page=27&perPage=100&search=&org=1">27</a></li><li class="page-item"><a class="page-link" href="?page=4&perPage=100&search=&org=1">&raquo;</a></li></ul></nav>            </div>
+</div>
+
+</body>
+</html>
