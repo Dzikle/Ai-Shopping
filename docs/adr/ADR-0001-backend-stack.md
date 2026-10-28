@@ -1,0 +1,6 @@
+# ADR-0001: Backend stack — Spring Boot modular monolith + independent adapter workers
+
+- **Status:** Accepted (2026-10-28)
+- **Context:** We need daily price ingestion from heterogeneous sources (HTML/PDF/CSV), canonical product matching, and API/search for clients and AI agents. Team size is small; premature microservices would add operational cost. Web scraping ecosystems are strongest in Python; the JVM is strongest for the long-lived API/search layer. Version verification (2026-10-28): Spring Boot 4.1.2 GA, OpenSearch 3.9.0, PostgreSQL 18.6, Java 21 LTS still supported.
+- **Decision:** One Spring Boot (Java 21) application (modular monolith) hosting REST API, ingestion orchestration, matching and projections. Retailer source adapters run as independent Python (TypeScript where reuse justifies) worker processes with an explicit worker contract. Redis queues only when scheduling outgrows simple polling. Docker Compose is the first and only deployment form for now.
+- **Consequences:** Clear language boundary per concern; workers must be stateless regarding job state (PostgreSQL owns it). Cross-language contracts (DTO schemas) must be versioned. No Kubernetes or managed cloud in this phase.

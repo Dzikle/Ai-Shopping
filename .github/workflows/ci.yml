@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check required docs exist
+        run: |
+          test -f README.md
+          test -f AGENTS.md
+          test -f docs/architecture/master-plan.md
+          test -f docs/milestones/roadmap.md
+          test -f docs/milestones/current-status.md
+          test -f docs/research/open-source-reuse-audit.md
+          test -f docs/research/retailer-sources.md
+          test -f docs/data-model/domain-model.md
+
+      - name: Prepare env
+        run: cp .env.example .env
+
+      - name: Raise vm.max_map_count for OpenSearch
+        run: sudo sysctl -w vm.max_map_count=262144
+
+      - name: Start baseline stack
+        run: docker compose up -d --wait
+
+      - name: Validate baseline
+        shell: pwsh
+        run: ./scripts/validate-baseline.ps1
+
+      - name: Teardown
+        if: always()
+        run: docker compose down -v

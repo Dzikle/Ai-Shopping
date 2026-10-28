@@ -1,15 +1,9 @@
-# Ai-Shopping
-Ai shopping
-price markets
+# AI Shopping — Universal Price Intelligence Platform
 
-## Setup
+A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, and AI-assisted grocery shopping. **Status: planning / M0.** No deployed implementation is implied.
 
-```bash
-npm install
-```
+Initial focus: North Macedonia. Expansion: other countries, retailers and product categories.
 
-## Usage
+Start with [the master plan](docs/architecture/master-plan.md), [the milestone roadmap](docs/milestones/roadmap.md) and [AGENTS.md](AGENTS.md).
 
-```bash
-npm run dev
-```
+Core design: Spring Boot / Java 21, PostgreSQL source of truth, OpenSearch derived indexes, independent Python/TypeScript adapters, optional Redis worker queues, Docker Compose, MCP read-only tools. Exact versions and compatibility must be verified during M0.

@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+**/__pycache__/
+**/.pytest_cache/
+**/target/
+**/build/
+**/node_modules/
+.idea/
+.vscode/
+*.log
+.DS_Store
