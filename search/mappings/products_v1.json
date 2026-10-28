@@ -1,0 +1,47 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "canonical_product_id": { "type": "integer" },
+      "canonical_key": { "type": "keyword" },
+      "canonical_name": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      "normalized_tokens": { "type": "text" },
+      "normalized_size": { "type": "keyword" },
+      "quantity_value": { "type": "scaled_float", "scaling_factor": 1000 },
+      "quantity_unit": { "type": "keyword" },
+      "pack_count": { "type": "integer" },
+      "gtin": { "type": "keyword" },
+      "retailer_count": { "type": "integer" },
+      "store_count": { "type": "integer" },
+      "retailers": { "type": "keyword" },
+      "min_price": { "type": "scaled_float", "scaling_factor": 100 },
+      "max_price": { "type": "scaled_float", "scaling_factor": 100 },
+      "spread_mkd": { "type": "scaled_float", "scaling_factor": 100 },
+      "latest_published_ts": { "type": "date" },
+      "offers": {
+        "type": "nested",
+        "properties": {
+          "retailer_slug": { "type": "keyword" },
+          "retailer_product_id": { "type": "integer" },
+          "listing_name": { "type": "text" },
+          "min_price": { "type": "scaled_float", "scaling_factor": 100 },
+          "max_price": { "type": "scaled_float", "scaling_factor": 100 },
+          "store_count": { "type": "integer" },
+          "latest_published_ts": { "type": "date" },
+          "source_url": { "type": "keyword" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "settings": {
+    "index": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "store_id": { "type": "integer" },
+      "retailer_slug": { "type": "keyword" },
+      "retailer_name": { "type": "keyword" },
+      "external_key": { "type": "keyword" },
+      "name": {
+        "type": "text",
+        "fields": {
+          "keyword": { "type": "keyword" }
+        }
+      },
+      "address": { "type": "text" },
+      "city": {
+        "type": "keyword",
+        "fields": {
+          "text": { "type": "text" }
+        }
+      },
+      "active_offers_count": { "type": "integer" },
+      "latest_published_ts": { "type": "date" }
+    }
+  }
+}
