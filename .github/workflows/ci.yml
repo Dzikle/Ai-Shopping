@@ -22,6 +22,7 @@ jobs:
           test -f docs/research/retailer-sources.md
           test -f docs/data-model/domain-model.md
           test -f docs/contracts/search-api-contract.md
+          test -f docs/contracts/basket-api-contract.md
 
       - name: Prepare env
         run: cp .env.example .env
@@ -59,6 +60,10 @@ jobs:
       - name: M3 integration test (OpenSearch projections, alias swap, REST API & fallback)
         shell: pwsh
         run: ./scripts/test-m3.ps1
+
+      - name: M4 integration test (shopping lists, unit scaling, single & multi-store basket optimization)
+        shell: pwsh
+        run: ./scripts/test-m4.ps1
 
       - name: Teardown
         if: always()

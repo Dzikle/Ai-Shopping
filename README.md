@@ -1,6 +1,6 @@
 # AI Shopping — Universal Price Intelligence Platform
 
-A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & Spring Boot search/comparison REST API) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
+A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
 
 Initial focus: North Macedonia. Expansion: other countries, retailers and product categories.
 
@@ -8,12 +8,12 @@ Start with [the master plan](docs/architecture/master-plan.md), [the milestone r
 
 Core design: Spring Boot / Java 21, PostgreSQL source of truth, OpenSearch derived indexes, independent Python/TypeScript adapters, optional Redis worker queues, Docker Compose, MCP read-only tools.
 
-## Running the M1, M2 & M3 pipelines (replay mode, no network)
+## Running the M1–M4 pipelines (replay mode, no network)
 
 ```powershell
 copy .env.example .env          # once; docker compose reads it
 docker compose up -d --wait postgres
-./scripts/apply-migrations.ps1  # V1 + V2 schema + Vero/Stokomak/Zito store seeds
+./scripts/apply-migrations.ps1  # V1 + V2 + V3 schema + Vero/Stokomak/Zito store seeds
 
 # Replay Vero, Stokomak, and Zito fixtures
 docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B adapters/vero/cli.py --from-snapshots tests/fixtures/vero --out snapshots/vero/<date>/<run_key> --run-key <run_key>
@@ -41,10 +41,11 @@ docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B matching/cli.py 
   - `docker run --rm -v "${PWD}:/w" -w /w/matching python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}:/w" -w /w/search python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}/backend:/w" -v aoshopping-m2-repo:/root/.m2 -w /w maven:3.9.9-eclipse-temurin-21 mvn -B test`
-- Integration tests (scratch DB, idempotency, OpenSearch alias swap, REST API + Postgres fallback):
+- Integration tests (scratch DB, idempotency, OpenSearch alias swap, REST API + Postgres fallback, deterministic basket optimization):
   - `./scripts/test-m1.ps1`
   - `./scripts/test-m2.ps1`
   - `./scripts/test-m3.ps1`
+  - `./scripts/test-m4.ps1`
 
 Live fetching (`--url --stores`) follows the politeness rules in
 [docs/contracts/vero-adapter-contract.md](docs/contracts/vero-adapter-contract.md) and

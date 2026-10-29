@@ -1,4 +1,4 @@
-# Project status — 2026-10-28
+# Project status — 2026-10-29
 
 ## Implemented (M0, this session)
 - **Dependency verification:** Spring Boot 4.1.2 GA (stable), OpenSearch 3.9.0 (2026-09-29), PostgreSQL 18.6 (current 18.x), Java 21 LTS — all compatible with the planned stack. Recorded in ADR-0001/0002.
@@ -40,30 +40,43 @@
   - Exports authoritative PostgreSQL state (`stores`, `offers_current`, `canonical_products` + `product_matches` with `review_status IN ('auto_accepted', 'approved')`) to NDJSON.
   - Creates physical indexes `stores_v1_<tag>`, `offers_v1_<tag>`, `products_v1_<tag>`, bulk-indexes in bounded batches, verifies `_count`, atomically swaps aliases (`stores`/`stores_v1`, `offers`/`offers_v1`, `products`/`products_v1`) via `POST /_aliases`, and deletes superseded physical indexes.
 - **Spring Boot 4.1.2 (Java 21) Read-Only Search & Comparison REST API (`backend/`, `docs/contracts/search-api-contract.md`)**:
-  - `GET /api/v1/health` — database + OpenSearch status, active search engine (`opensearch` vs `postgresql_fallback`), and table/index counts.
-  - `GET /api/v1/stores?retailer=&city=` — store catalog with active offer counts and latest `publishedTs`.
-  - `GET /api/v1/offers/search` — full-text query (`q`), retailer, storeKey, category, `inStockOnly`, `promoOnly`, `minPrice`, `maxPrice`, `sort` (`price_asc`/`price_desc`), pagination, preserving full provenance (`sourceUrl`, `publishedTs`, `fetchedTs`, `runId`).
-  - `GET /api/v1/products/compare?q=&minRetailers=2` — side-by-side multi-retailer comparison (`cheapestMkd`, `highestMkd`, `spreadMkd`, `latestPublishedTs`, per-retailer offer summaries) strictly restricted to verified identity matches (`auto_accepted`/`approved`).
-  - `GET /api/v1/products/{canonicalId}/history` — ordered `price_observations` timeline across retailers and stores.
-  - `GET /api/v1/matches/review-queue` — read-only inspection of Stage-2 `pending_review` candidate pairs and their `evidence` JSON.
+  - `GET /api/v1/health`, `GET /api/v1/stores`, `GET /api/v1/offers/search`, `GET /api/v1/products/compare`, `GET /api/v1/products/{canonicalId}/history`, `GET /api/v1/matches/review-queue`.
   - **Automatic PostgreSQL fallback (ADR-0002)**: when OpenSearch is unreachable or unpopulated, `/stores`, `/offers/search`, and `/products/compare` automatically serve from authoritative PostgreSQL tables (`sourceEngine = "postgresql_fallback"`).
 
-## Execution evidence (2026-10-28, local)
+## Implemented (M4, this session) — owner-approved
+- **Schema `migrations/V3__m4_baskets.sql`**:
+  - `shopping_lists` (`id`, `name`, `city_filter`, `created_at`, `updated_at`) and `shopping_list_items` (`shopping_list_id`, `canonical_product_id`, `retailer_product_id`, `item_label`, `quantity`, `unit` (`pack`/`pcs`/`g`/`kg`/`ml`/`l`), `position`).
+- **Deterministic Unit Conversion & Basket Optimization Engine (`backend/`, `docs/contracts/basket-api-contract.md`)**:
+  - `UnitConversionUtil`: normalizes `g`/`kg`, `ml`/`l`, `pack`/`pcs`, converts requested amounts to base units, and deterministically computes integer `packsNeeded = ceil(requestedBase / perSkuBase)`.
+  - `BasketOptimizerService`:
+    - **Single-store evaluation (`singleStoreRankings`)**: ranks stores by `itemsCovered DESC` (coverage first), then `exactMatchesCount DESC`, then `totalMkd ASC`, then `storeId ASC`. Explicitly reports `missingItems` (`no_offer_at_store`, `product_not_found_in_catalog`) so partial stores never masquerade as cheaper full baskets.
+    - **Multi-store split optimization (`bestMultiStorePlan`)**: evaluates `1..maxStores` (default `2`, max `3`) store combinations, maximizing item coverage first and minimizing total MKD second, and checks `savingsVsBestSingleStoreMkd >= minSplitSavingsMkd`.
+    - **Identity vs. substitution (ADR-0003)**: strict exact identity (`auto_accepted`/`approved`) by default (`allowSubstitutes = false`); when `allowSubstitutes = true`, clearly flags Stage-2 `pending_review` candidates with `isSubstitute = true`, `substituteReason = "stage2_pending_review_candidate"`, and `matchConfidence`.
+  - **REST endpoints (`BasketController`)**:
+    - `POST /api/v1/baskets/optimize` (stateless ad-hoc basket optimization)
+    - `POST /api/v1/baskets/lists` (create persisted shopping list)
+    - `GET /api/v1/baskets/lists/{listId}` (fetch persisted shopping list)
+    - `POST /api/v1/baskets/lists/{listId}/optimize` (optimize persisted shopping list with optional parameter overrides)
+
+## Execution evidence (2026-10-29, local)
 - Unit tests (`python:3.12-slim` stdlib + JUnit 5 in `maven:3.9.9-eclipse-temurin-21`):
   - `adapters/common/tests.py` → **8/8 OK**
   - `adapters/vero/tests.py` → **22/22 OK**
   - `adapters/stokomak/tests.py` → **9/9 OK**
   - `matching/tests.py` → **5/5 OK**
-  - `search/tests.py` → **2/2 OK** (atomic alias swap across `v1_run1` → `v1_run2`, old physical index deletion, `_search` filtering/sorting)
-  - `backend` (`mvn -B test package`) → **3/3 JUnit tests OK, BUILD SUCCESS** (`ai-shopping-backend-0.3.0-SNAPSHOT.jar`)
-- `scripts/test-m1.ps1` → **M1 TEST OK** (1000 observations/offers/promotions, idempotent second pass, all 8 asserts PASS).
-- `scripts/test-m2.ps1` → **M2 TEST OK**:
-  - Loaded 3 retailers (`vero`: 1000 rows, `stokomak`: 400 rows across 3 stores `1, 3, 14`, `zito`: 500 rows / 496 unique store offers across 3 stores `2, 8, 13`).
-  - First & second pass counts (`observations,offers,promotions,snapshots,retailer_products,canonical_products,stage1_matches,stage2_queue`): `1896,1896,1053,11,1672,1372,1381,20` (100% idempotent).
-- `scripts/test-m3.ps1` → **M3 TEST OK**:
-  - Exported PostgreSQL projections and ran two consecutive OpenSearch reindex passes (`v1_pass1` → `v1_pass2`): `192` stores, `1,896` offers, `1,372` canonical products indexed; aliases `stores`, `offers`, `products` atomically swapped to `*_v1_v1_pass2` and `*_v1_v1_pass1` deleted (`PASS opensearch_alias_swap_v1_pass2`).
-  - Booted `ai-shopping-backend-0.3.0-SNAPSHOT.jar` container and verified all 6 REST endpoints against OpenSearch (`sourceEngine = "opensearch"`, 17 Vero stores, 400 Stokomak offers, 6 cross-retailer canonical product comparisons, 2 observations for canonicalId `1116`, 20 `pending_review` items).
-  - Stopped OpenSearch container and verified automatic fallback to PostgreSQL (`sourceEngine = "postgresql_fallback"`) returning identical totals (`6` cross-retailer comparisons, `400` Stokomak offers).
+  - `search/tests.py` → **2/2 OK**
+  - `backend` (`mvn -B test package`) → **6/6 JUnit tests OK (`CatalogApiTest` 3/3 + `BasketOptimizerTest` 3/3), BUILD SUCCESS**
+- `scripts/test-m1.ps1` → **M1 TEST OK**
+- `scripts/test-m2.ps1` → **M2 TEST OK**
+- `scripts/test-m3.ps1` → **M3 TEST OK**
+- `scripts/test-m4.ps1` → **M4 TEST OK**:
+  - Applied `V1` + `V2` + `V3` migrations (`PASS v3_schema_tables_present`) and loaded Vero + Stokomak + Zito fixtures.
+  - Created persisted 3-item shopping list (`PASS shopping_list_created`, `PASS shopping_list_get_verified`).
+  - Verified repeatable totals across consecutive optimization runs (`PASS repeatable_basket_totals`, `bestSingle = 519.00 MKD`, `bestMulti = 498.00 MKD`).
+  - Verified unit conversion & pack scaling (`800g` of `400g` product → `packsNeeded = 2`, `lineTotal = 360.00 MKD`).
+  - Verified coverage-first ranking and explicit missing-item reporting (`bestSingle` covered `3/3` at Zito; partial store covered `2/3` with explicit `missingReason = no_offer_at_store`).
+  - Verified 2-store split optimization (`storesUsed = 2`, `totalMkd = 498.00 MKD`, `savingsVsBestSingle = 21.00 MKD`).
+  - Verified ADR-0003 substitute separation (`allowSubstitutes = false` vs `allowSubstitutes = true` on `canonicalId = 897`, `isSubstitute = true`, `confidence = 0.80`).
 
 ## Blockers / limitations
 - Java, Maven, psql not installed natively on this machine (containers and CI provide them; `maven:3.9.9-eclipse-temurin-21` already cached).
@@ -78,6 +91,7 @@
 - **M1 (`docs/milestones/m1-proposal.md`):** M1 scope approved; daily fetch window after 08:30 local; real Vero HTML fixtures committed; Ramstore skipped pending written consent.
 - **M2 (`docs/milestones/m2-proposal.md`):** Stokomak + Zito approved; 3 stores/retailer subset for M2; exact deterministic match + Stage-2 review queue (no LLM in M2); byte-exact HTML fixtures committed.
 - **M3 (`docs/milestones/m3-proposal.md`):** M3 scope approved; OpenSearch primary with automatic PostgreSQL fallback; strictly read-only `GET /api/v1/*` surface.
+- **M4 (`docs/milestones/m4-proposal.md`):** M4 scope approved (persisted `shopping_lists` + stateless/persisted optimization); coverage-first ranking (`itemsCovered DESC`, then `totalMkd ASC`) with `maxStores=2..3` and `minSplitSavingsMkd`; strict exact identity by default (`allowSubstitutes=false`) and flagged Stage-2 substitutes (`isSubstitute=true`) when `allowSubstitutes=true`.
 
-## Next smallest testable task (pending owner approval of M4 scope)
-M4 proposal: single-store vs multi-store basket optimization engine (itemized basket pricing, missing-item handling, store-split savings threshold, and verified substitution rules separate from product identity per ADR-0003).
+## Next smallest testable task (pending owner approval of M5 scope)
+M5 proposal: bounded, read-only Model Context Protocol (MCP) server & AI tool layer over the M3/M4 REST/catalog services (`search_products`, `compare_product_prices`, `get_price_history`, `find_nearby_stores`, `optimize_shopping_basket`, `find_current_discounts`, `suggest_product_substitutes`) where all prices, unit conversions, and basket totals remain 100% deterministic.
