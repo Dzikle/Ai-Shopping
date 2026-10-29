@@ -1,6 +1,6 @@
 # AI Shopping — Universal Price Intelligence Platform
 
-A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
+A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
 
 Initial focus: North Macedonia. Expansion: other countries, retailers and product categories.
 
@@ -41,11 +41,25 @@ docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B matching/cli.py 
   - `docker run --rm -v "${PWD}:/w" -w /w/matching python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}:/w" -w /w/search python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}/backend:/w" -v aoshopping-m2-repo:/root/.m2 -w /w maven:3.9.9-eclipse-temurin-21 mvn -B test`
-- Integration tests (scratch DB, idempotency, OpenSearch alias swap, REST API + Postgres fallback, deterministic basket optimization):
+- Integration tests (scratch DB, idempotency, OpenSearch alias swap, REST API + Postgres fallback, deterministic basket optimization, bounded MCP server):
   - `./scripts/test-m1.ps1`
   - `./scripts/test-m2.ps1`
   - `./scripts/test-m3.ps1`
   - `./scripts/test-m4.ps1`
+  - `./scripts/test-m5.ps1`
+
+## Model Context Protocol (MCP) Server
+
+The Spring Boot backend exposes a Model Context Protocol (`2024-11-05`) JSON-RPC 2.0 server at `POST /mcp` (discovery info at `GET /mcp` and `GET /mcp/sse`), enabling AI agents (such as Claude Desktop or Antigravity) to query product intelligence and optimize shopping baskets deterministically without paid LLM APIs on the backend. See [MCP tools contract](docs/contracts/mcp-tools-contract.md).
+
+Registered tools:
+1. `search_products`: Catalog offer search with filters and freshness.
+2. `compare_product_prices`: Cross-retailer price comparison and spread.
+3. `get_price_history`: Immutable observation timeline for canonical products.
+4. `list_stores`: Retailer store branch discovery.
+5. `find_current_discounts`: Top promotional sales sorted by discount percentage.
+6. `optimize_shopping_basket`: Pack-scaled, coverage-first basket optimizer (single & multi-store).
+7. `suggest_product_substitutes`: Stage-2 candidate substitutes labeled with confidence and token evidence.
 
 Live fetching (`--url --stores`) follows the politeness rules in
 [docs/contracts/vero-adapter-contract.md](docs/contracts/vero-adapter-contract.md) and

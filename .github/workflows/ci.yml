@@ -23,6 +23,7 @@ jobs:
           test -f docs/data-model/domain-model.md
           test -f docs/contracts/search-api-contract.md
           test -f docs/contracts/basket-api-contract.md
+          test -f docs/contracts/mcp-tools-contract.md
 
       - name: Prepare env
         run: cp .env.example .env
@@ -64,6 +65,10 @@ jobs:
       - name: M4 integration test (shopping lists, unit scaling, single & multi-store basket optimization)
         shell: pwsh
         run: ./scripts/test-m4.ps1
+
+      - name: M5 integration test (bounded read-only MCP server, 7 tools, handshake & tool calls)
+        shell: pwsh
+        run: ./scripts/test-m5.ps1
 
       - name: Teardown
         if: always()

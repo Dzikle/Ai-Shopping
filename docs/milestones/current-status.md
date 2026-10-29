@@ -58,6 +58,20 @@
     - `GET /api/v1/baskets/lists/{listId}` (fetch persisted shopping list)
     - `POST /api/v1/baskets/lists/{listId}/optimize` (optimize persisted shopping list with optional parameter overrides)
 
+## Implemented (M5, this session) — owner-approved
+- **Contract & Protocol Specification (`docs/contracts/mcp-tools-contract.md`, `docs/milestones/m5-proposal.md`)**:
+  - Full Model Context Protocol (MCP) `2024-11-05` spec with 7 bounded, read-only tools:
+    `search_products`, `compare_product_prices`, `get_price_history`, `list_stores`, `find_current_discounts`, `optimize_shopping_basket`, `suggest_product_substitutes`.
+  - Input bounds enforced outside prompts (e.g. `size <= 25`, `items <= 20`, `maxStores <= 3`).
+  - Zero backend LLM calls / paid AI APIs; the client agent (Claude Desktop, Antigravity, etc.) handles natural language while the backend deterministically calculates prices, unit scaling, and projections.
+  - Data provenance (`sourceUrl`, `publishedTs`, `fetchedTs`, store attribution) and `dataFreshness` envelopes on every tool result.
+- **Spring Boot 4.1.2 Streamable HTTP / JSON-RPC 2.0 MCP Endpoint (`backend/src/main/java/mk/aishopping/mcp/`)**:
+  - `McpProtocolModels`: Type-safe JSON-RPC 2.0 request, response, error, tool definitions, tool call results, and content blocks.
+  - `McpToolRegistry`: Registry and execution dispatching for all 7 tools, delegating to `CatalogSearchService` and `BasketOptimizerService` with parameter boundary checks and freshness timestamps.
+  - `McpController`: `@RestController` at `/mcp` supporting `initialize`, `notifications/initialized`, `ping`, `tools/list`, `tools/call`, `GET /mcp` (discovery), and `GET /mcp/sse`.
+- **JUnit 5 Unit Test Suite (`backend/src/test/java/mk/aishopping/McpServerTest.java`)**:
+  - 5 tests verifying protocol handshake, tool catalog enumeration (7 tools), tool calls (`search_products`, `optimize_shopping_basket`), unknown method handling, and GET `/mcp` discovery info. Total JUnit tests: 11 (`CatalogApiTest` 3, `BasketOptimizerTest` 3, `McpServerTest` 5).
+
 ## Execution evidence (2026-10-29, local)
 - Unit tests (`python:3.12-slim` stdlib + JUnit 5 in `maven:3.9.9-eclipse-temurin-21`):
   - `adapters/common/tests.py` → **8/8 OK**
@@ -65,18 +79,22 @@
   - `adapters/stokomak/tests.py` → **9/9 OK**
   - `matching/tests.py` → **5/5 OK**
   - `search/tests.py` → **2/2 OK**
-  - `backend` (`mvn -B test package`) → **6/6 JUnit tests OK (`CatalogApiTest` 3/3 + `BasketOptimizerTest` 3/3), BUILD SUCCESS**
+  - `backend` (`mvn -B test package`) → **11/11 JUnit tests OK (`CatalogApiTest` 3/3 + `BasketOptimizerTest` 3/3 + `McpServerTest` 5/5), BUILD SUCCESS**
 - `scripts/test-m1.ps1` → **M1 TEST OK**
 - `scripts/test-m2.ps1` → **M2 TEST OK**
 - `scripts/test-m3.ps1` → **M3 TEST OK**
-- `scripts/test-m4.ps1` → **M4 TEST OK**:
-  - Applied `V1` + `V2` + `V3` migrations (`PASS v3_schema_tables_present`) and loaded Vero + Stokomak + Zito fixtures.
-  - Created persisted 3-item shopping list (`PASS shopping_list_created`, `PASS shopping_list_get_verified`).
-  - Verified repeatable totals across consecutive optimization runs (`PASS repeatable_basket_totals`, `bestSingle = 519.00 MKD`, `bestMulti = 498.00 MKD`).
-  - Verified unit conversion & pack scaling (`800g` of `400g` product → `packsNeeded = 2`, `lineTotal = 360.00 MKD`).
-  - Verified coverage-first ranking and explicit missing-item reporting (`bestSingle` covered `3/3` at Zito; partial store covered `2/3` with explicit `missingReason = no_offer_at_store`).
-  - Verified 2-store split optimization (`storesUsed = 2`, `totalMkd = 498.00 MKD`, `savingsVsBestSingle = 21.00 MKD`).
-  - Verified ADR-0003 substitute separation (`allowSubstitutes = false` vs `allowSubstitutes = true` on `canonicalId = 897`, `isSubstitute = true`, `confidence = 0.80`).
+- `scripts/test-m4.ps1` → **M4 TEST OK**
+- `scripts/test-m5.ps1` → **M5 TEST OK**:
+  - Applied `V1` + `V2` + `V3` migrations, loaded Vero + Stokomak + Zito fixtures, and booted Spring Boot MCP container on port 18085.
+  - Performed MCP `2024-11-05` handshake: `PASS mcp_server_info_discovery`, `PASS mcp_initialize`, `PASS mcp_notifications_initialized`, `PASS mcp_ping`, `PASS mcp_tools_list (registered_tools=7)`.
+  - Executed all 7 tools via `tools/call`:
+    - `PASS tool_search_products (matches=2, sampleSourceUrl=https://pricelist.vero.com.mk/89_2.html)`
+    - `PASS tool_compare_product_prices (canonicalId=1116, spread=21.00 MKD)`
+    - `PASS tool_get_price_history (observations=2)`
+    - `PASS tool_list_stores (vero stores=17)`
+    - `PASS tool_find_current_discounts (discounts=11)`
+    - `PASS tool_optimize_shopping_basket_deterministic_match (bestSingle=519.00 MKD, bestMulti=498.00 MKD)` (verified identical to REST endpoint)
+    - `PASS tool_suggest_product_substitutes (candidates=5, sampleConfidence=0.80)`
 
 ## Blockers / limitations
 - Java, Maven, psql not installed natively on this machine (containers and CI provide them; `maven:3.9.9-eclipse-temurin-21` already cached).
@@ -92,6 +110,7 @@
 - **M2 (`docs/milestones/m2-proposal.md`):** Stokomak + Zito approved; 3 stores/retailer subset for M2; exact deterministic match + Stage-2 review queue (no LLM in M2); byte-exact HTML fixtures committed.
 - **M3 (`docs/milestones/m3-proposal.md`):** M3 scope approved; OpenSearch primary with automatic PostgreSQL fallback; strictly read-only `GET /api/v1/*` surface.
 - **M4 (`docs/milestones/m4-proposal.md`):** M4 scope approved (persisted `shopping_lists` + stateless/persisted optimization); coverage-first ranking (`itemsCovered DESC`, then `totalMkd ASC`) with `maxStores=2..3` and `minSplitSavingsMkd`; strict exact identity by default (`allowSubstitutes=false`) and flagged Stage-2 substitutes (`isSubstitute=true`) when `allowSubstitutes=true`.
+- **M5 (`docs/milestones/m5-proposal.md`):** M5 scope approved; bounded read-only MCP server at `/mcp` inside Spring Boot backend (reuses services, single deployable); 7 tools; strict bounds; zero paid LLM APIs; data provenance and freshness envelope.
 
-## Next smallest testable task (pending owner approval of M5 scope)
-M5 proposal: bounded, read-only Model Context Protocol (MCP) server & AI tool layer over the M3/M4 REST/catalog services (`search_products`, `compare_product_prices`, `get_price_history`, `find_nearby_stores`, `optimize_shopping_basket`, `find_current_discounts`, `suggest_product_substitutes`) where all prices, unit conversions, and basket totals remain 100% deterministic.
+## Next smallest testable task (Milestone M6 proposal)
+M6: Live daily ingestion scheduler, freshness monitor, and automated pipeline execution (cron/scheduled worker for polite live scraping of Vero + Stokomak + Zito, quarantine alerts, and freshness status endpoint).
