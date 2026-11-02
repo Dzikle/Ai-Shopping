@@ -53,7 +53,7 @@ deterministic `BigDecimal` result.
      for inspecting the contract without any network call.
    - `mock_catalog_api.py` — in-process mock of the M3/M4 REST API (real
      Vero/Stokomak/Zito prices and provenance from the committed fixtures).
-   - `tests.py` — 29 contract tests (protocol, schemas, bounds, determinism,
+   - `tests.py` — 31 contract tests (protocol, schemas, bounds, determinism,
      provenance, identity labelling, read-only enforcement, failure modes,
      stdio round-trip).
 

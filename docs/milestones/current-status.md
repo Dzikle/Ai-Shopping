@@ -58,6 +58,20 @@
     - `GET /api/v1/baskets/lists/{listId}` (fetch persisted shopping list)
     - `POST /api/v1/baskets/lists/{listId}/optimize` (optimize persisted shopping list with optional parameter overrides)
 
+## Implemented (M5, owner-directed 2026-11-02) — pending owner review
+- **Bounded read-only MCP server (`mcp_server/`, Python 3.12 stdlib only, no DB/JVM/Docker dependency):**
+  - `contract.py`: versioned tool contract (`MCP_TOOLS_VERSION = "v1"`) and every hard cap — single source of truth for schemas, docs and tests.
+  - `api_client.py`: method-aware **read-only route allowlist** (6 routes; persisted list creation, review queue, writes and path traversal all raise `ReadOnlyViolation`), no-redirect opener, 10 s timeout, 2 MB response cap, 1 KB URL cap, structured `UpstreamError`.
+  - `tools.py`: 9 deterministic **pass-through** handlers — `search_products`, `get_product_details`, `compare_product_prices`, `get_price_history`, `find_stores`, `find_current_discounts`, `suggest_product_substitutes`, `optimize_shopping_basket`, `get_catalog_health`. No price/unit/pack/basket arithmetic; only presentation metadata (`provenance`, `truncated`, `identityScope`, `equivalenceStatus`, `computation`).
+  - `server.py`: JSON-RPC 2.0 over MCP stdio — `initialize` (protocol `2025-06-18`/`2025-03-26`), notifications, batch frames, `ping`, `tools/list`, `tools/call`; bounds on inbound frames (256 KB) and tool payloads (1 MB); protocol errors `-32700/-32600/-32601/-32602`; tool failures returned in-band with `isError: true`.
+  - `cli.py`: stdio entry point (`python -B -m mcp_server.cli`), `--list-tools` contract dump, env config `AI_SHOPPING_API_BASE` / `AI_SHOPPING_API_TIMEOUT` / `AI_SHOPPING_MAX_RESPONSE_BYTES`.
+  - `mock_catalog_api.py`: in-process mock of the M3/M4 REST API using the committed Vero/Stokomak/Zito prices and provenance, with request recording and forced-failure switch.
+- **Identity vs. equivalence preserved (ADR-0003/ADR-0004):** `compare_product_prices`/`get_product_details` report `identityScope: "verified_identity_only"`; `suggest_product_substitutes` derives the seed category from the backend offer record and labels every candidate `equivalenceStatus: "not_verified_equivalent"`.
+- **Provenance & no fabrication:** every offer-bearing result carries per-item `sourceUrl`/`publishedTs`/`fetchedTs` plus a `provenance` summary; unreachable/failed upstream returns `upstream_unavailable` / `upstream_error` (with `upstreamStatus`) instead of prices.
+- **Scope correction:** the master plan's `find_nearby_stores` is **not** shipped as a radius search — the authoritative schema has no store geo-coordinates, so `find_stores` offers a city text filter and states `geoScope: "city_text_filter_only"`.
+- **Docs:** `docs/milestones/m5-proposal.md`, `docs/contracts/mcp-tools-contract.md` (transport, tool catalogue, schemas, hard limits, error reasons, allowlist, client config).
+- **Tests & CI:** `mcp_server/tests.py` → **31/31 OK** (protocol lifecycle, batch frames, schema/limit contract, filter forwarding, provenance, discount ordering, substitute labelling, basket payload forwarding + repeatable backend totals, invalid-line rejection without API calls, upstream 5xx/unreachable, allowlist/path-escape/redirect refusal, real stdio subprocess round-trip, `--list-tools`). `scripts/test-m5.ps1` added (contract suite + tool snapshot + optional live `initialize → tools/list → get_catalog_health` handshake). The three `ci.yml` edits are specified in `docs/ci/m5-ci-steps.md` and **await the owner** (agent token lacks `workflows` permission).
+
 ## Execution evidence (2026-10-29 → 2026-11-02, local)
 - Unit tests (`python:3.12-slim` stdlib + JUnit 5 in `maven:3.9.9-eclipse-temurin-21`):
   - `adapters/common/tests.py` → **8/8 OK**
@@ -65,7 +79,7 @@
   - `adapters/stokomak/tests.py` → **9/9 OK**
   - `matching/tests.py` → **5/5 OK**
   - `search/tests.py` → **2/2 OK**
-  - `mcp_server/tests.py` → **29/29 OK** (2026-11-02, native `python3 -B mcp_server/tests.py`, stdlib only)
+  - `mcp_server/tests.py` → **31/31 OK** (2026-11-02, native `python3 -B mcp_server/tests.py`, stdlib only)
   - `backend` (`mvn -B test package`) → **6/6 JUnit tests OK (`CatalogApiTest` 3/3 + `BasketOptimizerTest` 3/3), BUILD SUCCESS**
 - `scripts/test-m1.ps1` → **M1 TEST OK**
 - `scripts/test-m2.ps1` → **M2 TEST OK**
@@ -79,23 +93,9 @@
   - Verified 2-store split optimization (`storesUsed = 2`, `totalMkd = 498.00 MKD`, `savingsVsBestSingle = 21.00 MKD`).
   - Verified ADR-0003 substitute separation (`allowSubstitutes = false` vs `allowSubstitutes = true` on `canonicalId = 897`, `isSubstitute = true`, `confidence = 0.80`).
 - **M5 verification (2026-11-02):**
-  - `python3 -B mcp_server/tests.py` → **29/29 OK** — lifecycle/`tools/list` contract, bounds rejection, filter forwarding (`retailer`, `promoOnly`, `size`), provenance aggregation, discount ordering (23% → 15%), substitute labelling (`canonicalId 898` candidate only, `not_verified_equivalent`), basket forwarding (`800 g` → backend `packsNeeded = 6`, `lineTotalMkd = 374.00`; `bestSingle.totalMkd = 498.00`, `bestMulti.totalMkd = 483.50` repeatable), 11 invalid-basket cases rejected with **zero** backend calls, upstream `500` → `upstream_error` then recovery, unreachable API → `upstream_unavailable`, allowlist blocks `POST /baskets/lists`, `DELETE`, path escape and redirects, real stdio subprocess round-trip (initialize → notification → `search_products`).
+  - `python3 -B mcp_server/tests.py` → **31/31 OK** — lifecycle/`tools/list` contract, bounds rejection, filter forwarding (`retailer`, `promoOnly`, `size`), provenance aggregation, discount ordering (23% → 15%), substitute labelling (`canonicalId 898` candidate only, `not_verified_equivalent`), basket forwarding (`800 g` → backend `packsNeeded = 6`, `lineTotalMkd = 374.00`; `bestSingle.totalMkd = 498.00`, `bestMulti.totalMkd = 483.50` repeatable), 11 invalid-basket cases rejected with **zero** backend calls, upstream `500` → `upstream_error` then recovery, unreachable API → `upstream_unavailable`, allowlist blocks `POST /baskets/lists`, `DELETE`, path escape and redirects, real stdio subprocess round-trip (initialize → notification → `search_products`).
   - `python3 -B mcp_server/cli.py --list-tools` → 9 tools, 6 allowlisted routes, all `readOnlyHint`.
   - Existing suites re-run unchanged: `adapters/common` 8/8, `adapters/vero` 22/22, `adapters/stokomak` 9/9, `matching` 5/5, `search` 2/2.
-
-## Implemented (M5, owner-directed 2026-11-02) — pending owner review
-- **Bounded read-only MCP server (`mcp_server/`, Python 3.12 stdlib only, no DB/JVM/Docker dependency):**
-  - `contract.py`: versioned tool contract (`MCP_TOOLS_VERSION = "v1"`) and every hard cap — single source of truth for schemas, docs and tests.
-  - `api_client.py`: method-aware **read-only route allowlist** (6 routes; persisted list creation, review queue, writes and path traversal all raise `ReadOnlyViolation`), no-redirect opener, 10 s timeout, 2 MB response cap, 1 KB URL cap, structured `UpstreamError`.
-  - `tools.py`: 9 deterministic **pass-through** handlers — `search_products`, `get_product_details`, `compare_product_prices`, `get_price_history`, `find_stores`, `find_current_discounts`, `suggest_product_substitutes`, `optimize_shopping_basket`, `get_catalog_health`. No price/unit/pack/basket arithmetic; only presentation metadata (`provenance`, `truncated`, `identityScope`, `equivalenceStatus`, `computation`).
-  - `server.py`: JSON-RPC 2.0 over MCP stdio — `initialize` (protocol `2025-06-18`/`2025-03-26`), notifications, batch frames, `ping`, `tools/list`, `tools/call`; bounds on inbound frames (256 KB) and tool payloads (1 MB); protocol errors `-32700/-32600/-32601/-32602`; tool failures returned in-band with `isError: true`.
-  - `cli.py`: stdio entry point (`python -B -m mcp_server.cli`), `--list-tools` contract dump, env config `AI_SHOPPING_API_BASE` / `AI_SHOPPING_API_TIMEOUT` / `AI_SHOPPING_MAX_RESPONSE_BYTES`.
-  - `mock_catalog_api.py`: in-process mock of the M3/M4 REST API using the committed Vero/Stokomak/Zito prices and provenance, with request recording and forced-failure switch.
-- **Identity vs. equivalence preserved (ADR-0003/ADR-0004):** `compare_product_prices`/`get_product_details` report `identityScope: "verified_identity_only"`; `suggest_product_substitutes` derives the seed category from the backend offer record and labels every candidate `equivalenceStatus: "not_verified_equivalent"`.
-- **Provenance & no fabrication:** every offer-bearing result carries per-item `sourceUrl`/`publishedTs`/`fetchedTs` plus a `provenance` summary; unreachable/failed upstream returns `upstream_unavailable` / `upstream_error` (with `upstreamStatus`) instead of prices.
-- **Scope correction:** the master plan's `find_nearby_stores` is **not** shipped as a radius search — the authoritative schema has no store geo-coordinates, so `find_stores` offers a city text filter and states `geoScope: "city_text_filter_only"`.
-- **Docs:** `docs/milestones/m5-proposal.md`, `docs/contracts/mcp-tools-contract.md` (transport, tool catalogue, schemas, hard limits, error reasons, allowlist, client config).
-- **Tests & CI:** `mcp_server/tests.py` → **29/29 OK** (protocol lifecycle, batch frames, schema/limit contract, filter forwarding, provenance, discount ordering, substitute labelling, basket payload forwarding + repeatable backend totals, invalid-line rejection without API calls, upstream 5xx/unreachable, allowlist/path-escape/redirect refusal, real stdio subprocess round-trip, `--list-tools`). `scripts/test-m5.ps1` added (contract suite + tool snapshot + optional live `initialize → tools/list → get_catalog_health` handshake). The three `ci.yml` edits are specified in `docs/ci/m5-ci-steps.md` and **await the owner** (agent token lacks `workflows` permission).
 
 ## Blockers / limitations
 - Java, Maven, psql not installed natively on this machine (containers and CI provide them; `maven:3.9.9-eclipse-temurin-21` already cached).
@@ -104,7 +104,7 @@
 - Local Postgres runs 18.3 (cached image) via `POSTGRES_IMAGE=postgres:18.3` override; CI pins 18.6. Same major version; acceptable.
 - `ceni.tinex.mk` (port 442) timed out during M2 validation and remains deferred until reachable; `ramstore.com.mk` remains blocked pending written consent.
 - `*.proverkanaceni.mk` has slow/unreachable IPv6 in some environments; IPv4 reaches the host in ~0.5s.
-- **M5 environment note:** the MCP layer needs no Docker/JVM/PostgreSQL, so `mcp_server/tests.py` was verified natively (Python 3.11/3.12 stdlib, 29/29). `scripts/test-m5.ps1` requires PowerShell 7 and therefore runs in CI (`pwsh`); its live handshake step needs `-ApiBase` with a running Spring Boot API.
+- **M5 environment note:** the MCP layer needs no Docker/JVM/PostgreSQL, so `mcp_server/tests.py` was verified natively (Python 3.11/3.12 stdlib, 31/31). `scripts/test-m5.ps1` requires PowerShell 7 and therefore runs in CI (`pwsh`); its live handshake step needs `-ApiBase` with a running Spring Boot API.
 - **Workflow permission blocker (M5):** the automation token cannot push `.github/workflows/ci.yml` (`refusing to allow a GitHub App to create or update workflow ... without workflows permission`). The M5 CI steps (doc check, `mcp_server/tests.py`, `scripts/test-m5.ps1`) are therefore documented in `docs/ci/m5-ci-steps.md` for the owner to apply; until then CI does not execute the M5 suite, though it is green when run locally and via `scripts/test-m5.ps1`.
 - Local clone lives at `C:\Dev\Personal\ao shopping` (outside OneDrive ✓).
 

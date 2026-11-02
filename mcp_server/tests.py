@@ -18,7 +18,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from mcp_server import MCP_TOOLS_VERSION, contract  # noqa: E402
+from mcp_server import MCP_TOOLS_VERSION, contract, tools  # noqa: E402
 from mcp_server.api_client import CatalogApiClient, ReadOnlyViolation, UpstreamError  # noqa: E402
 from mcp_server.mock_catalog_api import start_background_server  # noqa: E402
 from mcp_server.server import McpServer  # noqa: E402
@@ -218,6 +218,23 @@ class McpServerTest(unittest.TestCase):
         self.assertEqual(result["identityScope"], "verified_identity_only")
         search_request = self.state.requests[-1]
         self.assertEqual(search_request["query"]["size"], [str(contract.MAX_LIMIT)])
+
+    def test_get_product_details_resolves_listing_name_size_suffix(self):
+        # Canonical name `МЛЕКО БИТОЛСКО 1ЛР` vs listing `МЛЕКО БИТОЛСКО 1Л`: the
+        # search seed drops the size token, then only verified canonical ids are kept.
+        result = structured(call(self.server, "get_product_details", {"canonicalProductId": 1116}))
+        self.assertEqual(result["offerSearchSeed"], "МЛЕКО БИТОЛСКО")
+        self.assertEqual(result["currentOfferCount"], 2)
+        self.assertEqual(
+            sorted(offer["retailerSlug"] for offer in result["currentOffers"]), ["vero", "zito"]
+        )
+        self.assertTrue(all(offer["canonicalProductId"] == 1116 for offer in result["currentOffers"]))
+        self.assertEqual(self.state.requests[-1]["query"]["q"], ["МЛЕКО БИТОЛСКО"])
+
+    def test_search_seed_drops_size_tokens_only(self):
+        self.assertEqual(tools._search_seed("СТОБИ ФЛИПС 150ГР ВИТАМИНКА"), "СТОБИ ФЛИПС")
+        self.assertEqual(tools._search_seed("МЛЕКО БИТОЛСКО 1ЛР"), "МЛЕКО БИТОЛСКО")
+        self.assertEqual(tools._search_seed("1Л"), "1Л")
 
     def test_find_stores_filters_by_city(self):
         response = call(self.server, "find_stores", {"city": "Битола"})

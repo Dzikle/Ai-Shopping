@@ -176,6 +176,25 @@ def _offer_summary(item: dict) -> dict:
     return {field: item.get(field) for field in _OFFER_SUMMARY_FIELDS if field in item}
 
 
+def _search_seed(canonical_name: str) -> str:
+    """Head tokens of a canonical name, used only as a *search* seed.
+
+    Retailer listing names and canonical names differ by size suffixes
+    (e.g. canonical `МЛЕКО БИТОЛСКО 1ЛР` vs listing `МЛЕКО БИТОЛСКО 1Л`), so the
+    trailing size/pack tokens are dropped before querying. Precision is not
+    affected: callers keep only offers whose ``canonicalProductId`` equals the
+    requested id, i.e. verified identity, never fuzzy matching.
+    """
+    tokens = canonical_name.split()
+    head: list[str] = []
+    for token in tokens:
+        if any(character.isdigit() for character in token):
+            break
+        head.append(token)
+    seed = " ".join(head) if head else canonical_name
+    return seed[: contract.MAX_QUERY_CHARS]
+
+
 # -- handlers ---------------------------------------------------------------
 def search_products(client, args: dict) -> dict:
     _reject_unknown(args, "search_products")
@@ -281,10 +300,12 @@ def get_product_details(client, args: dict) -> dict:
 
     offers: list[dict] = []
     source_engine = None
+    search_seed = None
     if canonical_name:
+        search_seed = _search_seed(canonical_name)
         response = client.get(
             "/api/v1/offers/search",
-            {"q": canonical_name, "page": 0, "size": contract.MAX_LIMIT},
+            {"q": search_seed, "page": 0, "size": contract.MAX_LIMIT},
         )
         source_engine = response.get("sourceEngine")
         items = response.get("items")
@@ -295,6 +316,7 @@ def get_product_details(client, args: dict) -> dict:
         "canonicalProductId": canonical_id,
         "canonicalName": canonical_name,
         "normalizedSize": history.get("normalizedSize"),
+        "offerSearchSeed": search_seed,
         "identityScope": "verified_identity_only",
         "observationCount": len(observations),
         "observations": observations[:history_limit],
@@ -401,7 +423,7 @@ def _seed_context(client, args: dict) -> dict:
         name = name or history_name
         seed_search = client.get(
             "/api/v1/offers/search",
-            {"q": history_name or name, "page": 0, "size": contract.MAX_LIMIT},
+            {"q": _search_seed(history_name or name), "page": 0, "size": contract.MAX_LIMIT},
         )
         source_engine = seed_search.get("sourceEngine")
         items = seed_search.get("items")

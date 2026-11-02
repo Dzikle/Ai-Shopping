@@ -139,6 +139,10 @@ arguments are rejected with `unknown_argument`.
 
 **`get_product_details`** — `canonicalProductId` (required, integer ≥ 1),
 `historyLimit` (1..200, default 200), `offerLimit` (1..50, default 20).
+Offers are found with the canonical name's head tokens (size/pack tokens
+dropped, reported as `offerSearchSeed`) and then filtered to offers whose
+`canonicalProductId` equals the request — verified identity, never fuzzy
+matching.
 
 **`compare_product_prices`** — `q` (string ≤ 200), `minRetailers` (1..3,
 default 2), `limit` (1..50, default 20).
@@ -271,7 +275,7 @@ Environment variables: `AI_SHOPPING_API_BASE` (default `http://localhost:8080`),
 ## Verification
 
 ```bash
-python3 -B mcp_server/tests.py                       # 29 contract tests, no Docker/JVM
+python3 -B mcp_server/tests.py                       # 31 contract tests, no Docker/JVM
 python3 -B -m mcp_server.cli --list-tools            # print this contract as JSON
 ./scripts/test-m5.ps1 -ApiBase http://localhost:8080 # milestone script (+ live API if up)
 ```

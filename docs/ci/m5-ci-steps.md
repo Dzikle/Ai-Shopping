@@ -13,7 +13,7 @@ The M5 pieces already exist in the repository:
 | Artifact | Path |
 |---|---|
 | MCP server package | `mcp_server/` |
-| MCP contract tests (29) | `mcp_server/tests.py` |
+| MCP contract tests (31) | `mcp_server/tests.py` |
 | Milestone test script | `scripts/test-m5.ps1` |
 | Tool contract | `docs/contracts/mcp-tools-contract.md` |
 | Milestone proposal | `docs/milestones/m5-proposal.md` |
@@ -58,6 +58,6 @@ direct REST call), pass a running backend:
 ## Verification before applying
 
 ```bash
-python3 -B mcp_server/tests.py        # 29/29 OK
+python3 -B mcp_server/tests.py        # 31/31 OK
 python3 -B mcp_server/cli.py --list-tools
 ```
