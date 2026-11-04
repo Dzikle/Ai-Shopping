@@ -56,14 +56,16 @@ try {
 
     $osUrl = "http://localhost:$MockOsPort"
     $osReady = $false
-    for ($i = 0; $i -lt 20; $i++) {
+    for ($i = 0; $i -lt 60; $i++) {
         try {
             $h = Invoke-RestMethod -Uri "$osUrl/_cluster/health" -TimeoutSec 2
             if ($h.status -eq 'green') { $osReady = $true; break }
-        } catch {}
-        Start-Sleep -Milliseconds 500
+        } catch { Start-Sleep -Milliseconds 750 }
     }
-    if (-not $osReady) { throw 'OpenSearch server did not become healthy' }
+    if (-not $osReady) {
+        "::error::mock_opensearch_not_healthy url=$osUrl containers=$((docker ps -a --format '{{.Names}} {{.Status}}') -join ' | ')"
+        throw 'OpenSearch server did not become healthy'
+    }
 
     # 4. Run projection reindex twice to verify atomic alias swap + cleanup
     Write-Output "=== Step 4: Run OpenSearch projection reindexer (pass 1 & pass 2) ==="
@@ -95,15 +97,16 @@ try {
 
     $apiBase = "http://localhost:$ApiPort/api/v1"
     $apiReady = $false
-    for ($i = 0; $i -lt 40; $i++) {
+    for ($i = 0; $i -lt 90; $i++) {
         try {
             $health = Invoke-RestMethod -Uri "$apiBase/health" -TimeoutSec 2
             if ($health.status -eq 'UP') { $apiReady = $true; break }
         } catch {}
-        Start-Sleep -Milliseconds 500
+        Start-Sleep -Seconds 1
     }
     if (-not $apiReady) {
-        docker logs $apiContainer
+        docker logs --tail 15 $apiContainer
+        "::error::spring_boot_api_not_healthy port=$ApiPort containers=$((docker ps -a --format '{{.Names}} {{.Status}}') -join ' | ')"
         throw 'Spring Boot API did not become healthy'
     }
 
@@ -174,6 +177,9 @@ try {
     }
     Write-Output "PASS offers_search_postgresql_fallback (total=$($offersPg.total) matches OpenSearch)"
 
+} catch {
+    "::error::M3-TEST-FAILED: $($_.Exception.Message)"
+    throw
 } finally {
     Cleanup-Containers
     if (-not $KeepDb) {

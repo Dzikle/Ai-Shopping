@@ -114,15 +114,16 @@ try {
 
     $apiBase = "http://localhost:$ApiPort"
     $serverReady = $false
-    for ($i = 0; $i -lt 40; $i++) {
+    for ($i = 0; $i -lt 90; $i++) {
         try {
             $h = Invoke-RestMethod -Uri "$apiBase/api/v1/health" -TimeoutSec 2
             if ($h.status -eq 'UP') { $serverReady = $true; break }
         } catch {}
-        Start-Sleep -Milliseconds 500
+        Start-Sleep -Seconds 1
     }
     if (-not $serverReady) {
-        docker logs $apiContainer
+        docker logs --tail 15 $apiContainer
+        "::error::backend_not_healthy port=$ApiPort containers=$((docker ps -a --format '{{.Names}} {{.Status}}') -join ' | ')"
         throw 'Backend server did not become healthy'
     }
 
@@ -224,6 +225,7 @@ try {
     }
 
 } catch {
+    "::error::M6-TEST-FAILED: $($_.Exception.Message)"
     Write-Output "=== ERROR CAUGHT: Dumping $apiContainer logs ==="
     docker logs --tail 80 $apiContainer 2>&1 | Out-String | Write-Output
     throw

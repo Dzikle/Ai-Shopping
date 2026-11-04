@@ -71,15 +71,16 @@ try {
 
     $apiBase = "http://localhost:$ApiPort/api/v1"
     $apiReady = $false
-    for ($i = 0; $i -lt 40; $i++) {
+    for ($i = 0; $i -lt 90; $i++) {
         try {
             $health = Invoke-RestMethod -Uri "$apiBase/health" -TimeoutSec 2
             if ($health.status -eq 'UP') { $apiReady = $true; break }
         } catch {}
-        Start-Sleep -Milliseconds 500
+        Start-Sleep -Seconds 1
     }
     if (-not $apiReady) {
-        docker logs $apiContainer
+        docker logs --tail 15 $apiContainer
+        "::error::spring_boot_api_not_healthy port=$ApiPort containers=$((docker ps -a --format '{{.Names}} {{.Status}}') -join ' | ')"
         throw 'Spring Boot API did not become healthy'
     }
 
@@ -227,6 +228,7 @@ try {
     Write-Output "PASS adr0003_substitute_flagging (canonicalId=$($cand.candidateCanonicalId), retailer=$($cand.sourceRetailerSlug), isSubstitute=$($subResp.bestSingleStore.coveredItems[0].isSubstitute), confidence=$($subResp.bestSingleStore.coveredItems[0].matchConfidence))"
 
 } catch {
+    "::error::M4-TEST-FAILED: $($_.Exception.Message)"
     Write-Output "=== ERROR CAUGHT: Dumping $apiContainer logs ==="
     docker logs --tail 80 $apiContainer 2>&1 | Out-String | Write-Output
     throw

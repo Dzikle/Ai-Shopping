@@ -7,6 +7,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 $psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }
+trap { "::error::M1-TEST-FAILED: $($_.Exception.Message)"; exit 1 }
 Set-Location -LiteralPath (Join-Path $PSScriptRoot '..')
 
 Get-Content '.env' | ForEach-Object {
