@@ -134,6 +134,13 @@ public final class ApiModels {
             Map<String, Object> evidence
     ) {}
 
+    public record ReviewQueueDecisionDto(
+            long matchId,
+            String reviewStatus,
+            String reviewedBy,
+            String reviewNotes
+    ) {}
+
     public record OfferSearchFilter(
             String q,
             String retailer,

@@ -13,6 +13,7 @@ import mk.aishopping.model.ApiModels.ProductHistoryResponse;
 import mk.aishopping.model.ApiModels.QuarantinedRunDto;
 import mk.aishopping.model.ApiModels.RetailerFreshnessDto;
 import mk.aishopping.model.ApiModels.RetailerOfferSummaryDto;
+import mk.aishopping.model.ApiModels.ReviewQueueDecisionDto;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
@@ -352,6 +353,42 @@ class CatalogApiTest {
         assertEquals("vero", res.retailers().get(0).retailerSlug());
         assertEquals("89", res.retailers().get(0).staleStores().get(0).externalKey());
         assertEquals("m6-zito-empty", res.quarantinedRuns().get(0).runKey());
+    }
+
+    @Test
+    void testReviewQueueApproveAndRejectEndpoints() {
+        long matchId = 7L;
+        ReviewQueueDecisionDto approved = new ReviewQueueDecisionDto(matchId, "approved", "operator@example.com", "Confirmed same product");
+        ReviewQueueDecisionDto rejected = new ReviewQueueDecisionDto(matchId, "rejected", "operator@example.com", "Different pack size");
+
+        when(postgresRepository.approveMatch(matchId, "operator@example.com", "Confirmed same product"))
+                .thenReturn(approved);
+        when(postgresRepository.rejectMatch(matchId, "operator@example.com", "Different pack size"))
+                .thenReturn(rejected);
+
+        OpenSearchClient osClient = new OpenSearchClient(objectMapper, openSearchUrl);
+        CatalogSearchService service = new CatalogSearchService(osClient, postgresRepository);
+        CatalogController controller = new CatalogController(service);
+
+        // Approve
+        CatalogController.ReviewQueueActionRequest approveReq =
+                new CatalogController.ReviewQueueActionRequest("operator@example.com", "Confirmed same product");
+        ReviewQueueDecisionDto approveRes = controller.approveMatch(matchId, approveReq);
+        assertEquals("approved", approveRes.reviewStatus());
+        assertEquals(matchId, approveRes.matchId());
+        assertEquals("operator@example.com", approveRes.reviewedBy());
+        assertEquals("Confirmed same product", approveRes.reviewNotes());
+        verify(postgresRepository).approveMatch(matchId, "operator@example.com", "Confirmed same product");
+
+        // Reject
+        CatalogController.ReviewQueueActionRequest rejectReq =
+                new CatalogController.ReviewQueueActionRequest("operator@example.com", "Different pack size");
+        ReviewQueueDecisionDto rejectRes = controller.rejectMatch(matchId, rejectReq);
+        assertEquals("rejected", rejectRes.reviewStatus());
+        assertEquals(matchId, rejectRes.matchId());
+        assertEquals("operator@example.com", rejectRes.reviewedBy());
+        assertEquals("Different pack size", rejectRes.reviewNotes());
+        verify(postgresRepository).rejectMatch(matchId, "operator@example.com", "Different pack size");
     }
 
     private static void respondJson(com.sun.net.httpserver.HttpExchange exchange, int status, String json) throws java.io.IOException {

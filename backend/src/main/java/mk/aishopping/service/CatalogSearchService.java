@@ -6,6 +6,7 @@ import mk.aishopping.model.ApiModels.OfferDto;
 import mk.aishopping.model.ApiModels.OfferSearchFilter;
 import mk.aishopping.model.ApiModels.ProductComparisonDto;
 import mk.aishopping.model.ApiModels.ProductHistoryResponse;
+import mk.aishopping.model.ApiModels.ReviewQueueDecisionDto;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
@@ -104,5 +105,13 @@ public class CatalogSearchService {
 
     public FreshnessResponse getFreshness(String retailer, int staleThresholdHours, int quarantineWindowDays) {
         return postgresRepository.getFreshness(retailer, staleThresholdHours, quarantineWindowDays);
+    }
+
+    public ReviewQueueDecisionDto approveMatch(long matchId, String reviewedBy, String reviewNotes) {
+        return postgresRepository.approveMatch(matchId, reviewedBy, reviewNotes);
+    }
+
+    public ReviewQueueDecisionDto rejectMatch(long matchId, String reviewedBy, String reviewNotes) {
+        return postgresRepository.rejectMatch(matchId, reviewedBy, reviewNotes);
     }
 }

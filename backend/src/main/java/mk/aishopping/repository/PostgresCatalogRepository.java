@@ -12,6 +12,7 @@ import mk.aishopping.model.ApiModels.ProductHistoryResponse;
 import mk.aishopping.model.ApiModels.QuarantinedRunDto;
 import mk.aishopping.model.ApiModels.RetailerFreshnessDto;
 import mk.aishopping.model.ApiModels.RetailerOfferSummaryDto;
+import mk.aishopping.model.ApiModels.ReviewQueueDecisionDto;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
@@ -434,6 +435,44 @@ public class PostgresCatalogRepository {
                 rs.getString("review_status"),
                 parseEvidence(rs.getString("evidence_json"))
         ), safeLimit);
+    }
+
+    public ReviewQueueDecisionDto approveMatch(long matchId, String reviewedBy, String reviewNotes) {
+        int updated = jdbcTemplate.update(
+                """
+                UPDATE product_matches
+                SET review_status = 'approved',
+                    reviewed_by = ?,
+                    reviewed_at = now(),
+                    review_notes = ?,
+                    updated_at = now()
+                WHERE id = ? AND review_status = 'pending_review'
+                """,
+                reviewedBy, reviewNotes, matchId);
+        if (updated == 0) {
+            throw new IllegalArgumentException(
+                    "match id " + matchId + " not found or not in pending_review status");
+        }
+        return new ReviewQueueDecisionDto(matchId, "approved", reviewedBy, reviewNotes);
+    }
+
+    public ReviewQueueDecisionDto rejectMatch(long matchId, String reviewedBy, String reviewNotes) {
+        int updated = jdbcTemplate.update(
+                """
+                UPDATE product_matches
+                SET review_status = 'rejected',
+                    reviewed_by = ?,
+                    reviewed_at = now(),
+                    review_notes = ?,
+                    updated_at = now()
+                WHERE id = ? AND review_status = 'pending_review'
+                """,
+                reviewedBy, reviewNotes, matchId);
+        if (updated == 0) {
+            throw new IllegalArgumentException(
+                    "match id " + matchId + " not found or not in pending_review status");
+        }
+        return new ReviewQueueDecisionDto(matchId, "rejected", reviewedBy, reviewNotes);
     }
 
     public FreshnessResponse getFreshness(String retailer, int staleThresholdHours, int quarantineWindowDays) {

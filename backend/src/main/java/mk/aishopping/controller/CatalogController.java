@@ -6,6 +6,7 @@ import mk.aishopping.model.ApiModels.OfferDto;
 import mk.aishopping.model.ApiModels.OfferSearchFilter;
 import mk.aishopping.model.ApiModels.ProductComparisonDto;
 import mk.aishopping.model.ApiModels.ProductHistoryResponse;
+import mk.aishopping.model.ApiModels.ReviewQueueDecisionDto;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
@@ -13,6 +14,8 @@ import mk.aishopping.service.CatalogSearchService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -83,6 +86,22 @@ public class CatalogController {
     @GetMapping("/matches/review-queue")
     public List<ReviewQueueItemDto> reviewQueue(@RequestParam(defaultValue = "25") int limit) {
         return searchService.getReviewQueue(limit);
+    }
+
+    public record ReviewQueueActionRequest(String reviewedBy, String reviewNotes) {}
+
+    @PostMapping("/matches/review-queue/{id}/approve")
+    public ReviewQueueDecisionDto approveMatch(
+            @PathVariable long id,
+            @RequestBody ReviewQueueActionRequest request) {
+        return searchService.approveMatch(id, request.reviewedBy, request.reviewNotes);
+    }
+
+    @PostMapping("/matches/review-queue/{id}/reject")
+    public ReviewQueueDecisionDto rejectMatch(
+            @PathVariable long id,
+            @RequestBody ReviewQueueActionRequest request) {
+        return searchService.rejectMatch(id, request.reviewedBy, request.reviewNotes);
     }
 
     @GetMapping("/freshness")

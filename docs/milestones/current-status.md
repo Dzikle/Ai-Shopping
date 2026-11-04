@@ -136,7 +136,14 @@
 - **M5 (`docs/milestones/m5-proposal.md`):** M5 scope approved; bounded read-only MCP server at `/mcp` inside Spring Boot backend (reuses services, single deployable); 7 tools; strict bounds; zero paid LLM APIs; data provenance and freshness envelope.
 - **M6 (`docs/milestones/m6-proposal.md`):** M6 scope approved and implemented (2026-11-04); stdlib Python scheduler worker (`adapters/scheduler/`), `V4__m6_operations.sql` lease/freshness schema, `/api/v1/freshness` endpoint, pluggable alert hooks (`scripts/alert.ps1`, `scripts/alert.sh`), `scripts/run-daily-pipeline.ps1`, and `scripts/test-m6.ps1`.
 
-## Next smallest testable task (Post-M6)
-All roadmap milestones M0–M6 are implemented and verified. Candidate next tasks for owner selection:
-1. **KAM PDF adapter (`adapters/kam/`):** Ingest daily per-store PDF price lists discovered via `POST https://kam.com.mk/ShopsWeb/LoadShopList` (`https://kam.com.mk/{YYYY}/{MM}/{DD}/{storeId}.pdf`).
-2. **Stage-2 review queue CLI/API workflow:** Approve/reject `pending_review` product match candidates with audit trail.
+## Implemented (M7, this session) — submitted for owner approval
+- **Stage-2 review queue REST API** (`backend/`): `POST /api/v1/matches/review-queue/{id}/approve` and `POST /api/v1/matches/review-queue/{id}/reject` endpoints; `ReviewQueueActionRequest` body (`reviewedBy`, `reviewNotes`); returns `ReviewQueueDecisionDto` with `matchId`, `reviewStatus`, `reviewedBy`, `reviewNotes`.
+- **Repository layer** (`PostgresCatalogRepository.java`): `approveMatch()` / `rejectMatch()` — conditional UPDATE on `product_matches` where `review_status = 'pending_review'`, sets `reviewed_by`, `reviewed_at = now()`, `review_notes`, `updated_at`; throws `IllegalArgumentException` if match not found or not pending.
+- **Service layer** (`CatalogSearchService.java`): delegates approve/reject to repository.
+- **CLI** (`scripts/review-queue.ps1`): `--List` (shows pending candidates with shared tokens, confidence, size), `--Approve <id> --ReviewedBy <user> [--Notes]`, `--Reject <id> --ReviewedBy <user> [--Notes]`.
+- **Tests:** `CatalogApiTest.testReviewQueueApproveAndRejectEndpoints` verifies approve+reject round-trip with Mockito verify. Total JUnit: 13.
+- **Validation:** All 13 backend JUnit tests pass; all Python unit tests pass (scheduler 6, common 8, vero 22, stokomak 9, matching 5, search 2).
+
+**Next candidate tasks (Post-M7):**
+1. **KAM PDF adapter (`adapters/kam/`):** Ingest daily per-store PDF price lists discovered via `POST https://kam.com.mk/ShopsWeb/LoadShopList` (`https://kam.com.mk/{YYYY}/{MM}/{DD}/{storeId}.pdf`). Requires PDF table parsing (new dependency decision needed — currently stdlib-only).
+2. **M8 Operations monitoring:** Extend `scripts/check-freshness.ps1` with Prometheus-style metrics export; add dashboard for pipeline run history and match review queue depth.
