@@ -19,6 +19,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import traceback
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
@@ -207,13 +208,21 @@ def main(argv=None):
     ap.add_argument("--version-tag", help="explicit version suffix for physical index names")
     args = ap.parse_args(argv)
 
-    summary = reindex_all(
-        args.opensearch_url,
-        Path(args.stores_ndjson),
-        Path(args.offers_ndjson),
-        Path(args.products_ndjson),
-        version_tag=args.version_tag,
-    )
+    try:
+        summary = reindex_all(
+            args.opensearch_url,
+            Path(args.stores_ndjson),
+            Path(args.offers_ndjson),
+            Path(args.products_ndjson),
+            version_tag=args.version_tag,
+        )
+    except Exception as e:
+        lines = traceback.format_exc().strip().splitlines()
+        print(json.dumps(
+            {"status": "failed", "error": f"{type(e).__name__}: {e}", "traceback": lines[-1] if lines else ""},
+            ensure_ascii=False,
+        ))
+        return 1
     print(json.dumps(summary, ensure_ascii=False))
     return 0
 
