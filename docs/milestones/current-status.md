@@ -70,31 +70,54 @@
   - `McpToolRegistry`: Registry and execution dispatching for all 7 tools, delegating to `CatalogSearchService` and `BasketOptimizerService` with parameter boundary checks and freshness timestamps.
   - `McpController`: `@RestController` at `/mcp` supporting `initialize`, `notifications/initialized`, `ping`, `tools/list`, `tools/call`, `GET /mcp` (discovery), and `GET /mcp/sse`.
 - **JUnit 5 Unit Test Suite (`backend/src/test/java/mk/aishopping/McpServerTest.java`)**:
-  - 5 tests verifying protocol handshake, tool catalog enumeration (7 tools), tool calls (`search_products`, `optimize_shopping_basket`), unknown method handling, and GET `/mcp` discovery info. Total JUnit tests: 11 (`CatalogApiTest` 3, `BasketOptimizerTest` 3, `McpServerTest` 5).
+  - 5 tests verifying protocol handshake, tool catalog enumeration (7 tools), tool calls (`search_products`, `optimize_shopping_basket`), unknown method handling, and GET `/mcp` discovery info. Total JUnit tests: 12 (`CatalogApiTest` 4, `BasketOptimizerTest` 3, `McpServerTest` 5).
 
-## Execution evidence (2026-10-29, local)
+## Implemented (M6, 2026-11-04) — owner-approved
+- **Schema `migrations/V4__m6_operations.sql`**:
+  - Adds `worker_id` (`TEXT`) to `ingestion_runs`.
+  - Adds partial unique index `uq_ingestion_runs_running_per_source` on `ingestion_runs (source_slug) WHERE status = 'running'` preventing concurrent overlapping runs for the same retailer.
+  - Adds freshness and quarantine lookup indexes (`idx_ingestion_runs_source_started`, `idx_ingestion_runs_quarantined_started`).
+- **Scheduler worker (`adapters/scheduler/`, stdlib-only Python 3.12)**:
+  - `LeaseManager`: atomic lockfile + DB-compatible job leases per retailer (`worker_id = "{hostname}:{pid}"`, TTL expiration).
+  - `fetch_with_retry` & `compute_backoff_seconds`: polite inter-page delay, exponential backoff (`1m, 2m, 4m, 8m`, capped at `30m`), `Retry-After` HTTP header support, and `prefer_ipv4_context` (`socket.AF_INET` resolution for `*.proverkanaceni.mk`).
+  - `seconds_until_next_window`: daily `08:30` `Europe/Skopje` run window calculation.
+  - `cli.py`: `--once` (manual/CI pass) and `--daemon` (continuous loop), supporting both `--from-snapshots` (offline replay) and `--live` (rate-limited live scraping), structured JSON logs to stdout, and `scheduler_manifest.json`.
+- **Quarantine & alerting pipeline (`scripts/load-records.ps1`, `scripts/alert.ps1`, `scripts/alert.sh`, `scripts/run-daily-pipeline.ps1`)**:
+  - Quarantined runs are recorded in `ingestion_runs` (`status = 'quarantined'`, `quarantined = true`) while refusing to touch `offers_current`, `price_observations`, or `promotions` (AGENTS.md #6).
+  - Pluggable alerting hook (`scripts/alert.ps1` / `scripts/alert.sh`) emits single-line structured JSON alerts to stderr, optional `$env:AISHOPPING_ALERT_LOG`, and optional webhook `$env:AISHOPPING_ALERT_WEBHOOK_URL`.
+- **Freshness & quarantine REST API (`GET /api/v1/freshness`, `docs/contracts/freshness-api-contract.md`, `scripts/check-freshness.ps1`)**:
+  - Reports overall `status` (`FRESH` / `DEGRADED` / `EMPTY`), authoritative DB `checkedAt` (`SELECT now()`), per-retailer `latestPublishedTs`, `oldestPublishedTs`, `latestFetchedTs`, `populatedStoresCount`, `offerCount`, `lastCompletedRunKey`, store-level `staleStores` (`ageHours > staleThresholdHours`, default 48h), and `quarantinedRuns` (default 7d window).
+- **Additional retailer discovery (`docs/research/retailer-sources.md`, 2026-11-04)**:
+  - **KAM (`kam.com.mk`):** Resolved format — `POST https://kam.com.mk/ShopsWeb/LoadShopList` returns JSON for 86 stores with daily per-store PDF price lists at `https://kam.com.mk/{YYYY}/{MM}/{DD}/{storeId}.pdf` (verified `%PDF-1.7`, ~478 KB).
+  - **Konto (`kontomarket.com.mk/cenovnik`):** Identified store links pointing to `https://ceni.tinex.mk:442/?org={org}&search=&perPage=20` (same platform as Tinex; currently blocked by `ceni.tinex.mk:442` TCP timeout).
+  - **Reptil (`reptilmarketi.mk`):** Identified WordPress REST store directory at `https://cms.reptilmarketi.mk/wp-json/wp/v2/pages/8` (30 stores).
+
+## Execution evidence (2026-11-04, local)
 - Unit tests (`python:3.12-slim` stdlib + JUnit 5 in `maven:3.9.9-eclipse-temurin-21`):
   - `adapters/common/tests.py` → **8/8 OK**
   - `adapters/vero/tests.py` → **22/22 OK**
   - `adapters/stokomak/tests.py` → **9/9 OK**
   - `matching/tests.py` → **5/5 OK**
   - `search/tests.py` → **2/2 OK**
-  - `backend` (`mvn -B test package`) → **11/11 JUnit tests OK (`CatalogApiTest` 3/3 + `BasketOptimizerTest` 3/3 + `McpServerTest` 5/5), BUILD SUCCESS**
+  - `adapters/scheduler/tests.py` → **6/6 OK**
+  - `backend` (`mvn -B test package`) → **12/12 JUnit tests OK (`CatalogApiTest` 4/4 + `BasketOptimizerTest` 3/3 + `McpServerTest` 5/5), BUILD SUCCESS**
 - `scripts/test-m1.ps1` → **M1 TEST OK**
 - `scripts/test-m2.ps1` → **M2 TEST OK**
 - `scripts/test-m3.ps1` → **M3 TEST OK**
 - `scripts/test-m4.ps1` → **M4 TEST OK**
-- `scripts/test-m5.ps1` → **M5 TEST OK**:
-  - Applied `V1` + `V2` + `V3` migrations, loaded Vero + Stokomak + Zito fixtures, and booted Spring Boot MCP container on port 18085.
-  - Performed MCP `2024-11-05` handshake: `PASS mcp_server_info_discovery`, `PASS mcp_initialize`, `PASS mcp_notifications_initialized`, `PASS mcp_ping`, `PASS mcp_tools_list (registered_tools=7)`.
-  - Executed all 7 tools via `tools/call`:
-    - `PASS tool_search_products (matches=2, sampleSourceUrl=https://pricelist.vero.com.mk/89_2.html)`
-    - `PASS tool_compare_product_prices (canonicalId=1116, spread=21.00 MKD)`
-    - `PASS tool_get_price_history (observations=2)`
-    - `PASS tool_list_stores (vero stores=17)`
-    - `PASS tool_find_current_discounts (discounts=11)`
-    - `PASS tool_optimize_shopping_basket_deterministic_match (bestSingle=519.00 MKD, bestMulti=498.00 MKD)` (verified identical to REST endpoint)
-    - `PASS tool_suggest_product_substitutes (candidates=5, sampleConfidence=0.80)`
+- `scripts/test-m5.ps1` → **M5 TEST OK**
+- `scripts/test-m6.ps1` → **M6 TEST OK**:
+  - Applied `V1` + `V2` + `V3` + `V4` migrations and executed `scripts/run-daily-pipeline.ps1 -FromSnapshots` twice: `PASS daily_pipeline_pass1 (counts=1896,1896,1372,3)`, `PASS daily_pipeline_idempotent (counts=1896,1896,1372,3)`.
+  - Verified `/api/v1/freshness` and `scripts/check-freshness.ps1`:
+    - `PASS freshness_endpoint_healthy (status=FRESH, totalOffers=1896, populatedStores=7)`
+    - `PASS check_freshness_script_pass`
+    - `PASS freshness_stale_store_detection (staleStores=7)`
+  - Verified quarantine refusal, alerting, and live-offer preservation using `tests/fixtures/zito/empty_1_1.html`:
+    - `PASS pipeline_quarantine_exit_code_2`
+    - `PASS offers_preserved_on_quarantine (offers_current=1896)`
+    - `PASS alert_hook_emitted_json (retailer=zito, runKey=m6-quarantine-test-zito)`
+    - `PASS freshness_reports_quarantined_run (quarantinedRuns=1)`
+    - `PASS check_freshness_fails_on_quarantine`
 
 ## Blockers / limitations
 - Java, Maven, psql not installed natively on this machine (containers and CI provide them; `maven:3.9.9-eclipse-temurin-21` already cached).
@@ -111,6 +134,9 @@
 - **M3 (`docs/milestones/m3-proposal.md`):** M3 scope approved; OpenSearch primary with automatic PostgreSQL fallback; strictly read-only `GET /api/v1/*` surface.
 - **M4 (`docs/milestones/m4-proposal.md`):** M4 scope approved (persisted `shopping_lists` + stateless/persisted optimization); coverage-first ranking (`itemsCovered DESC`, then `totalMkd ASC`) with `maxStores=2..3` and `minSplitSavingsMkd`; strict exact identity by default (`allowSubstitutes=false`) and flagged Stage-2 substitutes (`isSubstitute=true`) when `allowSubstitutes=true`.
 - **M5 (`docs/milestones/m5-proposal.md`):** M5 scope approved; bounded read-only MCP server at `/mcp` inside Spring Boot backend (reuses services, single deployable); 7 tools; strict bounds; zero paid LLM APIs; data provenance and freshness envelope.
+- **M6 (`docs/milestones/m6-proposal.md`):** M6 scope approved and implemented (2026-11-04); stdlib Python scheduler worker (`adapters/scheduler/`), `V4__m6_operations.sql` lease/freshness schema, `/api/v1/freshness` endpoint, pluggable alert hooks (`scripts/alert.ps1`, `scripts/alert.sh`), `scripts/run-daily-pipeline.ps1`, and `scripts/test-m6.ps1`.
 
-## Next smallest testable task (Milestone M6 proposal)
-M6: Live daily ingestion scheduler, freshness monitor, and automated pipeline execution (cron/scheduled worker for polite live scraping of Vero + Stokomak + Zito, quarantine alerts, and freshness status endpoint).
+## Next smallest testable task (Post-M6)
+All roadmap milestones M0–M6 are implemented and verified. Candidate next tasks for owner selection:
+1. **KAM PDF adapter (`adapters/kam/`):** Ingest daily per-store PDF price lists discovered via `POST https://kam.com.mk/ShopsWeb/LoadShopList` (`https://kam.com.mk/{YYYY}/{MM}/{DD}/{storeId}.pdf`).
+2. **Stage-2 review queue CLI/API workflow:** Approve/reject `pending_review` product match candidates with audit trail.

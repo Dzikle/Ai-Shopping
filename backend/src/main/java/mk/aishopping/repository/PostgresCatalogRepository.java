@@ -3,15 +3,19 @@ package mk.aishopping.repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import mk.aishopping.model.ApiModels.FreshnessResponse;
 import mk.aishopping.model.ApiModels.OfferDto;
 import mk.aishopping.model.ApiModels.OfferSearchFilter;
 import mk.aishopping.model.ApiModels.PriceObservationDto;
 import mk.aishopping.model.ApiModels.ProductComparisonDto;
 import mk.aishopping.model.ApiModels.ProductHistoryResponse;
+import mk.aishopping.model.ApiModels.QuarantinedRunDto;
+import mk.aishopping.model.ApiModels.RetailerFreshnessDto;
 import mk.aishopping.model.ApiModels.RetailerOfferSummaryDto;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
+import mk.aishopping.model.ApiModels.StoreFreshnessDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -430,6 +434,187 @@ public class PostgresCatalogRepository {
                 rs.getString("review_status"),
                 parseEvidence(rs.getString("evidence_json"))
         ), safeLimit);
+    }
+
+    public FreshnessResponse getFreshness(String retailer, int staleThresholdHours, int quarantineWindowDays) {
+        int safeStaleHours = Math.max(1, Math.min(87600, staleThresholdHours));
+        int safeQuarantineDays = Math.max(1, Math.min(365, quarantineWindowDays));
+
+        Timestamp dbNowTs = jdbcTemplate.queryForObject("SELECT now()", Timestamp.class);
+        Instant checkedAt = dbNowTs != null ? dbNowTs.toInstant() : Instant.now();
+
+        StringBuilder retailerWhere = new StringBuilder(" WHERE 1=1 ");
+        List<Object> retailerParams = new ArrayList<>();
+        if (retailer != null && !retailer.isBlank()) {
+            retailerWhere.append(" AND LOWER(r.slug) = ? ");
+            retailerParams.add(retailer.trim().toLowerCase());
+        }
+
+        // 1. Quarantined runs within quarantineWindowDays
+        StringBuilder qWhere = new StringBuilder(
+                " WHERE (ir.quarantined = true OR ir.status = 'quarantined') " +
+                "   AND ir.started_at >= (now() - (? * INTERVAL '1 day')) "
+        );
+        List<Object> qParams = new ArrayList<>();
+        qParams.add(safeQuarantineDays);
+        if (retailer != null && !retailer.isBlank()) {
+            qWhere.append(" AND LOWER(ir.source_slug) = ? ");
+            qParams.add(retailer.trim().toLowerCase());
+        }
+        String qSql = """
+                SELECT ir.id AS run_id,
+                       ir.run_key,
+                       ir.source_slug,
+                       ir.status,
+                       ir.started_at,
+                       ir.finished_at,
+                       ir.pages_seen,
+                       ir.rows_seen,
+                       ir.quarantine_reason,
+                       ir.worker_id
+                FROM ingestion_runs ir
+                """ + qWhere + " ORDER BY ir.started_at DESC, ir.id DESC";
+
+        List<QuarantinedRunDto> quarantinedRuns = jdbcTemplate.query(qSql, (rs, rowNum) -> new QuarantinedRunDto(
+                rs.getInt("run_id"),
+                rs.getString("run_key"),
+                rs.getString("source_slug"),
+                rs.getString("status"),
+                toInstant(rs.getTimestamp("started_at")),
+                toInstant(rs.getTimestamp("finished_at")),
+                (Integer) rs.getObject("pages_seen"),
+                (Integer) rs.getObject("rows_seen"),
+                rs.getString("quarantine_reason"),
+                rs.getString("worker_id")
+        ), qParams.toArray());
+
+        Map<String, Integer> quarantinedByRetailer = new LinkedHashMap<>();
+        for (QuarantinedRunDto qr : quarantinedRuns) {
+            String slug = qr.sourceSlug() != null ? qr.sourceSlug().toLowerCase() : "";
+            quarantinedByRetailer.put(slug, quarantinedByRetailer.getOrDefault(slug, 0) + 1);
+        }
+
+        // 2. Populated store freshness and stale stores detection
+        String storeSql = """
+                SELECT r.slug AS retailer_slug,
+                       s.id AS store_id,
+                       s.external_key,
+                       s.name AS store_name,
+                       s.city,
+                       COUNT(oc.retailer_product_id)::int AS offer_count,
+                       MAX(oc.published_ts) AS latest_published_ts,
+                       MAX(oc.fetched_ts) AS latest_fetched_ts,
+                       ROUND(EXTRACT(EPOCH FROM (now() - MAX(oc.published_ts))) / 3600.0, 2) AS age_hours
+                FROM stores s
+                JOIN retailers r ON r.id = s.retailer_id
+                JOIN offers_current oc ON oc.store_id = s.id
+                """ + retailerWhere + """
+                GROUP BY r.slug, s.id, s.external_key, s.name, s.city
+                HAVING MAX(oc.published_ts) < (now() - (? * INTERVAL '1 hour'))
+                ORDER BY r.slug ASC, s.id ASC
+                """;
+        List<Object> storeParams = new ArrayList<>(retailerParams);
+        storeParams.add(safeStaleHours);
+
+        Map<String, List<StoreFreshnessDto>> staleStoresByRetailer = new LinkedHashMap<>();
+        jdbcTemplate.query(storeSql, rs -> {
+            String slug = rs.getString("retailer_slug").toLowerCase();
+            StoreFreshnessDto dto = new StoreFreshnessDto(
+                    rs.getInt("store_id"),
+                    rs.getString("external_key"),
+                    rs.getString("store_name"),
+                    rs.getString("city"),
+                    rs.getInt("offer_count"),
+                    toInstant(rs.getTimestamp("latest_published_ts")),
+                    toInstant(rs.getTimestamp("latest_fetched_ts")),
+                    scale2(rs.getBigDecimal("age_hours"))
+            );
+            staleStoresByRetailer.computeIfAbsent(slug, k -> new ArrayList<>()).add(dto);
+        }, storeParams.toArray());
+
+        // 3. Per-retailer aggregates + latest completed ingestion run
+        String retailerSql = """
+                SELECT r.slug AS retailer_slug,
+                       r.name AS retailer_name,
+                       COUNT(DISTINCT s.id)::int AS seeded_stores_count,
+                       COUNT(DISTINCT oc.store_id)::int AS populated_stores_count,
+                       COUNT(oc.retailer_product_id)::bigint AS offer_count,
+                       MAX(oc.published_ts) AS latest_published_ts,
+                       MIN(oc.published_ts) AS oldest_published_ts,
+                       MAX(oc.fetched_ts) AS latest_fetched_ts,
+                       (SELECT ir.run_key
+                        FROM ingestion_runs ir
+                        WHERE LOWER(ir.source_slug) = LOWER(r.slug)
+                          AND ir.status = 'completed'
+                        ORDER BY ir.finished_at DESC NULLS LAST, ir.id DESC
+                        LIMIT 1) AS last_completed_run_key,
+                       (SELECT ir.finished_at
+                        FROM ingestion_runs ir
+                        WHERE LOWER(ir.source_slug) = LOWER(r.slug)
+                          AND ir.status = 'completed'
+                        ORDER BY ir.finished_at DESC NULLS LAST, ir.id DESC
+                        LIMIT 1) AS last_completed_at
+                FROM retailers r
+                LEFT JOIN stores s ON s.retailer_id = r.id
+                LEFT JOIN offers_current oc ON oc.store_id = s.id
+                """ + retailerWhere + """
+                GROUP BY r.id, r.slug, r.name
+                ORDER BY r.slug ASC
+                """;
+
+        List<RetailerFreshnessDto> retailers = jdbcTemplate.query(retailerSql, (rs, rowNum) -> {
+            String slug = rs.getString("retailer_slug");
+            String key = slug != null ? slug.toLowerCase() : "";
+            List<StoreFreshnessDto> staleList = staleStoresByRetailer.getOrDefault(key, List.of());
+            int qCount = quarantinedByRetailer.getOrDefault(key, 0);
+            return new RetailerFreshnessDto(
+                    slug,
+                    rs.getString("retailer_name"),
+                    rs.getInt("seeded_stores_count"),
+                    rs.getInt("populated_stores_count"),
+                    rs.getLong("offer_count"),
+                    toInstant(rs.getTimestamp("latest_published_ts")),
+                    toInstant(rs.getTimestamp("oldest_published_ts")),
+                    toInstant(rs.getTimestamp("latest_fetched_ts")),
+                    staleList.size(),
+                    staleList,
+                    qCount,
+                    rs.getString("last_completed_run_key"),
+                    toInstant(rs.getTimestamp("last_completed_at"))
+            );
+        }, retailerParams.toArray());
+
+        long totalOffers = 0L;
+        int totalPopulatedStores = 0;
+        int totalStaleStores = 0;
+        for (RetailerFreshnessDto rf : retailers) {
+            totalOffers += rf.offerCount();
+            totalPopulatedStores += rf.populatedStoresCount();
+            totalStaleStores += rf.staleStoresCount();
+        }
+        int totalQuarantinedRuns = quarantinedRuns.size();
+
+        String status;
+        if (totalOffers == 0L) {
+            status = "EMPTY";
+        } else if (totalStaleStores > 0 || totalQuarantinedRuns > 0) {
+            status = "DEGRADED";
+        } else {
+            status = "FRESH";
+        }
+
+        return new FreshnessResponse(
+                status,
+                checkedAt,
+                safeStaleHours,
+                safeQuarantineDays,
+                totalOffers,
+                totalPopulatedStores,
+                totalStaleStores,
+                totalQuarantinedRuns,
+                retailers,
+                quarantinedRuns
+        );
     }
 
     private OfferDto mapOfferRow(ResultSet rs) throws SQLException {

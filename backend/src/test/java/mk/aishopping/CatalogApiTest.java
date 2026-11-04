@@ -4,15 +4,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpServer;
 import mk.aishopping.controller.CatalogController;
+import mk.aishopping.model.ApiModels.FreshnessResponse;
 import mk.aishopping.model.ApiModels.HealthResponse;
 import mk.aishopping.model.ApiModels.OfferDto;
 import mk.aishopping.model.ApiModels.PriceObservationDto;
 import mk.aishopping.model.ApiModels.ProductComparisonDto;
 import mk.aishopping.model.ApiModels.ProductHistoryResponse;
+import mk.aishopping.model.ApiModels.QuarantinedRunDto;
+import mk.aishopping.model.ApiModels.RetailerFreshnessDto;
 import mk.aishopping.model.ApiModels.RetailerOfferSummaryDto;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
+import mk.aishopping.model.ApiModels.StoreFreshnessDto;
 import mk.aishopping.repository.PostgresCatalogRepository;
 import mk.aishopping.service.CatalogSearchService;
 import mk.aishopping.service.OpenSearchClient;
@@ -294,6 +298,60 @@ class CatalogApiTest {
         assertEquals(1, queue.size());
         assertEquals("pending_review", queue.get(0).reviewStatus());
         assertEquals(new BigDecimal("0.67"), queue.get(0).confidence());
+    }
+
+    @Test
+    void testFreshnessEndpointReportsStaleStoresAndQuarantinedRuns() {
+        StoreFreshnessDto staleStore = new StoreFreshnessDto(
+                89, "89", "ВЕРО 1", "Аеродром", 1000,
+                Instant.parse("2026-10-28T07:02:00Z"),
+                Instant.parse("2026-10-28T10:00:00Z"),
+                new BigDecimal("72.50")
+        );
+        RetailerFreshnessDto veroFreshness = new RetailerFreshnessDto(
+                "vero", "Vero", 17, 1, 1000L,
+                Instant.parse("2026-10-28T07:02:00Z"),
+                Instant.parse("2026-10-28T07:02:00Z"),
+                Instant.parse("2026-10-28T10:00:00Z"),
+                1, List.of(staleStore), 0,
+                "m6-vero-1", Instant.parse("2026-10-28T10:01:00Z")
+        );
+        QuarantinedRunDto quarantinedZito = new QuarantinedRunDto(
+                42, "m6-zito-empty", "zito", "quarantined",
+                Instant.parse("2026-10-29T08:35:00Z"),
+                Instant.parse("2026-10-29T08:35:05Z"),
+                1, 0, "pages with header but zero product rows: https://zito.proverkanaceni.mk/?org=1&perPage=2000&page=1",
+                "scheduler-host:1234"
+        );
+        FreshnessResponse mockResponse = new FreshnessResponse(
+                "DEGRADED",
+                Instant.parse("2026-10-31T08:30:00Z"),
+                48,
+                7,
+                1896L,
+                7,
+                1,
+                1,
+                List.of(veroFreshness),
+                List.of(quarantinedZito)
+        );
+
+        when(postgresRepository.getFreshness(null, 48, 7)).thenReturn(mockResponse);
+
+        OpenSearchClient osClient = new OpenSearchClient(objectMapper, openSearchUrl);
+        CatalogSearchService service = new CatalogSearchService(osClient, postgresRepository);
+        CatalogController controller = new CatalogController(service);
+
+        FreshnessResponse res = controller.freshness(null, 48, 7);
+        assertEquals("DEGRADED", res.status());
+        assertEquals(48, res.staleThresholdHours());
+        assertEquals(7, res.quarantineWindowDays());
+        assertEquals(1896L, res.totalOffers());
+        assertEquals(1, res.totalStaleStores());
+        assertEquals(1, res.totalQuarantinedRuns());
+        assertEquals("vero", res.retailers().get(0).retailerSlug());
+        assertEquals("89", res.retailers().get(0).staleStores().get(0).externalKey());
+        assertEquals("m6-zito-empty", res.quarantinedRuns().get(0).runKey());
     }
 
     private static void respondJson(com.sun.net.httpserver.HttpExchange exchange, int status, String json) throws java.io.IOException {

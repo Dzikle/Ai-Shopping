@@ -1,5 +1,6 @@
 package mk.aishopping.service;
 
+import mk.aishopping.model.ApiModels.FreshnessResponse;
 import mk.aishopping.model.ApiModels.HealthResponse;
 import mk.aishopping.model.ApiModels.OfferDto;
 import mk.aishopping.model.ApiModels.OfferSearchFilter;
@@ -99,5 +100,9 @@ public class CatalogSearchService {
 
     public List<ReviewQueueItemDto> getReviewQueue(int limit) {
         return postgresRepository.getReviewQueue(limit);
+    }
+
+    public FreshnessResponse getFreshness(String retailer, int staleThresholdHours, int quarantineWindowDays) {
+        return postgresRepository.getFreshness(retailer, staleThresholdHours, quarantineWindowDays);
     }
 }

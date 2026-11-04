@@ -20,19 +20,21 @@
 - **Terms:** site footer states downloading or using content from `ramstore.com.mk`/`ramstoremall.com.mk` (commercial content, logos, trademarks), storing it in any form, publishing or using it for any purpose is **not permitted without written consent from Ramstore Macedonia DOO**.
 - **Decision:** Do not ingest until written permission is obtained. Record the request as an owner action item.
 
-### 3. KAM — landing page verified, format unresolved
-- **URL:** `https://kam.com.mk/ceni-vo-marketi.nspx` — page exists ("Ценовник - КАМ") but content is JS-driven (cookie-consent wall; embedded viewers render empty without JS). Likely an embedded document (possibly PDF).
-- **robots.txt:** request returned empty (no restrictions found / possibly no file).
-- **Next step:** inspect embedded document URLs behind the viewer (M1); do not attempt JS-heavy scraping until format is confirmed.
+### 3. KAM — VALIDATED (2026-11-04): JSON store directory + daily per-store PDFs
+- **Landing page:** `https://kam.com.mk/ceni-vo-marketi.nspx` — AngularJS `shopListModule` (`Scripts/Shop/shopList/shopList.min.js`) rendering `/custom-templates/shopList/templates/storesPricelist.html`.
+- **Store directory API:** `POST https://kam.com.mk/ShopsWeb/LoadShopList` (`Content-Type: application/json`, body `null`) — returns a 55 KB JSON array of **86 stores** (`Id`, `Name`, `Address`, `City`, `Municipality`, `Coordinates`, `WorkingHours`, `Tags`, and `ShopFiles`).
+- **Per-store price-list format:** Every store entry carries `ShopFiles[0].RelativePath` of the form `{YYYY}/{MM}/{DD}/{storeId}.pdf` (e.g. `2026/11/04/73.pdf`, `DateUploaded: "/Date(1793746800000)/"`), downloadable directly without JS at `https://kam.com.mk/{RelativePath}` (verified `%PDF-1.7`, ~478 KB per store).
+- **robots.txt:** request returned empty (no crawl restrictions).
+- **Next step:** build a dedicated PDF table parser adapter in a post-M6 milestone when PDF source ingestion is prioritized.
 
-## Other candidates (unverified)
+## Other candidates
 | Retailer | Starting URL | Status |
 |---|---|---|
-| Tinex | https://www.tinex.com.mk/ (`ceni.tinex.mk`) | Self-hosted statutory price site unreachable (TCP timeout 2026-10-28); deferred |
+| Tinex | https://www.tinex.com.mk/ (`ceni.tinex.mk:442`) | Self-hosted statutory price site unreachable (TCP timeout 2026-10-28 & 2026-11-04); deferred |
 | Stokomak | https://stokomak.proverkanaceni.mk/ | **VALIDATED & INGESTED (M2)** — 81 stores in selector, `?org={org}&perPage={n}&page={k}`, 6/9-col HTML table, no robots restrictions |
-| Kipper | https://kipper.mk/ | Store-specific listing candidate |
-| Konto | https://www.kontomarket.com.mk/cenovnik | Store-level listing candidate |
-| Reptil | https://www.reptilmarketi.mk/ | Store-level links; verify |
+| Kipper | https://kipper.mk/mk/marketet/ | WordPress + Elementor + DataTables (`kipper.proverkanaceni.mk` NXDOMAIN); store-level listing URLs to inspect further |
+| Konto | https://www.kontomarket.com.mk/cenovnik | **FORMAT IDENTIFIED (2026-11-04)** — Wix page linking stores directly to Tinex's statutory host `https://ceni.tinex.mk:442/?org={org}&search=&perPage=20` (e.g. `org=588, 590, 589, 554, 552`); blocked by `ceni.tinex.mk:442` TCP timeout |
+| Reptil | https://www.reptilmarketi.mk/mk/pricelists | **STORE API IDENTIFIED (2026-11-04)** — Next.js frontend backed by WordPress REST `https://cms.reptilmarketi.mk/wp-json/wp/v2/pages/8` (`acf.locations`: 30 stores with addresses/hours; `pricelist` field points to `https://marketonline.mk/`) |
 | Elida | https://www.elida.com.mk/Products | Product catalog; full legal price list unconfirmed |
 | Zito | https://zito.proverkanaceni.mk/ | **VALIDATED & INGESTED (M2)** — 94 stores in selector (sparse `org` IDs starting at 2; `org=1` returns empty `Нема податоци` table), same `*.proverkanaceni.mk` platform |
 | Zur | https://zurmarket.mk/ | Full list unresolved |

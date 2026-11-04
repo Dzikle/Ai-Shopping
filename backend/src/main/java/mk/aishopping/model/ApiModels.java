@@ -147,4 +147,57 @@ public final class ApiModels {
             int page,
             int size
     ) {}
+
+    public record StoreFreshnessDto(
+            int storeId,
+            String externalKey,
+            String storeName,
+            String city,
+            int offerCount,
+            Instant latestPublishedTs,
+            Instant latestFetchedTs,
+            BigDecimal ageHours
+    ) {}
+
+    public record QuarantinedRunDto(
+            int runId,
+            String runKey,
+            String sourceSlug,
+            String status,
+            Instant startedAt,
+            Instant finishedAt,
+            Integer pagesSeen,
+            Integer rowsSeen,
+            String quarantineReason,
+            String workerId
+    ) {}
+
+    public record RetailerFreshnessDto(
+            String retailerSlug,
+            String retailerName,
+            int seededStoresCount,
+            int populatedStoresCount,
+            long offerCount,
+            Instant latestPublishedTs,
+            Instant oldestPublishedTs,
+            Instant latestFetchedTs,
+            int staleStoresCount,
+            List<StoreFreshnessDto> staleStores,
+            int quarantinedRunsCount,
+            String lastCompletedRunKey,
+            Instant lastCompletedAt
+    ) {}
+
+    public record FreshnessResponse(
+            String status,
+            Instant checkedAt,
+            int staleThresholdHours,
+            int quarantineWindowDays,
+            long totalOffers,
+            int totalPopulatedStores,
+            int totalStaleStores,
+            int totalQuarantinedRuns,
+            List<RetailerFreshnessDto> retailers,
+            List<QuarantinedRunDto> quarantinedRuns
+    ) {}
 }

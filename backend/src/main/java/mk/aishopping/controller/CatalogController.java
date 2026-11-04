@@ -1,5 +1,6 @@
 package mk.aishopping.controller;
 
+import mk.aishopping.model.ApiModels.FreshnessResponse;
 import mk.aishopping.model.ApiModels.HealthResponse;
 import mk.aishopping.model.ApiModels.OfferDto;
 import mk.aishopping.model.ApiModels.OfferSearchFilter;
@@ -82,5 +83,14 @@ public class CatalogController {
     @GetMapping("/matches/review-queue")
     public List<ReviewQueueItemDto> reviewQueue(@RequestParam(defaultValue = "25") int limit) {
         return searchService.getReviewQueue(limit);
+    }
+
+    @GetMapping("/freshness")
+    public FreshnessResponse freshness(
+            @RequestParam(required = false) String retailer,
+            @RequestParam(defaultValue = "48") int staleThresholdHours,
+            @RequestParam(defaultValue = "7") int quarantineWindowDays
+    ) {
+        return searchService.getFreshness(retailer, staleThresholdHours, quarantineWindowDays);
     }
 }

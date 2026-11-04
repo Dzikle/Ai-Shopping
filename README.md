@@ -1,6 +1,6 @@
 # AI Shopping — Universal Price Intelligence Platform
 
-A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
+A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) + M6 (Daily ingestion scheduler, freshness API & automated pipeline) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
 
 Initial focus: North Macedonia. Expansion: other countries, retailers and product categories.
 
@@ -32,6 +32,25 @@ docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B matching/cli.py 
 ./scripts/reindex-opensearch.ps1 -VersionTag v1_local
 ```
 
+## Running the M6 daily pipeline
+
+```powershell
+# Run full daily pipeline once (offline fixture replay)
+./scripts/run-daily-pipeline.ps1 -FromSnapshots -RunTag m6-local
+
+# Or run polite live scrape for selected stores per retailer
+./scripts/run-daily-pipeline.ps1 -Live -StoresMap 'vero=89,stokomak=1,zito=2' -MaxPages 5 -RunTag m6-live
+
+# Start scheduler worker in continuous daemon mode (aligned to 08:30 Europe/Skopje)
+docker run -d --name aishopping-scheduler `
+  -v "${PWD}:/w" -w /w python:3.12-slim `
+  python -B adapters/scheduler/cli.py --daemon --target-time 08:30 --live
+
+# Check freshness & quarantine telemetry via REST API or CLI
+curl http://localhost:8080/api/v1/freshness
+./scripts/check-freshness.ps1 -ApiUrl http://localhost:8080 -StaleThresholdHours 48
+```
+
 ## Tests
 
 - Unit tests (stdlib Python 3.12 + JUnit 5 on Java 21):
@@ -40,13 +59,15 @@ docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B matching/cli.py 
   - `docker run --rm -v "${PWD}:/w" -w /w/adapters/stokomak python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}:/w" -w /w/matching python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}:/w" -w /w/search python:3.12-slim python -B tests.py`
+  - `docker run --rm -v "${PWD}:/w" -w /w/adapters/scheduler python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}/backend:/w" -v aoshopping-m2-repo:/root/.m2 -w /w maven:3.9.9-eclipse-temurin-21 mvn -B test`
-- Integration tests (scratch DB, idempotency, OpenSearch alias swap, REST API + Postgres fallback, deterministic basket optimization, bounded MCP server):
+- Integration tests (scratch DB, idempotency, OpenSearch alias swap, REST API + Postgres fallback, deterministic basket optimization, bounded MCP server, daily pipeline & freshness monitor):
   - `./scripts/test-m1.ps1`
   - `./scripts/test-m2.ps1`
   - `./scripts/test-m3.ps1`
   - `./scripts/test-m4.ps1`
   - `./scripts/test-m5.ps1`
+  - `./scripts/test-m6.ps1`
 
 ## Model Context Protocol (MCP) Server
 

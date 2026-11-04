@@ -15,8 +15,8 @@ CREATE TEMP TABLE stage_records (doc jsonb);
 
 CREATE TEMP TABLE _run AS
 WITH ins AS (
-    INSERT INTO ingestion_runs (run_key, source_slug, status)
-    VALUES (:'run_key', :'source_slug', 'running')
+    INSERT INTO ingestion_runs (run_key, source_slug, status, worker_id)
+    VALUES (:'run_key', :'source_slug', 'running', NULLIF(:'worker_id', ''))
     ON CONFLICT (run_key) DO NOTHING
     RETURNING id
 )
@@ -196,7 +196,8 @@ SET status = :'status',
     rows_stored = (:'rows_stored')::int,
     rows_skipped = (:'rows_skipped')::int,
     quarantined = (:'quarantined')::boolean,
-    quarantine_reason = :'quarantine_reason'
+    quarantine_reason = NULLIF(:'quarantine_reason', ''),
+    worker_id = COALESCE(NULLIF(:'worker_id', ''), worker_id)
 WHERE run_key = :'run_key';
 
 COMMIT;
