@@ -7,6 +7,7 @@ param(
     [switch]$KeepDb
 )
 $ErrorActionPreference = 'Stop'
+$psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }
 Set-Location -LiteralPath (Join-Path $PSScriptRoot '..')
 
 Get-Content '.env' | ForEach-Object {
@@ -50,7 +51,7 @@ docker compose exec -T postgres psql -U $DbUser -d $POSTGRES_DB -v ON_ERROR_STOP
 if ($LASTEXITCODE -ne 0) { throw 'create test db failed' }
 
 # 3. Apply migrations (V1 + V2)
-& powershell -NoProfile -ExecutionPolicy Bypass -File scripts/apply-migrations.ps1 -Database $Database
+& $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/apply-migrations.ps1 -Database $Database
 if ($LASTEXITCODE -ne 0) { throw 'migrations failed' }
 
 $date = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd')
@@ -72,19 +73,19 @@ function Invoke-PipelinePass() {
     docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B adapters/stokomak/cli.py --retailer zito --from-snapshots tests/fixtures/zito --out $zitoOut --run-key $zitoRunKey
     if ($LASTEXITCODE -ne 0) { throw 'zito replay failed' }
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $veroOut -RunKey $veroRunKey -SourceSlug vero -Database $Database
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $veroOut -RunKey $veroRunKey -SourceSlug vero -Database $Database
     if ($LASTEXITCODE -ne 0) { throw 'vero load failed' }
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $stokoOut -RunKey $stokoRunKey -SourceSlug stokomak -Database $Database
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $stokoOut -RunKey $stokoRunKey -SourceSlug stokomak -Database $Database
     if ($LASTEXITCODE -ne 0) { throw 'stokomak load failed' }
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $zitoOut -RunKey $zitoRunKey -SourceSlug zito -Database $Database
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $zitoOut -RunKey $zitoRunKey -SourceSlug zito -Database $Database
     if ($LASTEXITCODE -ne 0) { throw 'zito load failed' }
 
     docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B matching/cli.py --run-dirs "$veroOut,$stokoOut,$zitoOut" --out $matchOut
     if ($LASTEXITCODE -ne 0) { throw 'matching cli failed' }
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/load-matches.ps1 -OutDir $matchOut -Database $Database
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/load-matches.ps1 -OutDir $matchOut -Database $Database
     if ($LASTEXITCODE -ne 0) { throw 'load-matches failed' }
 }
 
@@ -162,7 +163,7 @@ SELECT CASE WHEN count(*) = 0 THEN 1 ELSE 0 END FROM (
 "@
 
 # 7. Cross-retailer comparison and history report
-& powershell -NoProfile -ExecutionPolicy Bypass -File scripts/report-cross-retailer.ps1 -Database $Database
+& $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/report-cross-retailer.ps1 -Database $Database
 if ($LASTEXITCODE -ne 0) { throw 'report-cross-retailer failed' }
 
 if (-not $KeepDb) {

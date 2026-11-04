@@ -24,6 +24,7 @@ param(
     [switch]$KeepDb
 )
 $ErrorActionPreference = 'Stop'
+$psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }
 Set-Location -LiteralPath (Join-Path $PSScriptRoot '..')
 
 Get-Content '.env' | ForEach-Object {
@@ -46,7 +47,7 @@ Cleanup-Containers
 try {
     # 1. Populate $Database via M2 pipeline
     Write-Output "=== Step 1: Populate $Database via M2 pipeline (V1+V2+V3) ==="
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-m2.ps1 -Database $Database -KeepDb
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/test-m2.ps1 -Database $Database -KeepDb
     if ($LASTEXITCODE -ne 0) { throw 'test-m2 setup failed' }
 
     # 2. Build & test Spring Boot backend JAR

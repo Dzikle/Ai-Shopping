@@ -10,6 +10,7 @@ param(
     [switch]$Force
 )
 $ErrorActionPreference = 'Stop'
+$psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }
 Set-Location -LiteralPath (Join-Path $PSScriptRoot '..')
 
 Get-Content '.env' | ForEach-Object {
@@ -19,7 +20,10 @@ Get-Content '.env' | ForEach-Object {
 }
 if (-not $Database) { $Database = $POSTGRES_DB }
 if (-not $DbUser) { $DbUser = $POSTGRES_USER }
-if (-not $WorkerId) { $WorkerId = "$($env:COMPUTERNAME):$PID" }
+if (-not $WorkerId) {
+    $workerHostname = if ($env:COMPUTERNAME) { $env:COMPUTERNAME } elseif ($env:HOSTNAME) { $env:HOSTNAME } else { 'unknown' }
+    $WorkerId = "$($workerHostname):$PID"
+}
 
 $recordsPath = Join-Path $OutDir 'records.ndjson'
 $snapshotsPath = Join-Path $OutDir 'snapshots.ndjson'
@@ -59,7 +63,7 @@ ON CONFLICT (run_key) DO UPDATE SET
     $alertScript = Join-Path $PSScriptRoot 'alert.ps1'
     if (Test-Path $alertScript) {
         $firstStore = if ($manifest.pages -and $manifest.pages.Count -gt 0) { "$($manifest.pages[0].store_external_key)" } else { 'unknown' }
-        & powershell -NoProfile -ExecutionPolicy Bypass -File $alertScript `
+        & $psExe -NoProfile -ExecutionPolicy Bypass -File $alertScript `
             -Level 'error' `
             -Retailer $SourceSlug `
             -Store $firstStore `

@@ -6,6 +6,7 @@ param(
     [switch]$KeepDb
 )
 $ErrorActionPreference = 'Stop'
+$psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }
 Set-Location -LiteralPath (Join-Path $PSScriptRoot '..')
 
 Get-Content '.env' | ForEach-Object {
@@ -33,7 +34,7 @@ docker compose exec -T postgres psql -U $DbUser -d $POSTGRES_DB -v ON_ERROR_STOP
 if ($LASTEXITCODE -ne 0) { throw 'create test db failed' }
 
 # 3. Apply migrations
-& powershell -NoProfile -ExecutionPolicy Bypass -File scripts/apply-migrations.ps1 -Database $Database
+& $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/apply-migrations.ps1 -Database $Database
 if ($LASTEXITCODE -ne 0) { throw 'migrations failed' }
 
 # 4. Adapter replay (unit container, offline, fixture-driven; default snapshot layout)
@@ -44,7 +45,7 @@ docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B adapters/vero/cl
 if ($LASTEXITCODE -ne 0) { throw 'adapter replay failed' }
 
 # 5. First load
-& powershell -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $outDir -RunKey $runKey -Database $Database
+& $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $outDir -RunKey $runKey -Database $Database
 if ($LASTEXITCODE -ne 0) { throw 'first load failed' }
 
 $counts1 = docker compose exec -T postgres psql -U $DbUser -d $Database -t -A -F ',' -c "SELECT (SELECT count(*) FROM price_observations), (SELECT count(*) FROM offers_current), (SELECT count(*) FROM promotions), (SELECT count(*) FROM raw_snapshots), (SELECT count(*) FROM retailer_products);"
@@ -54,7 +55,7 @@ Write-Output "COUNTS_AFTER_FIRST_LOAD: $counts1"
 # 6. Idempotent second replay + load (same run key, re-generated snapshot dir)
 docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B adapters/vero/cli.py --from-snapshots tests/fixtures/vero --out $outDir --run-key $runKey
 if ($LASTEXITCODE -ne 0) { throw 'second adapter replay failed' }
-& powershell -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $outDir -RunKey $runKey -Database $Database
+& $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 -OutDir $outDir -RunKey $runKey -Database $Database
 if ($LASTEXITCODE -ne 0) { throw 'second load failed' }
 
 $counts2 = docker compose exec -T postgres psql -U $DbUser -d $Database -t -A -F ',' -c "SELECT (SELECT count(*) FROM price_observations), (SELECT count(*) FROM offers_current), (SELECT count(*) FROM promotions), (SELECT count(*) FROM raw_snapshots), (SELECT count(*) FROM retailer_products);"

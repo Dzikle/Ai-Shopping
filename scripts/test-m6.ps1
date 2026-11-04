@@ -21,6 +21,7 @@ param(
     [switch]$KeepDb
 )
 $ErrorActionPreference = 'Stop'
+$psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }
 Set-Location -LiteralPath (Join-Path $PSScriptRoot '..')
 
 Get-Content '.env' | ForEach-Object {
@@ -73,7 +74,7 @@ try {
 
     # 3. Run M6 daily pipeline twice (--from-snapshots) and verify idempotency
     Write-Output '=== Step 3: Run M6 daily pipeline (pass 1 & pass 2 idempotency) ==='
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-daily-pipeline.ps1 `
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/run-daily-pipeline.ps1 `
         -Database $Database `
         -RunTag 'm6-replay-test' `
         -FromSnapshots
@@ -83,7 +84,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'counts1 query failed' }
     Write-Output "PASS daily_pipeline_pass1 (counts=$counts1)"
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-daily-pipeline.ps1 `
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/run-daily-pipeline.ps1 `
         -Database $Database `
         -RunTag 'm6-replay-test' `
         -FromSnapshots
@@ -139,7 +140,7 @@ try {
     }
     Write-Output "PASS freshness_endpoint_healthy (status=$($freshWide.status), totalOffers=$($freshWide.totalOffers), populatedStores=$($freshWide.totalPopulatedStores))"
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-freshness.ps1 -ApiUrl $apiBase -StaleThresholdHours 8760 | Out-Null
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/check-freshness.ps1 -ApiUrl $apiBase -StaleThresholdHours 8760 | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'check-freshness.ps1 should exit 0 when FRESH' }
     Write-Output 'PASS check_freshness_script_pass'
 
@@ -158,7 +159,7 @@ try {
     $env:AISHOPPING_ALERT_LOG = $alertLogFile
 
     $ErrorActionPreference = 'Continue'
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-daily-pipeline.ps1 `
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/run-daily-pipeline.ps1 `
         -Database $Database `
         -RunTag 'm6-quarantine-test' `
         -Retailers 'zito' `
@@ -201,7 +202,7 @@ try {
     Write-Output "PASS freshness_reports_quarantined_run (quarantinedRuns=$($freshAfterQ.totalQuarantinedRuns))"
 
     $ErrorActionPreference = 'Continue'
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-freshness.ps1 -ApiUrl $apiBase -StaleThresholdHours 8760 | Out-Null
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/check-freshness.ps1 -ApiUrl $apiBase -StaleThresholdHours 8760 | Out-Null
     $checkQExit = $LASTEXITCODE
     $ErrorActionPreference = 'Stop'
     if ($checkQExit -eq 0) {
@@ -212,7 +213,7 @@ try {
     # 7. Optional live smoke test against 1 store per retailer
     if ($LiveSmoke) {
         Write-Output '=== Step 7: Live 1-store smoke test ==='
-        & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-daily-pipeline.ps1 `
+        & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/run-daily-pipeline.ps1 `
             -Database $Database `
             -RunTag 'm6-live-smoke' `
             -Live `

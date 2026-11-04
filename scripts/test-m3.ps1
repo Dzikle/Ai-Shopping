@@ -16,6 +16,7 @@ param(
     [switch]$KeepDb
 )
 $ErrorActionPreference = 'Stop'
+$psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }
 Set-Location -LiteralPath (Join-Path $PSScriptRoot '..')
 
 Get-Content '.env' | ForEach-Object {
@@ -39,7 +40,7 @@ Cleanup-Containers
 try {
     # 1. Run M2 pipeline into $Database and keep the populated scratch DB
     Write-Output "=== Step 1: Populate $Database via M2 pipeline ==="
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test-m2.ps1 -Database $Database -KeepDb
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/test-m2.ps1 -Database $Database -KeepDb
     if ($LASTEXITCODE -ne 0) { throw 'test-m2 setup failed' }
 
     # 2. Package Spring Boot backend JAR (if not already packaged)
@@ -66,11 +67,11 @@ try {
 
     # 4. Run projection reindex twice to verify atomic alias swap + cleanup
     Write-Output "=== Step 4: Run OpenSearch projection reindexer (pass 1 & pass 2) ==="
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
         -Database $Database -OpenSearchUrl $osUrl -VersionTag 'v1_pass1'
     if ($LASTEXITCODE -ne 0) { throw 'reindex pass 1 failed' }
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
         -Database $Database -OpenSearchUrl $osUrl -VersionTag 'v1_pass2'
     if ($LASTEXITCODE -ne 0) { throw 'reindex pass 2 failed' }
 

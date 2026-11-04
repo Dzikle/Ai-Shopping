@@ -23,6 +23,7 @@ param(
     [int]$StaleThresholdHours = 48
 )
 $ErrorActionPreference = 'Stop'
+$psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }
 Set-Location -LiteralPath (Join-Path $PSScriptRoot '..')
 
 Get-Content '.env' | ForEach-Object {
@@ -40,7 +41,7 @@ if (-not $RunTag) {
 docker compose up -d --wait postgres
 if ($LASTEXITCODE -ne 0) { throw 'postgres failed to start' }
 
-& powershell -NoProfile -ExecutionPolicy Bypass -File scripts/apply-migrations.ps1 -Database $Database
+& $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/apply-migrations.ps1 -Database $Database
 if ($LASTEXITCODE -ne 0) { throw 'migrations failed' }
 
 # 2. Run scheduler worker (--once)
@@ -85,7 +86,7 @@ foreach ($r in $schedManifest.retailers) {
         throw "retailer $($r.retailer) produced no output directory"
     }
     $ErrorActionPreference = 'Continue'
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 `
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/load-records.ps1 `
         -OutDir $r.out_dir `
         -RunKey $r.run_key `
         -SourceSlug $r.retailer `
@@ -111,14 +112,14 @@ if ($healthyDirs.Count -gt 0) {
     docker run --rm -v "${PWD}:/w" -w /w python:3.12-slim python -B matching/cli.py --run-dirs $runDirsArg --out $matchOut
     if ($LASTEXITCODE -ne 0) { throw 'matching cli failed' }
 
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/load-matches.ps1 -OutDir $matchOut -Database $Database
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/load-matches.ps1 -OutDir $matchOut -Database $Database
     if ($LASTEXITCODE -ne 0) { throw 'load-matches failed' }
 }
 
 # 5. Optional OpenSearch projection reindex
 if ($OpenSearchUrl) {
     $versionTag = "v1_$($RunTag -replace '[^a-zA-Z0-9_]', '_')"
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
         -Database $Database `
         -OpenSearchUrl $OpenSearchUrl `
         -VersionTag $versionTag
@@ -126,12 +127,12 @@ if ($OpenSearchUrl) {
 }
 
 # 6. Cross-retailer comparison report
-& powershell -NoProfile -ExecutionPolicy Bypass -File scripts/report-cross-retailer.ps1 -Database $Database
+& $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/report-cross-retailer.ps1 -Database $Database
 if ($LASTEXITCODE -ne 0) { throw 'report-cross-retailer failed' }
 
 # 7. Optional freshness check
 if ($ApiUrl) {
-    & powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-freshness.ps1 `
+    & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/check-freshness.ps1 `
         -ApiUrl $ApiUrl `
         -StaleThresholdHours $StaleThresholdHours
     if ($LASTEXITCODE -ne 0) {
