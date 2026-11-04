@@ -29,6 +29,15 @@ jobs:
       - name: Prepare env
         run: cp .env.example .env
 
+      - name: Pre-create snapshot directories (docker mounts would create them root-owned otherwise)
+        run: |
+          mkdir -p snapshots/vero
+          mkdir -p snapshots/stokomak
+          mkdir -p snapshots/zito
+          mkdir -p snapshots/matching
+          mkdir -p snapshots/opensearch
+          mkdir -p snapshots/scheduler
+
       - name: Raise vm.max_map_count for OpenSearch
         run: sudo sysctl -w vm.max_map_count=262144
 

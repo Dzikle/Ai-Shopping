@@ -72,7 +72,7 @@ try {
     # 4. Run projection reindex twice to verify atomic alias swap + cleanup
     Write-Output "=== Step 4: Run OpenSearch projection reindexer (pass 1 & pass 2) ==="
     "::notice::m3_step=reindex_pass1_start"
-    $reindexErrFile = Join-Path $PWD 'snapshots/reindex-pass1-stderr.log'
+    $reindexErrFile = Join-Path ([System.IO.Path]::GetTempPath()) 'reindex-pass1-stderr.log'
     $childOut = & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
         -Database $Database -OpenSearchUrl $osUrl -VersionTag 'v1_pass1' 2>"$reindexErrFile"
     $childExit = $LASTEXITCODE
