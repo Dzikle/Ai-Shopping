@@ -50,7 +50,6 @@ try {
 
     # 3. Start OpenSearch service container for projection indexing
     Write-Output "=== Step 3: Start OpenSearch projection server on port $MockOsPort ==="
-    "::notice::m3_step=mock_start"
     docker run -d --name $osContainer -p "${MockOsPort}:9200" -v "${PWD}:/w" -w /w python:3.12-slim `
         python -B search/mock_opensearch.py --host 0.0.0.0 --port 9200 | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'failed to start OpenSearch container' }
@@ -67,28 +66,12 @@ try {
         "::error::mock_opensearch_not_healthy url=$osUrl containers=$((docker ps -a --format '{{.Names}} {{.Status}}') -join ' | ')"
         throw 'OpenSearch server did not become healthy'
     }
-    "::notice::m3_step=mock_healthy"
 
     # 4. Run projection reindex twice to verify atomic alias swap + cleanup
     Write-Output "=== Step 4: Run OpenSearch projection reindexer (pass 1 & pass 2) ==="
-    "::notice::m3_step=reindex_pass1_start"
-    $reindexErrFile = Join-Path ([System.IO.Path]::GetTempPath()) 'reindex-pass1-stderr.log'
-    $childOut = & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
-        -Database $Database -OpenSearchUrl $osUrl -VersionTag 'v1_pass1' 2>"$reindexErrFile"
-    $childExit = $LASTEXITCODE
-    $outLine = (($childOut | Select-Object -First 12) -join ' | ') -replace '%', '%25'
-    $outLine = $outLine -replace "`r`n", '%0A' -replace "`n", '%0A'
-    "::notice::m3_step=reindex_pass1_done exit=$childExit out=$outLine"
-    if (Test-Path $reindexErrFile) {
-        $errHead = (Get-Content $reindexErrFile -ErrorAction SilentlyContinue | Select-Object -First 12) -join ' | '
-        $errHead = ($errHead -replace '%', '%25') -replace "`r`n", '%0A' -replace "`n", '%0A'
-        if ($errHead) { "::notice::m3_step=reindex_pass1_stderr=$errHead" }
-    }
-    if ($childExit -ne 0) { throw 'reindex pass 1 failed' }
-
-    "::notice::m3_step=reindex_pass2_start"
     & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
-        -Database $Database -OpenSearchUrl $osUrl -VersionTag 'v1_pass2'
+        -Database $Database -OpenSearchUrl $osUrl -VersionTag 'v1_pass1'
+    if ($LASTEXITCODE -ne 0) { throw 'reindex pass 1 failed' }
 
     & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/reindex-opensearch.ps1 `
         -Database $Database -OpenSearchUrl $osUrl -VersionTag 'v1_pass2'
@@ -102,7 +85,6 @@ try {
 
     # 5. Start Spring Boot backend container connected to Postgres and OpenSearch
     Write-Output "=== Step 5: Start Spring Boot REST API container on port $ApiPort ==="
-    "::notice::m3_step=backend_start"
     docker run -d --name $apiContainer --add-host=host.docker.internal:host-gateway `
         -p "${ApiPort}:8080" `
         -e "SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:${DbPort}/${Database}" `
@@ -130,7 +112,6 @@ try {
 
     # 6. Verify REST endpoints backed by OpenSearch
     Write-Output "=== Step 6: Verify REST endpoints with OpenSearch active ==="
-    "::notice::m3_step=verify_opensearch_endpoints"
     $healthOs = Invoke-RestMethod -Uri "$apiBase/health"
     if ($healthOs.activeSearchEngine -ne 'opensearch') {
         throw "Expected activeSearchEngine=opensearch, got $($healthOs.activeSearchEngine)"

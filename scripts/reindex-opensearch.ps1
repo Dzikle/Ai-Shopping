@@ -21,24 +21,19 @@ if (-not $VersionTag) { $VersionTag = (Get-Date).ToUniversalTime().ToString('yyy
 
 $tmpHostDir = "snapshots/opensearch/$VersionTag"
 New-Item -ItemType Directory -Force -Path $tmpHostDir | Out-Null
-"::notice::reindex_step=init db=$Database url=$OpenSearchUrl tag=$VersionTag"
 
 docker compose exec -T postgres mkdir -p /tmp/aishopping
-"::notice::reindex_step=cp_sql_start"
 docker compose cp scripts/export-projection-docs.sql "postgres:/tmp/aishopping/export-projection-docs.sql"
 if ($LASTEXITCODE -ne 0) { "::error::reindex_cp_export_sql_failed"; throw 'docker compose cp export-projection-docs.sql failed' }
 
-"::notice::reindex_step=psql_export_start"
 docker compose exec -T postgres psql -U $DbUser -d $Database -v ON_ERROR_STOP=1 `
     -f /tmp/aishopping/export-projection-docs.sql
 if ($LASTEXITCODE -ne 0) { "::error::reindex_psql_export_failed db=$Database user=$DbUser"; throw 'export-projection-docs.sql failed' }
-"::notice::reindex_step=export_ok"
 
 foreach ($f in @('projection_stores.ndjson', 'projection_offers.ndjson', 'projection_products.ndjson')) {
     docker compose cp "postgres:/tmp/aishopping/$f" (Join-Path $tmpHostDir $f)
     if ($LASTEXITCODE -ne 0) { "::error::reindex_cp_file_failed file=$f"; throw "docker compose cp $f failed" }
 }
-"::notice::reindex_step=cp_files_ok"
 
 # Run reindexer against OpenSearch URL (supports host.docker.internal when targeting a host port)
 $containerOsUrl = $OpenSearchUrl -replace 'localhost|127\.0\.0\.1', 'host.docker.internal'
@@ -57,4 +52,3 @@ if ($reindexExit -ne 0) {
 }
 
 Write-Output "REINDEX OK version_tag=$VersionTag"
-"::notice::reindex_step=reindexer_ok"
