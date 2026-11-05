@@ -15,4 +15,4 @@
 
 **M6 implemented:** `docs/milestones/m6-proposal.md` (2026-11-04) — owner-approved and verified via `scripts/test-m6.ps1`.
 
-**M7 implemented:** `scripts/review-queue.ps1`, `POST /api/v1/matches/review-queue/{id}/approve|reject` — verified via `CatalogApiTest.testReviewQueueApproveAndRejectEndpoints` (13 JUnit tests pass).
+**M7 implemented & owner-approved (2026-11-05):** `docs/milestones/m7-proposal.md` — review queue approve/reject REST endpoints + `scripts/review-queue.ps1` CLI + audit trail, verified via `CatalogApiTest.testReviewQueueApproveAndRejectEndpoints` (13 JUnit tests pass; CI green runs 41938782736/41939594293).
