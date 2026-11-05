@@ -129,7 +129,7 @@ Previous CI runs (M4/M6/M7 pushes plus an M3 fix probe) still failed at the "M1 
 
 ### CI verification evidence (2026-11-05)
 - Run 41937544513 on commit d95dbd8: **first fully green CI run** on `Dzikle/Ai-Shopping` (all 14 steps OK: docs check, baseline stack incl. OpenSearch 3.9.0/Postgres on CI, 6 Python suites, 13 JUnit tests, M1-M6 integration, teardown) — previously CI had never been green (runs 40826031422, 41917304993, 41915901526 all failed at M1/M3).
-- Post-cleanup re-verification: final commit run on main (`gh run list` shows the newest run green; see run id in the CI history).
+- Run 41938782736 on commit 628c7e2 (post debug-notice cleanup): still green, no diagnostic annotations, job time 4m23s.
 
 ## Blockers / limitations
 - Java, Maven, psql not installed natively on this machine (containers and CI provide them; `maven:3.9.9-eclipse-temurin-21` already cached).
