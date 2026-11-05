@@ -100,7 +100,7 @@
   - `matching/tests.py` → **5/5 OK**
   - `search/tests.py` → **2/2 OK**
   - `adapters/scheduler/tests.py` → **6/6 OK**
-  - `backend` (`mvn -B test package`) → **12/12 JUnit tests OK (`CatalogApiTest` 4/4 + `BasketOptimizerTest` 3/3 + `McpServerTest` 5/5), BUILD SUCCESS**
+  - `backend` (`mvn -B test package`) → **13/13 JUnit tests OK (`CatalogApiTest` 5/5 + `BasketOptimizerTest` 3/3 + `McpServerTest` 5/5), BUILD SUCCESS** (re-verified 2026-11-05 via cached `maven:3.9.9-eclipse-temurin-21`; the original 12/12 line predates the M7 test method).
 - `scripts/test-m1.ps1` → **M1 TEST OK**
 - `scripts/test-m2.ps1` → **M2 TEST OK**
 - `scripts/test-m3.ps1` → **M3 TEST OK**
@@ -118,6 +118,18 @@
     - `PASS alert_hook_emitted_json (retailer=zito, runKey=m6-quarantine-test-zito)`
     - `PASS freshness_reports_quarantined_run (quarantinedRuns=1)`
     - `PASS check_freshness_fails_on_quarantine`
+
+## CI stabilization (2026-11-05)
+Previous CI runs (M4/M6/M7 pushes plus an M3 fix probe) still failed at the "M1 integration test" step despite the local evidence above. Root causes, found and fixed:
+1. **Windows-only shell invocation:** every integration script spawned `& powershell` (Windows PowerShell), which does not exist on Ubuntu runners. Fixed by resolving the shell per OS (`$psExe = if ($env:OS -eq 'Windows_NT') { 'powershell' } else { 'pwsh' }`) in all 8 scripts (`scripts/test-m1..m6.ps1`, `scripts/run-daily-pipeline.ps1`, `scripts/load-records.ps1`) and replacing all 28 call sites; plus a Linux-sapient WorkerId hostname fallback in `load-records.ps1`.
+2. **Root-owned docker-mount directories:** on Linux the first `docker run -v` with a not-yet-existing `snapshots/` subdirectory creates it `root:root` 0755, so the M3 reindexer's `New-Item -Path snapshots/opensearch/<tag>` was permission-denied and the nested reindex script exited 1 with silently empty stdout. Fixed by pre-creating `snapshots/{vero,stokomak,zito,matching,opensearch,scheduler}` in CI before the integration steps so runner-owned directories already exist when docker mounts them.
+3. **Runner pin:** `ubuntu-latest` has migrated to Ubuntu 26 (per runner-images#14748); the job is now pinned to `ubuntu-24.04` for deterministic pwsh (7.4.x) behavior.
+4. **CI health waits tightened for 2-vCPU runners:** mock OpenSearch ready-loop 45 s and Spring Boot ready-loops 45-90 s (were 10-20 s), because boot can exceed 20 s in CI with the baseline OpenSearch container running concurrently.
+5. **Failure visibility for restricted gh tokens:** logical test scripts now emit `::error::` workflow annotations and `docker logs --tail 15` dumps on container-start failure, so failures are diagnosable via `gh run view` even when run logs are admin-only (HTTP 403). A `trap` handler in `test-m1.ps1`/`test-m2.ps1` and catch blocks in m3-m6 surface the failing assertion message.
+
+### CI verification evidence (2026-11-05)
+- Run 41937544513 on commit d95dbd8: **first fully green CI run** on `Dzikle/Ai-Shopping` (all 14 steps OK: docs check, baseline stack incl. OpenSearch 3.9.0/Postgres on CI, 6 Python suites, 13 JUnit tests, M1-M6 integration, teardown) — previously CI had never been green (runs 40826031422, 41917304993, 41915901526 all failed at M1/M3).
+- Post-cleanup re-verification: final commit run on main (`gh run list` shows the newest run green; see run id in the CI history).
 
 ## Blockers / limitations
 - Java, Maven, psql not installed natively on this machine (containers and CI provide them; `maven:3.9.9-eclipse-temurin-21` already cached).
