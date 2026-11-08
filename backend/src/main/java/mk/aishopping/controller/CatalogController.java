@@ -2,6 +2,7 @@ package mk.aishopping.controller;
 
 import mk.aishopping.model.ApiModels.FreshnessResponse;
 import mk.aishopping.model.ApiModels.HealthResponse;
+import mk.aishopping.model.ApiModels.MetricsResponse;
 import mk.aishopping.model.ApiModels.OfferDto;
 import mk.aishopping.model.ApiModels.OfferSearchFilter;
 import mk.aishopping.model.ApiModels.ProductComparisonDto;
@@ -111,5 +112,10 @@ public class CatalogController {
             @RequestParam(defaultValue = "7") int quarantineWindowDays
     ) {
         return searchService.getFreshness(retailer, staleThresholdHours, quarantineWindowDays);
+    }
+
+    @GetMapping("/metrics")
+    public MetricsResponse metrics() {
+        return searchService.getMetrics();
     }
 }

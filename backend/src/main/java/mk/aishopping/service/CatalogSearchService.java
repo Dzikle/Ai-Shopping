@@ -7,6 +7,7 @@ import mk.aishopping.model.ApiModels.OfferSearchFilter;
 import mk.aishopping.model.ApiModels.ProductComparisonDto;
 import mk.aishopping.model.ApiModels.ProductHistoryResponse;
 import mk.aishopping.model.ApiModels.ReviewQueueDecisionDto;
+import mk.aishopping.model.ApiModels.MetricsResponse;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
@@ -113,5 +114,9 @@ public class CatalogSearchService {
 
     public ReviewQueueDecisionDto rejectMatch(long matchId, String reviewedBy, String reviewNotes) {
         return postgresRepository.rejectMatch(matchId, reviewedBy, reviewNotes);
+    }
+
+    public MetricsResponse getMetrics() {
+        return postgresRepository.getMetrics();
     }
 }

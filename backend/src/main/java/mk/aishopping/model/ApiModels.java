@@ -141,6 +141,45 @@ public final class ApiModels {
             String reviewNotes
     ) {}
 
+    public record PipelineRunMetricDto(
+            int runId,
+            String runKey,
+            String sourceSlug,
+            String status,
+            Instant startedAt,
+            Instant finishedAt,
+            Integer pagesSeen,
+            Integer rowsSeen,
+            Integer rowsStored,
+            Integer rowsSkipped,
+            boolean quarantined,
+            String quarantineReason,
+            String workerId,
+            Double durationSeconds
+    ) {}
+
+    public record ReviewQueueMetricDto(
+            int totalPending,
+            int totalApproved,
+            int totalRejected,
+            int totalAutoAccepted,
+            int oldestPendingDays
+    ) {}
+
+    public record MetricsResponse(
+            Instant checkedAt,
+            long totalOffers,
+            long totalObservations,
+            long totalCanonicalProducts,
+            long totalProductMatches,
+            long totalPendingReview,
+            int totalPopulatedStores,
+            int totalStaleStores,
+            int totalQuarantinedRuns,
+            List<PipelineRunMetricDto> recentRuns,
+            ReviewQueueMetricDto reviewQueue
+    ) {}
+
     public record OfferSearchFilter(
             String q,
             String retailer,

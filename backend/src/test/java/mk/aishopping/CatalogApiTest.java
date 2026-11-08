@@ -6,7 +6,9 @@ import com.sun.net.httpserver.HttpServer;
 import mk.aishopping.controller.CatalogController;
 import mk.aishopping.model.ApiModels.FreshnessResponse;
 import mk.aishopping.model.ApiModels.HealthResponse;
+import mk.aishopping.model.ApiModels.MetricsResponse;
 import mk.aishopping.model.ApiModels.OfferDto;
+import mk.aishopping.model.ApiModels.PipelineRunMetricDto;
 import mk.aishopping.model.ApiModels.PriceObservationDto;
 import mk.aishopping.model.ApiModels.ProductComparisonDto;
 import mk.aishopping.model.ApiModels.ProductHistoryResponse;
@@ -15,6 +17,7 @@ import mk.aishopping.model.ApiModels.RetailerFreshnessDto;
 import mk.aishopping.model.ApiModels.RetailerOfferSummaryDto;
 import mk.aishopping.model.ApiModels.ReviewQueueDecisionDto;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
+import mk.aishopping.model.ApiModels.ReviewQueueMetricDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
 import mk.aishopping.model.ApiModels.StoreFreshnessDto;
@@ -389,6 +392,48 @@ class CatalogApiTest {
         assertEquals("operator@example.com", rejectRes.reviewedBy());
         assertEquals("Different pack size", rejectRes.reviewNotes());
         verify(postgresRepository).rejectMatch(matchId, "operator@example.com", "Different pack size");
+    }
+
+    @Test
+    void testMetricsEndpointReportsRunsAndReviewQueue() {
+        PipelineRunMetricDto run = new PipelineRunMetricDto(
+                42, "m6-zito-empty", "zito", "quarantined",
+                Instant.parse("2026-10-29T08:35:00Z"),
+                Instant.parse("2026-10-29T08:35:05Z"),
+                1, 0, 0, 0, true,
+                "pages with header but zero product rows", "scheduler-host:1234", 5.0d
+        );
+        MetricsResponse mockResponse = new MetricsResponse(
+                Instant.parse("2026-10-31T08:30:00Z"),
+                1896L, 1896L, 1372L, 3722L, 3400L,
+                7, 7, 1,
+                List.of(run),
+                new ReviewQueueMetricDto(3400, 0, 0, 322, 2)
+        );
+
+        when(postgresRepository.getMetrics()).thenReturn(mockResponse);
+
+        OpenSearchClient osClient = new OpenSearchClient(objectMapper, openSearchUrl);
+        CatalogSearchService service = new CatalogSearchService(osClient, postgresRepository);
+        CatalogController controller = new CatalogController(service);
+
+        MetricsResponse res = controller.metrics();
+        assertNotNull(res);
+        assertEquals(1896L, res.totalOffers());
+        assertEquals(1372L, res.totalCanonicalProducts());
+        assertEquals(1896L, res.totalObservations());
+        assertEquals(7, res.totalPopulatedStores());
+        assertEquals(7, res.totalStaleStores());
+        assertEquals(1, res.totalQuarantinedRuns());
+        assertEquals(3400L, res.totalPendingReview());
+        assertEquals(1, res.recentRuns().size());
+        assertEquals("m6-zito-empty", res.recentRuns().get(0).runKey());
+        assertEquals("quarantined", res.recentRuns().get(0).status());
+        assertTrue(res.recentRuns().get(0).quarantined());
+        assertEquals(3400, res.reviewQueue().totalPending());
+        assertEquals(322, res.reviewQueue().totalAutoAccepted());
+        assertEquals(2, res.reviewQueue().oldestPendingDays());
+        verify(postgresRepository).getMetrics();
     }
 
     private static void respondJson(com.sun.net.httpserver.HttpExchange exchange, int status, String json) throws java.io.IOException {

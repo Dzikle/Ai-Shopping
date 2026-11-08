@@ -1,4 +1,4 @@
-# Project status — 2026-10-29
+# Project status — 2026-11-08
 
 ## Implemented (M0, this session)
 - **Dependency verification:** Spring Boot 4.1.2 GA (stable), OpenSearch 3.9.0 (2026-09-29), PostgreSQL 18.6 (current 18.x), Java 21 LTS — all compatible with the planned stack. Recorded in ADR-0001/0002.
@@ -157,6 +157,19 @@ Previous CI runs (M4/M6/M7 pushes plus an M3 fix probe) still failed at the "M1 
 - **Tests:** `CatalogApiTest.testReviewQueueApproveAndRejectEndpoints` verifies approve+reject round-trip with Mockito verify. Total JUnit: 13.
 - **Validation:** All 13 backend JUnit tests pass; all Python unit tests pass (scheduler 6, common 8, vero 22, stokomak 9, matching 5, search 2).
 
-**Next candidate tasks (Post-M7):**
+## Implemented (M8, 2026-11-08) — pending owner approval (staged in working tree)
+- **Metrics REST API (`GET /api/v1/metrics`, `docs/contracts/metrics-api-contract.md`)**: single read-only JSON snapshot from authoritative PostgreSQL — catalog counters (`totalOffers`, `totalObservations`, `totalCanonicalProducts`, `totalProductMatches`), `totalPendingReview`, populated/stale store counts, 7-day quarantined runs, last 20 ingestion runs (per-run page/row counters, `workerId`, fractional `durationSeconds` — in-flight runs report elapsed time), and Stage-2 review-queue depth (`pending`/`approved`/`rejected`/`autoAccepted`, `oldestPendingDays`). DB-clock `checkedAt`, `LIMIT 20` bound, no OpenSearch queries (ADR-0002).
+  - Fix applied: `EXTRACT(EPOCH ...)` returns `numeric` on PG ≥ 14 (JDBC `BigDecimal`), so the SQL casts `::double precision` to avoid a runtime `ClassCastException` that mocked tests alone would not catch.
+- **Prometheus exporter (`scripts/metrics.ps1`)**: emits exposition format (`aishopping_*` namespace, documented metric list) or `-Json`; `-OutputFile` for scrapers; DB/user from `.env`; grouped series omitted when empty (documented).
+- **Tests:** `CatalogApiTest.testMetricsEndpointReportsRunsAndReviewQueue` (JUnit 13 → 14 all green).
+- **Execution evidence (local, 2026-11-08):**
+  - JUnit via `maven:3.9.9-eclipse-temurin-21`: `Tests run: 14, Failures: 0, Errors: 0` — BUILD SUCCESS.
+  - Fresh `m8_metrics_test` DB + V1..V4 migrations via `scripts/apply-migrations.ps1` → `MIGRATIONS OK`; seeded 2 runs (completed vero 95 s, quarantined zito 5 s):
+    - `aishopping_pipeline_avg_duration_seconds 50` (verifies duration math), correct per-status/per-retailer series, epoch timestamps verified; JSON mode OK; throwaway DB dropped, no other DBs touched.
+  - Two exporter bugs found by validation and fixed: outer-scope alias `r.slug` → `sub.slug` in the stale-stores query; removed stderr-suppression (`2>$null`) that could mask failing psql queries under `$ErrorActionPreference='Stop'`.
+- **CI:** unchanged — existing matrix (docs, baseline stack, 6 Python suites, JUnit M1-M6 integration) covers the new files; see proposal for staged follow-ups.
+
+**Next candidate tasks (Post-M8):**
 1. **KAM PDF adapter (`adapters/kam/`):** Ingest daily per-store PDF price lists discovered via `POST https://kam.com.mk/ShopsWeb/LoadShopList` (`https://kam.com.mk/{YYYY}/{MM}/{DD}/{storeId}.pdf`). Requires PDF table parsing (new dependency decision needed — currently stdlib-only).
-2. **M8 Operations monitoring:** Extend `scripts/check-freshness.ps1` with Prometheus-style metrics export; add dashboard for pipeline run history and match review queue depth.
+2. **Tinex/Konto adapter (`adapters/tinex/`):** Reuse the shared `adapters/stokomak` parser against the Tinex platform (`ceni.tinex.mk:442`, same `?org={org}` scheme as Stokomak/Zito; Konto store links point at it) once the endpoint is reachable again; then M5/M6 freshness coverage extends automatically.
+3. **Alert thresholds on M8 metrics:** owner decision from m8-proposal non-goals — plumb `aishopping_*` series into `scripts/alert.ps1` thresholds (e.g. stale-store count > 0, review queue depth > N) and optional hosted dashboard for run history + queue depth.

@@ -13,7 +13,10 @@ import mk.aishopping.model.ApiModels.QuarantinedRunDto;
 import mk.aishopping.model.ApiModels.RetailerFreshnessDto;
 import mk.aishopping.model.ApiModels.RetailerOfferSummaryDto;
 import mk.aishopping.model.ApiModels.ReviewQueueDecisionDto;
+import mk.aishopping.model.ApiModels.MetricsResponse;
+import mk.aishopping.model.ApiModels.PipelineRunMetricDto;
 import mk.aishopping.model.ApiModels.ReviewQueueItemDto;
+import mk.aishopping.model.ApiModels.ReviewQueueMetricDto;
 import mk.aishopping.model.ApiModels.SearchResponse;
 import mk.aishopping.model.ApiModels.StoreDto;
 import mk.aishopping.model.ApiModels.StoreFreshnessDto;
@@ -473,6 +476,93 @@ public class PostgresCatalogRepository {
                     "match id " + matchId + " not found or not in pending_review status");
         }
         return new ReviewQueueDecisionDto(matchId, "rejected", reviewedBy, reviewNotes);
+    }
+
+    public MetricsResponse getMetrics() {
+        Timestamp dbNowTs = jdbcTemplate.queryForObject("SELECT now()", Timestamp.class);
+        Instant checkedAt = dbNowTs != null ? dbNowTs.toInstant() : Instant.now();
+
+        Long totalOffers = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM offers_current", Long.class);
+        Long totalObservations = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM price_observations", Long.class);
+        Long totalCanonical = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM canonical_products", Long.class);
+        Long totalMatches = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM product_matches", Long.class);
+
+        // Populated stores
+        Integer populatedStores = jdbcTemplate.queryForObject(
+                "SELECT COUNT(DISTINCT store_id) FROM offers_current", Integer.class);
+
+        // Stale stores (no offers updated in > 48h)
+        Integer staleStores = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM (SELECT s.id FROM stores s JOIN offers_current oc ON oc.store_id = s.id "
+                        + "GROUP BY s.id HAVING MAX(oc.published_ts) < now() - INTERVAL '48 hours') sub",
+                Integer.class);
+
+        // Quarantined runs in last 7 days
+        Integer quarantinedRuns = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM ingestion_runs WHERE quarantined = true AND started_at >= now() - INTERVAL '7 days'",
+                Integer.class);
+
+        // Recent runs (last 20)
+        String runsSql = """
+                SELECT id, run_key, source_slug, status, started_at, finished_at,
+                       pages_seen, rows_seen, rows_stored, rows_skipped, quarantined,
+                       quarantine_reason, worker_id,
+                       EXTRACT(EPOCH FROM (COALESCE(finished_at, now()) - started_at))::double precision AS duration_seconds
+                FROM ingestion_runs
+                ORDER BY started_at DESC, id DESC
+                LIMIT 20
+                """;
+        List<PipelineRunMetricDto> recentRuns = jdbcTemplate.query(runsSql, (rs, rowNum) -> new PipelineRunMetricDto(
+                rs.getInt("id"),
+                rs.getString("run_key"),
+                rs.getString("source_slug"),
+                rs.getString("status"),
+                toInstant(rs.getTimestamp("started_at")),
+                toInstant(rs.getTimestamp("finished_at")),
+                (Integer) rs.getObject("pages_seen"),
+                (Integer) rs.getObject("rows_seen"),
+                (Integer) rs.getObject("rows_stored"),
+                (Integer) rs.getObject("rows_skipped"),
+                rs.getBoolean("quarantined"),
+                rs.getString("quarantine_reason"),
+                rs.getString("worker_id"),
+                (Double) rs.getObject("duration_seconds")
+        ));
+
+        // Review queue metrics
+        Integer pending = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM product_matches WHERE review_status = 'pending_review'", Integer.class);
+        Integer approved = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM product_matches WHERE review_status = 'approved'", Integer.class);
+        Integer rejected = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM product_matches WHERE review_status = 'rejected'", Integer.class);
+        Integer autoAccepted = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM product_matches WHERE review_status = 'auto_accepted'", Integer.class);
+        Integer oldestPendingDays = jdbcTemplate.queryForObject(
+                "SELECT COALESCE(EXTRACT(DAY FROM (now() - MIN(created_at)))::int, 0) FROM product_matches WHERE review_status = 'pending_review'",
+                Integer.class);
+
+        ReviewQueueMetricDto reviewQueue = new ReviewQueueMetricDto(
+                pending != null ? pending : 0,
+                approved != null ? approved : 0,
+                rejected != null ? rejected : 0,
+                autoAccepted != null ? autoAccepted : 0,
+                oldestPendingDays != null ? oldestPendingDays : 0
+        );
+
+        return new MetricsResponse(
+                checkedAt,
+                totalOffers != null ? totalOffers : 0L,
+                totalObservations != null ? totalObservations : 0L,
+                totalCanonical != null ? totalCanonical : 0L,
+                totalMatches != null ? totalMatches : 0L,
+                pending != null ? pending.longValue() : 0L,
+                populatedStores != null ? populatedStores : 0,
+                staleStores != null ? staleStores : 0,
+                quarantinedRuns != null ? quarantinedRuns : 0,
+                recentRuns,
+                reviewQueue
+        );
     }
 
     public FreshnessResponse getFreshness(String retailer, int staleThresholdHours, int quarantineWindowDays) {
