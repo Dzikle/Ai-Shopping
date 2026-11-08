@@ -1,6 +1,6 @@
 # M8 proposal — Operations monitoring: metrics API + Prometheus metrics export
 
-**Status:** Implemented in working tree — **for owner review** (per AGENTS.md #8/#10: committed changes, reproducible tests, documentation and evidence are staged; awaiting owner approval to commit/finalize).
+**Status:** Owner-approved & committed (approval given 2026-11-08; commit `6cfe290`).
 **Depends on:** M3 (PostgreSQL-backed REST API), M4 (basket schema containers — none), M6 (V4 operations schema, freshness pipeline), M7 (review queue decisions).
 
 ## Goal

@@ -157,7 +157,7 @@ Previous CI runs (M4/M6/M7 pushes plus an M3 fix probe) still failed at the "M1 
 - **Tests:** `CatalogApiTest.testReviewQueueApproveAndRejectEndpoints` verifies approve+reject round-trip with Mockito verify. Total JUnit: 13.
 - **Validation:** All 13 backend JUnit tests pass; all Python unit tests pass (scheduler 6, common 8, vero 22, stokomak 9, matching 5, search 2).
 
-## Implemented (M8, 2026-11-08) — pending owner approval (staged in working tree)
+## Implemented (M8) — owner-approved (2026-11-08)
 - **Metrics REST API (`GET /api/v1/metrics`, `docs/contracts/metrics-api-contract.md`)**: single read-only JSON snapshot from authoritative PostgreSQL — catalog counters (`totalOffers`, `totalObservations`, `totalCanonicalProducts`, `totalProductMatches`), `totalPendingReview`, populated/stale store counts, 7-day quarantined runs, last 20 ingestion runs (per-run page/row counters, `workerId`, fractional `durationSeconds` — in-flight runs report elapsed time), and Stage-2 review-queue depth (`pending`/`approved`/`rejected`/`autoAccepted`, `oldestPendingDays`). DB-clock `checkedAt`, `LIMIT 20` bound, no OpenSearch queries (ADR-0002).
   - Fix applied: `EXTRACT(EPOCH ...)` returns `numeric` on PG ≥ 14 (JDBC `BigDecimal`), so the SQL casts `::double precision` to avoid a runtime `ClassCastException` that mocked tests alone would not catch.
 - **Prometheus exporter (`scripts/metrics.ps1`)**: emits exposition format (`aishopping_*` namespace, documented metric list) or `-Json`; `-OutputFile` for scrapers; DB/user from `.env`; grouped series omitted when empty (documented).
@@ -168,6 +168,7 @@ Previous CI runs (M4/M6/M7 pushes plus an M3 fix probe) still failed at the "M1 
     - `aishopping_pipeline_avg_duration_seconds 50` (verifies duration math), correct per-status/per-retailer series, epoch timestamps verified; JSON mode OK; throwaway DB dropped, no other DBs touched.
   - Two exporter bugs found by validation and fixed: outer-scope alias `r.slug` → `sub.slug` in the stale-stores query; removed stderr-suppression (`2>$null`) that could mask failing psql queries under `$ErrorActionPreference='Stop'`.
 - **CI:** unchanged — existing matrix (docs, baseline stack, 6 Python suites, JUnit M1-M6 integration) covers the new files; see proposal for staged follow-ups.
+- **Committed** as `6cfe290` (`feat(m8): metrics API and Prometheus exporter`).
 
 **Next candidate tasks (Post-M8):**
 1. **KAM PDF adapter (`adapters/kam/`):** Ingest daily per-store PDF price lists discovered via `POST https://kam.com.mk/ShopsWeb/LoadShopList` (`https://kam.com.mk/{YYYY}/{MM}/{DD}/{storeId}.pdf`). Requires PDF table parsing (new dependency decision needed — currently stdlib-only).
