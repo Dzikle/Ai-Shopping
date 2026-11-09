@@ -198,3 +198,16 @@ Previous CI runs (M4/M6/M7 pushes plus an M3 fix probe) still failed at the "M1 
 1. **Tinex/Konto adapter:** `ceni.tinex.mk:442` third consecutive TCP timeout re-confirmed 2026-11-08 — both stay blocked behind this endpoint.
 2. **Alert thresholds on M8/M9 metrics:** plumb `aishopping_*` series into `scripts/alert.ps1` thresholds (stale-store count > 0, review queue depth > N) and optional hosted dashboard for run history + queue depth.
 3. **KAM live smoke in the daily pipeline:** an operator `run-daily-pipeline.ps1 -Live` pass including `kam=73` (replay-only automation is what CI covers) before the first scheduled full-scale KAM ingestion; scale planning for ~1.5–1.7k rows/store/day × 86 stores.
+
+## Implemented (M10) - on branch `m10-fastapi-migration`, pending owner review (2026-11-09)
+
+- **Scope:** the Spring Boot backend (REST + MCP, all M1-M9 behavior) is re-implemented in Python/FastAPI under `backend_py/` (ADR-0006 supersedes the backend portion of ADR-0001). Migrations V1..V5, adapters, scheduler, PowerShell pipeline scripts and Docker Compose infra are unchanged.
+- **Parity enforcement:**
+  - Differential regression: `scripts/test-m10-diff.ps1` builds the Spring Boot jar, prepares two identical PostgreSQL clones (fixture pipeline + in-container `pg_dump | psql`), reindexes OpenSearch from the java DB, boots both services (jar on :18088, uvicorn on :18089) and runs `backend_py/tools/diff_harness.py` - a 48-request corpus covering every REST endpoint, error shapes (400/404/404-vs-500), the FK/constraint 500 parity paths, all 7 MCP tools, JSON-RPC error codes and notifications. **Result: 48/48 pairs equal** on canonicalized bodies (wall-clock timestamps and `ageHours` normalized as request-time-derived).
+  - Unit suite: the 14 JUnit tests (BasketOptimizer 3, CatalogApi 6, McpServer 5) are ported 1:1 to pytest plus 10 app-routing parity tests (Spring error shapes, MCP protocol codes) - **24 passed**.
+  - Integration scripts `test-m3/m4/m5/m6.ps1` now boot the FastAPI container and pass (OS-active + PG-fallback, baskets, MCP handshake + 7 tools, scheduler/freshness/quarantine); `mock_opensearch.py` gained `POST /{index}/_count` (opensearch-py verb).
+- **Jackson wire parity details:** camelCase payloads; decimals as JSON numbers (`response_model=None` + `RestJSONResponse` renderer, since FastAPI's response-model path stringifies Decimals); ISO instants; Spring error bodies `{timestamp, status, error, path}`; MCP `2024-11-05` NON_NULL JSON-RPC (id omitted for notifications, `result` omitted on error).
+- **Dev-loop measurements (same host, 2026-11-09):** backend suite 9.0 s -> 10.3 s; build/package 3.9 s -> `uv sync --locked` 0.6 s; cold boot -> health UP 6.19 s -> 1.5 s; targeted test ~10 s -> 0.7 s; edit->verify ~20 s -> ~1 s.
+- **CI:** JUnit step replaced with uv+pytest; `test-m10-diff.ps1` added as the differential gate; integration steps boot FastAPI.
+- **Rollback:** the Java tree (`backend/`) is untouched and the differential gate still builds/tests it; CI and scripts can be re-pointed at `mvn` by reverting this branch. Java removal is a planned follow-up commit **after** owner sign-off.
+- **Not included:** no production deployment, no data changes, no new endpoints; Tinex/Konto still blocked (upstream endpoint timeouts).

@@ -10,8 +10,11 @@
 | M5 AI/MCP | Bounded read-only MCP, natural language interpretation, evidence-backed results, provider abstraction | Agent uses actual offer data and deterministic totals |
 | M6 Operations | Scheduled jobs, monitoring, alerts, trends, backup/recovery, performance checks | Unattended daily runs with measured freshness and quality |
 | M7 Review Queue | Stage-2 product match review queue: REST approve/reject endpoints, CLI script, audit trail (`reviewed_by`, `reviewed_at`, `review_notes`) | Pending matches can be approved/rejected with full audit; approved matches flow into cross-retailer comparisons |
+| M8 Metrics | `GET /api/v1/metrics` run-quality aggregates + Prometheus exporter | Recent-run quality observable without SQL access |
+| M9 KAM PDF source | Fourth retailer adapter (stdlib PDF parser), V5 store references, scheduler/pipeline integration | KAM replay ingests 86 stores idempotently; quarantine semantics hold |
+| M10 FastAPI migration | Python/FastAPI backend replacing Spring Boot (ADR-0006), differential regression suite, CI/script switch, measured dev-loop gains | 48/48 differential pairs equal on identical data; ported unit suite green; owner sign-off before Java removal |
 
-**Instruction:** Implement only M0 now. No premature scrapers, product matching, OpenSearch application code, basket optimizer or AI tools until the respective designs are reviewed. Record tests, limitations and owner approvals per milestone.
+**Instruction:** The `Implement only M0 now` gate from the original plan is historical — every milestone above is owner-approved before implementation and records evidence in `docs/milestones/current-status.md`. Stale `M0 only` text elsewhere is superseded by AGENTS.md.
 
 **M6 implemented:** `docs/milestones/m6-proposal.md` (2026-11-04) — owner-approved and verified via `scripts/test-m6.ps1`.
 

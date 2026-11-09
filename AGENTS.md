@@ -4,13 +4,13 @@
 
 ## Current state
 
-As of 2026-11-09, `main` contains backend/data work through M9, including Vero, Stokomak, Zito and KAM ingestion, PostgreSQL, OpenSearch, baskets, a read-only MCP server, daily scheduling, match review, and metrics. The main backend is **still Java/Spring Boot**. No Flutter or consumer web application is in `main`. See `docs/milestones/current-status.md` for source of truth; verify actual code/tests before trusting claims.
+As of 2026-11-09, `main` contains backend/data work through M9, including Vero, Stokomak, Zito and KAM ingestion, PostgreSQL, OpenSearch, baskets, a read-only MCP server, daily scheduling, match review, and metrics. M10 (branch `m10-fastapi-migration`) replaces the Java/Spring Boot backend with Python/FastAPI (`backend_py/`, ADR-0006), verified by a differential regression harness against the Spring Boot jar; the Java tree is retained untouched for rollback until owner sign-off. No Flutter or consumer web application is in `main`. See `docs/milestones/current-status.md` for source of truth; verify actual code/tests before trusting claims.
 
-**IMPORTANT:** The old roadmap and master plan contain stale `M0 only` and Spring Boot instructions. This file supersedes those operational restrictions. Consult `docs/architecture/product-delivery-plan.md` and the task-specific documents in `docs/milestones/` for next stages; do not treat every proposed stage as authorized.
+**IMPORTANT:** The old roadmap and master plan contain stale `M0 only` instructions; the master plan stack section now reflects FastAPI (ADR-0006). This file supersedes stale operational restrictions. Consult `docs/architecture/product-delivery-plan.md` and the task-specific documents in `docs/milestones/` for next stages; do not treat every proposed stage as authorized.
 
 ## Next approved task
 
-M10: migrate the Java Spring Boot API **and its M5-M9 endpoints/MCP behavior** to Python/FastAPI with full regression/differential verification. Read `docs/milestones/m10-fastapi-migration-task.md`. No M11+ feature implementation without owner approval.
+M10 review: the FastAPI migration is implemented and differentially verified (`scripts/test-m10-diff.ps1`, 48/48 pairs; `backend_py` pytest suite 24/24). Remaining: owner sign-off on the PR, then a follow-up commit removing `backend/` (Java) and the differential gate. No M11+ feature implementation without owner approval.
 
 ## Mandatory engineering rules
 
@@ -27,6 +27,7 @@ M10: migrate the Java Spring Boot API **and its M5-M9 endpoints/MCP behavior** t
 
 ## Next work packages after M10 owner sign-off
 
+- Follow-up: remove `backend/` (Java) and the differential gate once the owner signs off on M10.
 - M11 Flutter/KortingKlok feasibility spike, then M12 mobile MVP.
 - M13 AI assistant experience using existing bounded MCP/domain tools.
 - M14 checkjebon-inspired web evaluation and SEO rendering decision.

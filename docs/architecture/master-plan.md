@@ -1,7 +1,7 @@
 # Master implementation plan v0.1
 
 **Project:** Dzikle/Ai-Shopping  
-**Status:** Proposed architecture; no implementation started.  
+**Status:** Living architecture reference. First version proposed before implementation; M1–M9 shipped (Python adapters, PostgreSQL, OpenSearch, REST API, MCP). The API layer is FastAPI since M10 (ADR-0006) — this plan's stack section was updated accordingly; see `docs/architecture/product-delivery-plan.md` for the delivery-level plan.  
 **Initial market:** North Macedonia; future multi-country, multi-retailer and multi-category.
 
 ## Mission
@@ -16,7 +16,7 @@ Retailer HTML / JSON / PDF / CSV
     -> Parsing / validation / normalization / identity resolution
     -> PostgreSQL canonical products, retailer SKUs, offers, history, provenance
     -> Versioned OpenSearch projections: products, offers, stores, intelligence
-    -> Spring Boot REST API and bounded MCP tools
+    -> Python/FastAPI REST API and bounded MCP tools
     -> Web/mobile clients and AI shopping agent
 ```
 
@@ -27,8 +27,8 @@ Retailer HTML / JSON / PDF / CSV
 - Exact identity: verified GTIN + variant/pack checks where present. Candidate matches can use normalized names/attributes and OpenSearch; LLM only for review of ambiguous candidates. Equivalent substitutes are not exact identities.
 - Never infer current availability or prices from stale snapshots; expose freshness, source URL and update time.
 
-## Preferred stack (to verify during M0)
-- Java 21 / Spring Boot backend, PostgreSQL, OpenSearch 3.x, Python adapter workers (TypeScript where reuse justifies), Redis if useful, Docker Compose, GitHub Actions, JUnit / pytest, structured logs; Prometheus/Grafana later.
+## Preferred stack (updated by ADR-0006, M10)
+- Python 3.12 / FastAPI backend (`uv`-managed, pytest), PostgreSQL, OpenSearch 3.x, Python adapter workers (TypeScript where reuse justifies), Redis if useful, Docker Compose, GitHub Actions, structured logs; Prometheus/Grafana later.
 - Model-agnostic AI interface; semantic retrieval is later milestone, not a baseline dependency.
 
 ## Data design
