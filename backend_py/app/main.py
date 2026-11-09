@@ -82,6 +82,9 @@ def _install_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def unhandled_handler(request: Request, exc: Exception):
+        import traceback
+
+        traceback.print_exc()
         return JSONResponse(
             status_code=500,
             content=_spring_error_body(500, "Internal Server Error", request.url.path),

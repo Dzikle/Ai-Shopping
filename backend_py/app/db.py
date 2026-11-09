@@ -35,6 +35,9 @@ class Database:
                     max_size=8,
                     open=True,
                     kwargs={"row_factory": dict_row},
+                    # Validate on borrow (HikariCP parity): a connection dropped
+                    # between requests must not surface as a failed query.
+                    check=ConnectionPool.check_connection,
                 )
             return self._pool
 
