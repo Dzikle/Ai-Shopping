@@ -83,7 +83,7 @@ def make_mcp_router(registry) -> APIRouter:
                 content=mcp_response_error(id_value, -32603, f"Internal error: {message}"),
             )
 
-    @router.get("/mcp")
+    @router.get("/mcp", response_model=None)
     def server_info() -> dict[str, Any]:
         return {
             "server": SERVER_NAME,

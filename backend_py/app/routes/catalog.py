@@ -29,18 +29,18 @@ class _OfferSearchFilter:
 def make_catalog_router(search_service) -> APIRouter:
     router = APIRouter(prefix="/api/v1", default_response_class=RestJSONResponse)
 
-    @router.get("/health")
+    @router.get("/health", response_model=None)
     def health() -> dict[str, Any]:
         return search_service.get_health()
 
-    @router.get("/stores")
+    @router.get("/stores", response_model=None)
     def stores(
         retailer: Optional[str] = Query(default=None),
         city: Optional[str] = Query(default=None),
     ) -> dict[str, Any]:
         return search_service.get_stores(retailer, city)
 
-    @router.get("/offers/search")
+    @router.get("/offers/search", response_model=None)
     def search_offers(
         q: Optional[str] = Query(default=None),
         retailer: Optional[str] = Query(default=None),
@@ -59,7 +59,7 @@ def make_catalog_router(search_service) -> APIRouter:
         )
         return search_service.search_offers(filter_obj)
 
-    @router.get("/products/compare")
+    @router.get("/products/compare", response_model=None)
     def compare_products(
         q: Optional[str] = Query(default=None),
         minRetailers: int = Query(default=2),
@@ -68,26 +68,26 @@ def make_catalog_router(search_service) -> APIRouter:
     ) -> dict[str, Any]:
         return search_service.compare_products(q, minRetailers, page, size)
 
-    @router.get("/products/{canonical_id}/history")
+    @router.get("/products/{canonical_id}/history", response_model=None)
     def product_history(canonical_id: int):
         history = search_service.get_product_history(canonical_id)
         if history is None:
             return Response(status_code=404)
         return history
 
-    @router.get("/matches/review-queue")
+    @router.get("/matches/review-queue", response_model=None)
     def review_queue(limit: int = Query(default=25)) -> list[dict[str, Any]]:
         return search_service.get_review_queue(limit)
 
-    @router.post("/matches/review-queue/{match_id}/approve")
+    @router.post("/matches/review-queue/{match_id}/approve", response_model=None)
     def approve_match(match_id: int, request: ReviewQueueActionRequest) -> dict[str, Any]:
         return search_service.approve_match(match_id, request.reviewedBy, request.reviewNotes)
 
-    @router.post("/matches/review-queue/{match_id}/reject")
+    @router.post("/matches/review-queue/{match_id}/reject", response_model=None)
     def reject_match(match_id: int, request: ReviewQueueActionRequest) -> dict[str, Any]:
         return search_service.reject_match(match_id, request.reviewedBy, request.reviewNotes)
 
-    @router.get("/freshness")
+    @router.get("/freshness", response_model=None)
     def freshness(
         retailer: Optional[str] = Query(default=None),
         staleThresholdHours: int = Query(default=48),
@@ -95,7 +95,7 @@ def make_catalog_router(search_service) -> APIRouter:
     ) -> dict[str, Any]:
         return search_service.get_freshness(retailer, staleThresholdHours, quarantineWindowDays)
 
-    @router.get("/metrics")
+    @router.get("/metrics", response_model=None)
     def metrics() -> dict[str, Any]:
         return search_service.get_metrics()
 
