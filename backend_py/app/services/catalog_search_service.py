@@ -16,36 +16,50 @@ class CatalogSearchService:
         self._os = open_search_client
         self._pg = postgres_repository
 
-    def get_health(self) -> dict[str, Any]:
-        db_up = self._pg.is_database_healthy()
-        counts: dict[str, int] = {}
-        if db_up:
-            counts.update(self._pg.get_table_counts())
+def get_health(self) -> dict[str, Any]:
+    db_up = self._pg_is_up()
+    counts: dict[str, int] = {}
+    if db_up:
+        counts.update(self._pg.get_table_counts())
 
+    os_up = False
+    try:
+        os_stores = self._os.count_index("stores")
+        os_offers = self._os.count_index("offers")
+        os_products = self._os.count_index("products")
+        if os_stores >= 0 and os_offers >= 0 and os_products >= 0:
+            os_up = True
+            counts["opensearch_stores"] = os_stores
+            counts["opensearch_offers"] = os_offers
+            counts["opensearch_products"] = os_products
+    except Exception:
         os_up = False
-        try:
-            os_stores = self._os.count_index("stores")
-            os_offers = self._os.count_index("offers")
-            os_products = self._os.count_index("products")
-            if os_stores >= 0 and os_offers >= 0 and os_products >= 0:
-                os_up = True
-                counts["opensearch_stores"] = os_stores
-                counts["opensearch_offers"] = os_offers
-                counts["opensearch_products"] = os_products
-        except Exception:
-            os_up = False
 
-        status = "UP" if db_up else "DOWN"
-        db_status = "UP" if db_up else "DOWN"
-        os_status = "UP" if os_up else "FALLBACK_POSTGRESQL"
-        active_engine = "opensearch" if os_up else "postgresql_fallback"
-        return {
-            "status": status,
-            "databaseStatus": db_status,
-            "opensearchStatus": os_status,
-            "activeSearchEngine": active_engine,
-            "counts": counts,
-        }
+    status = "UP" if db_up else "DOWN"
+    db_status = "UP" if db_up else "DOWN"
+    os_status = "UP" if os_up else "FALLBACK_POSTGRESQL"
+    active_engine = "opensearch" if os_up else "postgresql_fallback"
+    return {
+        "status": status,
+        "databaseStatus": db_status,
+        "opensearchStatus": os_status,
+        "activeSearchEngine": active_engine,
+        "counts": counts,
+    }
+
+def _pg_is_up(self) -> bool:
+    """Return True if the PostgreSQL database is reachable.
+    Retries once with a short sleep to handle transient pool-warmup failures
+    that appear on fresh container starts (the first request after container
+    boot can fail even when the DB is actually healthy).
+    """
+    for _ in range(2):
+        try:
+            return self._db.scalar("SELECT 1") == 1
+        except Exception:
+            import time
+            time.sleep(0.3)
+    return False
 
     def get_stores(self, retailer: str | None, city: str | None) -> dict[str, Any]:
         if self._os.is_healthy_and_populated():

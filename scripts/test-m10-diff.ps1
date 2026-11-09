@@ -113,6 +113,14 @@ try {
         docker logs --tail 30 $pyApiContainer
         throw 'python service did not become ready'
     }
+    # Let the new container's connection pool settle before the corpus starts
+    # (first-request DB failures only appear in the seconds after boot).
+    Start-Sleep -Seconds 10
+    if (-not $javaReady) { throw 'java service did not become ready' }
+    if (-not $pyReady) {
+        docker logs --tail 30 $pyApiContainer
+        throw 'python service did not become ready'
+    }
 
     Write-Output '=== Step 8: Differential corpus ==='
     docker run --rm --add-host=host.docker.internal:host-gateway `
