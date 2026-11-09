@@ -10,7 +10,7 @@ As of 2026-11-09, `main` contains backend/data work through M9, including Vero, 
 
 ## Next approved task
 
-M10: migrate the Java Spring Boot API **and its M5-M9 endpoints/MCP behavior** to Python/FastAPI with full regression/differential verification. Read `docs/milestones/m10-fastapi-migration-task.md`. No M11+ feature implementation without owner approval.
+**M12 Flutter mobile MVP is owner-approved (2026-11-09)**. Read `docs/milestones/m12-flutter-mobile-mvp-task.md`. The owner explicitly chose to defer M11 Flutter/Android toolchain and device validation; document that deferral rather than blocking M12. Find and preserve the actual M10 FastAPI and M11 Flutter implementation commits, which may not yet be on `main`. Do not begin M13+ without owner approval.
 
 ## Mandatory engineering rules
 
