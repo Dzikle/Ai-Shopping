@@ -19,8 +19,14 @@ from app.mcp.tool_registry import McpToolRegistry
 
 
 def create_app(settings=None, catalog_service=None, basket_service=None) -> FastAPI:
-    if catalog_service is None or basket_service is None:
+    if catalog_service is None and basket_service is None:
         catalog_service, basket_service = _build_default_stack(settings)
+    elif catalog_service is None or basket_service is None:
+        from app.services.catalog_search_service import CatalogSearchService
+        from app.services.basket_optimizer_service import BasketOptimizerService
+
+        catalog_service = catalog_service or CatalogSearchService.__new__(CatalogSearchService)
+        basket_service = basket_service or BasketOptimizerService.__new__(BasketOptimizerService)
 
     app = FastAPI(default_response_class=RestJSONResponse)
     app.include_router(make_catalog_router(catalog_service))
@@ -53,7 +59,7 @@ def _build_default_stack(settings):
     pg_repository = PostgresCatalogRepository(database)
     basket_repository = BasketRepository(database)
     catalog_service = CatalogSearchService(os_client, pg_repository)
-    basket_service = BasketOptimizerService(pg_repository, basket_repository)
+    basket_service = BasketOptimizerService(basket_repository)
     return catalog_service, basket_service
 
 

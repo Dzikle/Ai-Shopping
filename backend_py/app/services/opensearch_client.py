@@ -55,7 +55,8 @@ class OpenSearchClient:
 
     def count_index(self, index_or_alias: str) -> int:
         response = self._client.count(index=index_or_alias)
-        count = response.body.get("count")
+        body = response.body if hasattr(response, "body") else response
+        count = body.get("count")
         if not isinstance(count, int):
             raise OpenSearchUnavailable("OpenSearch count returned no count")
         return count
@@ -197,7 +198,7 @@ class OpenSearchClient:
 
     def _post_search(self, index_or_alias: str, body: dict[str, Any]) -> dict[str, Any]:
         response = self._client.search(index=index_or_alias, body=body)
-        return response.body
+        return response.body if hasattr(response, "body") else response
 
 
 def _hits_total(root: dict[str, Any]) -> int:
