@@ -20,20 +20,27 @@
 - **Terms:** site footer states downloading or using content from `ramstore.com.mk`/`ramstoremall.com.mk` (commercial content, logos, trademarks), storing it in any form, publishing or using it for any purpose is **not permitted without written consent from Ramstore Macedonia DOO**.
 - **Decision:** Do not ingest until written permission is obtained. Record the request as an owner action item.
 
-### 3. KAM — VALIDATED (2026-11-04): JSON store directory + daily per-store PDFs
+### 3. KAM — VALIDATED (2026-11-04); adapter implemented 2026-11-08 (M9, `adapters/kam/`)
 - **Landing page:** `https://kam.com.mk/ceni-vo-marketi.nspx` — AngularJS `shopListModule` (`Scripts/Shop/shopList/shopList.min.js`) rendering `/custom-templates/shopList/templates/storesPricelist.html`.
-- **Store directory API:** `POST https://kam.com.mk/ShopsWeb/LoadShopList` (`Content-Type: application/json`, body `null`) — returns a 55 KB JSON array of **86 stores** (`Id`, `Name`, `Address`, `City`, `Municipality`, `Coordinates`, `WorkingHours`, `Tags`, and `ShopFiles`).
-- **Per-store price-list format:** Every store entry carries `ShopFiles[0].RelativePath` of the form `{YYYY}/{MM}/{DD}/{storeId}.pdf` (e.g. `2026/11/04/73.pdf`, `DateUploaded: "/Date(1793746800000)/"`), downloadable directly without JS at `https://kam.com.mk/{RelativePath}` (verified `%PDF-1.7`, ~478 KB per store).
-- **robots.txt:** request returned empty (no crawl restrictions).
-- **Next step:** build a dedicated PDF table parser adapter in a post-M6 milestone when PDF source ingestion is prioritized.
+- **Store directory API:** `POST https://kam.com.mk/ShopsWeb/LoadShopList` (`Content-Type: application/json`, body `null`) — returns 60 KB UTF-8 JSON array of **86 stores** (`Id`, `Name`, `Address`, `City`, `Municipality`, `Coordinates`, `WorkingHours`, `Tags`, `ShopFiles[]`). Re-verified 2026-11-08 (today-dated `ShopFiles` entries present for all 86 stores; upload timestamp = 23:00 Europe/Skopje the prior evening).
+- **Per-store price-list format:** every store entry carries `ShopFiles[0].RelativePath` of the form `{YYYY}/{MM}/{DD}/{storeId}.pdf` (e.g. `2026/11/08/73.pdf`), downloadable at `https://kam.com.mk/{RelativePath}` (verified `%PDF-1.7`, 425–475 KB per store; 142–155 pages across sampled stores 73 & 46).
+- **PDF internal structure (probed with stdlib-only Python on stores 73 & 46 samples):**
+  - Classic xref-table PDF (no ObjStm/xref-streams), object numbering varies per store (must scan/dereference by `/Pages` `/Kids` tree, not by sorted object numbers).
+  - 0–155 pages; each page = one `FlateDecode` content stream; text via `Tj`/`Ty` literal strings; `Td`/`Tm` positioning; column grid drawn with line/rectangle path operators.
+  - Two TrueType subset fonts (`AAAAAA+Tahoma`, `AAAAAB+Tahoma`) per page, glyph-coded strings; each font carries a `ToUnicode` CMap (`beginbfchar`/`beginbfrange`) that fully restores Macedonian Cyrillic + digits (`/9 → obj with cyrillic map`, `/a → digits/latin map`; the mapping is *derived per PDF*, never hardcoded).
+  - Extraction proof-of-concept (stdlib `zlib` + operator/CMap walker) reconstructed full rows, e.g. `MILKA-MILKINIS 87.5 ГР … 100 гр = 36.85 ден.`, plus per-store publish timestamp `Датум и време на последно ажурирање на цените: 08.11.2026 5:45:37AM` — usable as authoritative provenance timestamp.
+  - All statutory columns are present in the page header: назив на производ, продажна цена, единична цена, цена со попуст, попуст (%), вид на промоција, достапност, опис.
+- **robots.txt:** empty (no crawl restrictions). Rate limiting still applies (≥1 s delay/page, IPv4, single daily window).
+- **Volume note:** ~1.5–1.7k rows/store/day × 86 stores ≈ 130–145k rows/day; dedup unchanged rows via `price_observations` provenance contract.
+- **Next step:** M9 proposal (`docs/milestones/m9-proposal.md`) — stdlib-only PDF adapter; committed byte-exact fixtures for replay tests.
 
 ## Other candidates
 | Retailer | Starting URL | Status |
 |---|---|---|
-| Tinex | https://www.tinex.com.mk/ (`ceni.tinex.mk:442`) | Self-hosted statutory price site unreachable (TCP timeout 2026-10-28 & 2026-11-04); deferred |
+| Tinex | https://www.tinex.com.mk/ (`ceni.tinex.mk:442`) | Self-hosted statutory price site unreachable (TCP timeout 2026-10-28, 2026-11-04 & 2026-11-08); deferred |
 | Stokomak | https://stokomak.proverkanaceni.mk/ | **VALIDATED & INGESTED (M2)** — 81 stores in selector, `?org={org}&perPage={n}&page={k}`, 6/9-col HTML table, no robots restrictions |
 | Kipper | https://kipper.mk/mk/marketet/ | WordPress + Elementor + DataTables (`kipper.proverkanaceni.mk` NXDOMAIN); store-level listing URLs to inspect further |
-| Konto | https://www.kontomarket.com.mk/cenovnik | **FORMAT IDENTIFIED (2026-11-04)** — Wix page linking stores directly to Tinex's statutory host `https://ceni.tinex.mk:442/?org={org}&search=&perPage=20` (e.g. `org=588, 590, 589, 554, 552`); blocked by `ceni.tinex.mk:442` TCP timeout |
+| Konto | https://www.kontomarket.com.mk/cenovnik | **FORMAT IDENTIFIED (2026-11-04)** — Wix page linking stores directly to Tinex's statutory host `https://ceni.tinex.mk:442/?org={org}&search=&perPage=20` (e.g. `org=588, 590, 589, 554, 552`); TCP timeout also re-confirmed 2026-11-08 |
 | Reptil | https://www.reptilmarketi.mk/mk/pricelists | **STORE API IDENTIFIED (2026-11-04)** — Next.js frontend backed by WordPress REST `https://cms.reptilmarketi.mk/wp-json/wp/v2/pages/8` (`acf.locations`: 30 stores with addresses/hours; `pricelist` field points to `https://marketonline.mk/`) |
 | Elida | https://www.elida.com.mk/Products | Product catalog; full legal price list unconfirmed |
 | Zito | https://zito.proverkanaceni.mk/ | **VALIDATED & INGESTED (M2)** — 94 stores in selector (sparse `org` IDs starting at 2; `org=1` returns empty `Нема податоци` table), same `*.proverkanaceni.mk` platform |

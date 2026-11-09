@@ -11,11 +11,11 @@
 param(
     [string]$Database = '',
     [string]$RunTag = '',
-    [string]$Retailers = 'vero,stokomak,zito',
+    [string]$Retailers = 'vero,stokomak,zito,kam',
     [switch]$FromSnapshots,
     [switch]$Live,
     [string]$SnapshotMap = '',
-    [string]$StoresMap = 'vero=89,stokomak=1,zito=2',
+    [string]$StoresMap = 'vero=89,stokomak=1,zito=2,kam=73',
     [int]$MaxPages = 50,
     [double]$Delay = 1.0,
     [string]$OpenSearchUrl = '',

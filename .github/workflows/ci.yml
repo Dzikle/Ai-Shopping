@@ -34,6 +34,7 @@ jobs:
           mkdir -p snapshots/vero
           mkdir -p snapshots/stokomak
           mkdir -p snapshots/zito
+          mkdir -p snapshots/kam
           mkdir -p snapshots/matching
           mkdir -p snapshots/opensearch
           mkdir -p snapshots/scheduler
@@ -53,6 +54,7 @@ jobs:
           docker run --rm -v "$PWD:/w" -w /w/adapters/common python:3.12-slim python -B tests.py
           docker run --rm -v "$PWD:/w" -w /w/adapters/vero python:3.12-slim python -B tests.py
           docker run --rm -v "$PWD:/w" -w /w/adapters/stokomak python:3.12-slim python -B tests.py
+          docker run --rm -v "$PWD:/w" -w /w/adapters/kam python:3.12-slim python -B tests.py
           docker run --rm -v "$PWD:/w" -w /w/matching python:3.12-slim python -B tests.py
           docker run --rm -v "$PWD:/w" -w /w/search python:3.12-slim python -B tests.py
           docker run --rm -v "$PWD:/w" -w /w/adapters/scheduler python:3.12-slim python -B tests.py
@@ -84,6 +86,10 @@ jobs:
       - name: M6 integration test (daily scheduler, freshness API, quarantine & alerting)
         shell: pwsh
         run: ./scripts/test-m6.ps1
+
+      - name: M9 integration test (KAM PDF adapter replay through scheduler & loader)
+        shell: pwsh
+        run: ./scripts/test-m9.ps1
 
       - name: Teardown
         if: always()

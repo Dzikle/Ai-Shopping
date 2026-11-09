@@ -8,3 +8,5 @@
 tests/fixtures/vero/*.html -text
 tests/fixtures/stokomak/*.html -text
 tests/fixtures/zito/*.html -text
+tests/fixtures/kam/*.pdf -text
+tests/fixtures/kam/*.json -text

@@ -29,10 +29,12 @@ for _p in (
     _REPO_ROOT / "adapters" / "common",
     _REPO_ROOT / "adapters" / "vero",
     _REPO_ROOT / "adapters" / "stokomak",
+    _REPO_ROOT / "adapters" / "kam",
 ):
     if str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
 
+import kam
 import scheduler
 import stokomak
 import vero
@@ -49,6 +51,7 @@ def _load_module(name: str, file_path: Path):
 
 vero_cli = _load_module("vero_cli", _REPO_ROOT / "adapters" / "vero" / "cli.py")
 stokomak_cli = _load_module("stokomak_cli", _REPO_ROOT / "adapters" / "stokomak" / "cli.py")
+kam_cli = _load_module("kam_cli", _REPO_ROOT / "adapters" / "kam" / "cli.py")
 
 
 def _parse_kv_map(raw: str | None) -> dict[str, str]:
@@ -201,6 +204,85 @@ def _live_fetch_proverkanaceni(
     return stokomak_cli.build_run(sources, out_dir, run_key, source_slug=retailer)
 
 
+def _live_fetch_kam(
+    base_url: str,
+    stores: list[str],
+    delay: float,
+    out_dir: str | Path,
+    run_key: str,
+    worker_id: str,
+    max_retries: int,
+    base_backoff: float,
+    stream=None,
+):
+    """KAM live fetch: POST the store directory, then GET each store PDF."""
+    sources = []
+    state: dict[str, Any] = {"min_interval": delay, "last_request_ts": None}
+    dir_raw = scheduler.fetch_with_retry(
+        kam.STORES_URL,
+        delay_seconds=delay,
+        state=state,
+        max_retries=max_retries,
+        base_backoff_seconds=base_backoff,
+        force_ipv4=False,
+        post_body=b"",
+    )
+    all_stores = kam.discover_stores(dir_raw)
+    by_key = {s["external_key"]: s for s in all_stores}
+    skipped = []
+    for store in stores:
+        meta = by_key.get(store)
+        if meta is None or not meta.get("price_list_path"):
+            skipped.append(store)
+            continue
+        t0 = time.monotonic()
+        url = kam.build_pdf_url(base_url, meta["price_list_path"])
+        data = scheduler.fetch_with_retry(
+            url,
+            delay_seconds=delay,
+            state=state,
+            max_retries=max_retries,
+            base_backoff_seconds=base_backoff,
+            force_ipv4=False,
+            timeout_seconds=180.0,
+        )
+        dur_ms = int((time.monotonic() - t0) * 1000)
+        sources.append({"url": url, "raw_bytes": data})
+        scheduler.emit_json_log(
+            "info",
+            "page_fetched",
+            retailer="kam",
+            store=store,
+            page=1,
+            run_key=run_key,
+            worker_id=worker_id,
+            duration_ms=dur_ms,
+            status="ok",
+            stream=stream,
+        )
+    if skipped:
+        scheduler.emit_json_log(
+            "warn",
+            "kam_stores_skipped",
+            retailer="kam",
+            stores=",".join(skipped),
+            run_key=run_key,
+            worker_id=worker_id,
+            stream=stream,
+        )
+    if not sources:
+        raise RuntimeError("no KAM price lists fetched")
+    store_dir_meta = {
+        "url": kam.STORES_URL,
+        "content_hash": kam.content_hash_sha256(dir_raw),
+        "stores": len(all_stores),
+        "fetched_ts": scheduler.now_utc().isoformat(),
+    }
+    return kam_cli.build_run(
+        sources, out_dir, run_key, store_directory=store_dir_meta
+    )
+
+
 def run_single_retailer(
     retailer: str,
     *,
@@ -244,6 +326,22 @@ def run_single_retailer(
                 if not sources:
                     raise RuntimeError(f"no store pages found in {snap_root}")
                 _records, manifest, out_path = vero_cli.build_run(sources, out_dir, run_key)
+            elif retailer == "kam":
+                sources = kam_cli.discover_snapshot_files(snap_root)
+                if not sources:
+                    raise RuntimeError(f"no store PDFs found in {snap_root}")
+                store_dir_ref = kam_cli.snapshot_store_directory(snap_root)
+                store_directory = None
+                if store_dir_ref:
+                    _raw, stores_found = store_dir_ref
+                    store_directory = {
+                        "url": kam.STORES_URL,
+                        "content_hash": kam.content_hash_sha256(_raw),
+                        "stores": len(stores_found),
+                    }
+                _records, manifest, out_path = kam_cli.build_run(
+                    sources, out_dir, run_key, store_directory=store_directory
+                )
             else:
                 url = base_url or stokomak.RETAILER_URLS[retailer]
                 sources = stokomak_cli.discover_snapshot_files(snap_root, url, per_page=per_page)
@@ -260,6 +358,18 @@ def run_single_retailer(
                     url,
                     target_stores,
                     max_pages,
+                    delay,
+                    out_dir,
+                    run_key,
+                    worker_id,
+                    max_retries,
+                    base_backoff,
+                    stream=stream,
+                )
+            elif retailer == "kam":
+                _records, manifest, out_path = _live_fetch_kam(
+                    url,
+                    target_stores,
                     delay,
                     out_dir,
                     run_key,
@@ -291,9 +401,10 @@ def run_single_retailer(
         status = "quarantined" if quarantined else "completed"
         alert = None
         if quarantined:
+            manifest_rows = manifest.get("pages") or manifest.get("sources") or []
             first_store = (
-                manifest["pages"][0]["store_external_key"]
-                if manifest.get("pages")
+                manifest_rows[0]["store_external_key"]
+                if manifest_rows
                 else "unknown"
             )
             alert = scheduler.build_alert_payload(
@@ -457,7 +568,7 @@ def main(argv=None) -> int:
     src_grp.add_argument("--from-snapshots", action="store_true", help="replay from local snapshot/fixture dirs")
     src_grp.add_argument("--live", action="store_true", help="polite live HTTP scraping")
 
-    ap.add_argument("--retailers", default="vero,stokomak,zito", help="comma-separated retailer slugs")
+    ap.add_argument("--retailers", default="vero,stokomak,zito,kam", help="comma-separated retailer slugs")
     ap.add_argument("--snapshot-map", help="comma-separated retailer=dir overrides for --from-snapshots")
     ap.add_argument("--stores-map", help="comma-separated retailer=store1:store2 overrides for --live")
     ap.add_argument("--max-pages", type=int, default=50)

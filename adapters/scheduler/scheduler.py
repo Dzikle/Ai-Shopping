@@ -34,24 +34,27 @@ except ImportError:
     SKOPJE_TZ = timezone(timedelta(hours=1), name="CET")
     TZ_SOURCE = "fixed:+01:00"
 
-DEFAULT_RETAILERS = ("vero", "stokomak", "zito")
+DEFAULT_RETAILERS = ("vero", "stokomak", "zito", "kam")
 
 DEFAULT_FIXTURE_DIRS = {
     "vero": "tests/fixtures/vero",
     "stokomak": "tests/fixtures/stokomak",
     "zito": "tests/fixtures/zito",
+    "kam": "tests/fixtures/kam",
 }
 
 DEFAULT_LIVE_URLS = {
     "vero": "https://pricelist.vero.com.mk",
     "stokomak": "https://stokomak.proverkanaceni.mk",
     "zito": "https://zito.proverkanaceni.mk",
+    "kam": "https://kam.com.mk",
 }
 
 DEFAULT_LIVE_SMOKE_STORES = {
     "vero": ["89"],
     "stokomak": ["1"],
     "zito": ["2"],
+    "kam": ["73"],
 }
 
 
@@ -181,6 +184,7 @@ def fetch_with_retry(
     timeout_seconds: float = 60.0,
     force_ipv4: bool = False,
     user_agent: str = "AiShopping-M6-scheduler/0.1 (+contact: owner)",
+    post_body: bytes | None = None,
     opener: Callable[[urllib.request.Request, float], Any] | None = None,
     sleep_fn: Callable[[float], None] = time.sleep,
 ) -> bytes:
@@ -198,7 +202,18 @@ def fetch_with_retry(
     attempt = 0
 
     while True:
-        req = urllib.request.Request(url, headers={"User-Agent": user_agent})
+        if post_body is None:
+            req = urllib.request.Request(url, headers={"User-Agent": user_agent})
+        else:
+            req = urllib.request.Request(
+                url,
+                data=post_body,
+                headers={
+                    "User-Agent": user_agent,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                method="POST",
+            )
         try:
             with prefer_ipv4_context(force_ipv4):
                 resp = open_fn(req, timeout_seconds)
