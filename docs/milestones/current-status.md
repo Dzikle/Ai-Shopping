@@ -190,6 +190,7 @@ Previous CI runs (M4/M6/M7 pushes plus an M3 fix probe) still failed at the "M1 
   - Unit suites all green: kam 18, common 8, vero 22, stokomak 9, scheduler 6, backend JUnit 14 (unchanged).
   - Full-file parses: store 73 -> 155 pages, 1697/1697 rows stored, 0 skipped, no quarantine, 0.75 s; store 46 -> 142 pages, 1561 rows, 0.66 s; promos 57/64, unit prices 1197/1053.
   - `scripts/test-m9.ps1` (scratch DB, migrations V1..V5, scheduler replay, loader, idempotency): all 17 asserts PASS; two identical passes stable at offers 3249 / observations 3252 / promotions 79 / snapshots 2 / products 1853 / completed runs 1; coordinates seeded for 86/86 stores; throwaway DB dropped.
+  - CI caught (run 42567344639) that `scripts/test-m6.ps1` still asserted 3-retailer-era freshness constants; fixed to 4 retailers (5,145 offers / 9 populated stores across wide+tight thresholds, kam row asserts offerCount 3249 / 86 seeded stores, quarantine-preservation assert now 5,145); `scripts/test-m6.ps1` fully green locally afterwards (M6 TEST OK, kam participates in cross-retailer report vs stokomak/zito).
 - **Limitations:** live KAM fetch was validated manually pre-implementation (store list + two PDFs downloaded) but CI covers fixture replay only; per-record `published_ts` uses each page's own statutory timestamp (identical across pages in practice for both fixtures); `category` stays `NULL` (statutory sheet has none).
 
 **Next candidate tasks (Post-M9):**

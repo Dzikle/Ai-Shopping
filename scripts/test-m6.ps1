@@ -1,18 +1,19 @@
 # M6 integration test:
 # 1. Recreates scratch PostgreSQL database (`ai_shopping_m6_test`) and applies
-#    migrations V1 + V2 + V3 + V4.
+#    migrations V1 + V2 + V3 + V4 (+ V5 since M9).
 # 2. Runs the M6 daily pipeline (`scripts/run-daily-pipeline.ps1 -FromSnapshots`)
 #    twice to verify end-to-end orchestration and idempotency across Vero,
-#    Stokomak, and Zito + deterministic matching + cross-retailer report.
+#    Stokomak, Zito, and KAM + deterministic matching + cross-retailer report.
 # 3. Builds and starts the Spring Boot backend container on port $ApiPort.
 # 4. Verifies `GET /api/v1/freshness` and `scripts/check-freshness.ps1`:
 #    - Store-level staleness detection (`staleThresholdHours=48` -> DEGRADED,
 #      `staleThresholdHours=8760` -> FRESH).
 # 5. Verifies quarantine handling and alerting (`scripts/alert.ps1`):
 #    - Runs a quarantined Zito store capture (`empty_1_1.html`) through the
-#      pipeline, asserts `offers_current` remains untouched (1,896 offers preserved),
-#      asserts `scripts/alert.ps1` emitted the structured JSON alert, and asserts
-#      `/api/v1/freshness` and `scripts/check-freshness.ps1` flag the quarantined run.
+#      pipeline, asserts `offers_current` remains untouched (5,145 offers
+#      preserved across all four retailers), asserts `scripts/alert.ps1`
+#      emitted the structured JSON alert, and asserts `/api/v1/freshness`
+#      and `scripts/check-freshness.ps1` flag the quarantined run.
 # 6. Optional `-LiveSmoke` switch: polite 1-page live scrape of one store per retailer.
 param(
     [string]$Database = 'ai_shopping_m6_test',
@@ -136,19 +137,23 @@ try {
     # 5. Verify /api/v1/freshness and check-freshness.ps1
     Write-Output '=== Step 5: Verify /api/v1/freshness and scripts/check-freshness.ps1 ==='
     $freshWide = Invoke-Utf8Get "$apiBase/api/v1/freshness?staleThresholdHours=8760&quarantineWindowDays=7"
-    if ($freshWide.status -ne 'FRESH' -or $freshWide.totalOffers -ne 1896 -or $freshWide.totalPopulatedStores -ne 7 -or $freshWide.totalStaleStores -ne 0 -or $freshWide.totalQuarantinedRuns -ne 0) {
+    if ($freshWide.status -ne 'FRESH' -or $freshWide.totalOffers -ne 5145 -or $freshWide.totalPopulatedStores -ne 9 -or $freshWide.totalStaleStores -ne 0 -or $freshWide.totalQuarantinedRuns -ne 0) {
         throw "Unexpected wide freshness response: $($freshWide | ConvertTo-Json -Compress)"
     }
-    Write-Output "PASS freshness_endpoint_healthy (status=$($freshWide.status), totalOffers=$($freshWide.totalOffers), populatedStores=$($freshWide.totalPopulatedStores))"
+    $kamRows = @($freshWide.retailers | Where-Object { $_.retailerSlug -eq 'kam' })
+    if ($kamRows.Count -ne 1 -or $kamRows[0].offerCount -ne 3249 -or $kamRows[0].seededStoresCount -ne 86) {
+        throw "Unexpected KAM freshness row: $($kamRows | ConvertTo-Json -Compress)"
+    }
+    Write-Output "PASS freshness_endpoint_healthy (status=$($freshWide.status), totalOffers=$($freshWide.totalOffers), populatedStores=$($freshWide.totalPopulatedStores), retailers=$(@($freshWide.retailers).Count))"
 
     & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/check-freshness.ps1 -ApiUrl $apiBase -StaleThresholdHours 8760 | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'check-freshness.ps1 should exit 0 when FRESH' }
     Write-Output 'PASS check_freshness_script_pass'
 
-    # Tight threshold (1 hour) against 2026-10-28 fixtures must flag all 7 populated stores as stale
+    # Tight threshold (1 hour) against fixture ages must flag all 9 populated stores as stale
     $freshTight = Invoke-Utf8Get "$apiBase/api/v1/freshness?staleThresholdHours=1&quarantineWindowDays=7"
-    if ($freshTight.status -ne 'DEGRADED' -or $freshTight.totalStaleStores -ne 7) {
-        throw "Expected 7 stale stores under 1h threshold, got status=$($freshTight.status) stale=$($freshTight.totalStaleStores)"
+    if ($freshTight.status -ne 'DEGRADED' -or $freshTight.totalStaleStores -ne 9) {
+        throw "Expected 9 stale stores under 1h threshold, got status=$($freshTight.status) stale=$($freshTight.totalStaleStores)"
     }
     Write-Output "PASS freshness_stale_store_detection (staleStores=$($freshTight.totalStaleStores))"
 
@@ -174,12 +179,12 @@ try {
     }
     Write-Output 'PASS pipeline_quarantine_exit_code_2'
 
-    # Verify offers_current was NOT deleted or corrupted (still 1,896 offers)
+    # Verify offers_current was NOT deleted or corrupted (still 5,145 offers)
     $offersAfterQ = docker compose exec -T postgres psql -U $DbUser -d $Database -t -A -c "SELECT count(*) FROM offers_current;"
-    if ($offersAfterQ -ne '1896') {
-        throw "AGENTS.md #6 violated: offers_current changed after quarantined run ($offersAfterQ != 1896)"
+    if ($offersAfterQ -ne '5145') {
+        throw "AGENTS.md #6 violated: offers_current changed after quarantined run ($offersAfterQ != 5145)"
     }
-    Write-Output 'PASS offers_preserved_on_quarantine (offers_current=1896)'
+    Write-Output 'PASS offers_preserved_on_quarantine (offers_current=5145)'
 
     # Verify alert.ps1 wrote structured JSON alert
     if (-not (Test-Path $alertLogFile)) {
@@ -218,7 +223,7 @@ try {
             -Database $Database `
             -RunTag 'm6-live-smoke' `
             -Live `
-            -StoresMap 'vero=89,stokomak=1,zito=2' `
+            -StoresMap 'vero=89,stokomak=1,zito=2,kam=73' `
             -MaxPages 1
         if ($LASTEXITCODE -ne 0) { throw 'live smoke pipeline failed' }
         Write-Output 'PASS live_smoke_pipeline'
