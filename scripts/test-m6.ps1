@@ -4,7 +4,7 @@
 # 2. Runs the M6 daily pipeline (`scripts/run-daily-pipeline.ps1 -FromSnapshots`)
 #    twice to verify end-to-end orchestration and idempotency across Vero,
 #    Stokomak, Zito, and KAM + deterministic matching + cross-retailer report.
-# 3. Builds and starts the Spring Boot backend container on port $ApiPort.
+# 3. Syncs (uv, locked) and starts the FastAPI backend container on port $ApiPort.
 # 4. Verifies `GET /api/v1/freshness` and `scripts/check-freshness.ps1`:
 #    - Store-level staleness detection (`staleThresholdHours=48` -> DEGRADED,
 #      `staleThresholdHours=8760` -> FRESH).
@@ -98,24 +98,29 @@ try {
     }
     Write-Output "PASS daily_pipeline_idempotent (counts=$counts2)"
 
-    # 4. Build & start Spring Boot backend container
-    Write-Output '=== Step 4: Build & start Spring Boot backend container ==='
-    docker run --rm -v "${PWD}/backend:/w" -v aoshopping-m2-repo:/root/.m2 -w /w maven:3.9.9-eclipse-temurin-21 mvn -B test package
-    if ($LASTEXITCODE -ne 0) { throw 'maven test package failed' }
+    # 4. Sync & start FastAPI backend container
+    Write-Output '=== Step 4: Sync & start FastAPI backend container ==='
+    docker run --rm -v "${PWD}/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv -v aoshopping-uv-venv:/w/.venv -w /w `
+        ghcr.io/astral-sh/uv:python3.12-bookworm-slim `
+        sh -c "uv sync --locked && uv run pytest -q"
+    if ($LASTEXITCODE -ne 0) { throw 'fastapi backend tests failed' }
 
     docker run -d --name $apiContainer --add-host=host.docker.internal:host-gateway `
-        -p "${ApiPort}:8080" `
-        -e "SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:${DbPort}/${Database}" `
-        -e "SPRING_DATASOURCE_USERNAME=${DbUser}" `
-        -e "SPRING_DATASOURCE_PASSWORD=${DbPass}" `
-        -e "AISHOPPING_OPENSEARCH_URL=http://127.0.0.1:1" `
-        -v "${PWD}/backend:/w" -w /w maven:3.9.9-eclipse-temurin-21 `
-        java -jar target/ai-shopping-backend-0.3.0-SNAPSHOT.jar | Out-Null
+        -p "${ApiPort}:8000" `
+        -e "POSTGRES_HOST=host.docker.internal" `
+        -e "POSTGRES_PORT=${DbPort}" `
+        -e "POSTGRES_DB=${Database}" `
+        -e "POSTGRES_USER=${DbUser}" `
+        -e "POSTGRES_PASSWORD=${DbPass}" `
+        -e "OPENSEARCH_URL=http://127.0.0.1:1" `
+        -v "${PWD}/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv -v aoshopping-uv-venv:/w/.venv -w /w `
+        ghcr.io/astral-sh/uv:python3.12-bookworm-slim `
+        uv run uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'failed to start backend container' }
 
     $apiBase = "http://localhost:$ApiPort"
     $serverReady = $false
-    for ($i = 0; $i -lt 90; $i++) {
+    for ($i = 0; $i -lt 240; $i++) {
         try {
             $h = Invoke-RestMethod -Uri "$apiBase/api/v1/health" -TimeoutSec 2
             if ($h.status -eq 'UP') { $serverReady = $true; break }

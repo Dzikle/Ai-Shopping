@@ -59,9 +59,12 @@ jobs:
           docker run --rm -v "$PWD:/w" -w /w/search python:3.12-slim python -B tests.py
           docker run --rm -v "$PWD:/w" -w /w/adapters/scheduler python:3.12-slim python -B tests.py
 
-      - name: Backend JUnit tests (Java 21 / Spring Boot)
-        run: |
-          docker run --rm -v "$PWD/backend:/w" -w /w maven:3.9.9-eclipse-temurin-21 mvn -B test
+      - name: Backend FastAPI tests (Python 3.12, uv, locked deps)
+        run: >
+          docker run --rm -v "$PWD/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv
+          -v aoshopping-uv-venv:/w/.venv -w /w
+          ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+          sh -c "uv sync --locked && uv run pytest -q"
 
       - name: M1 integration test (replay fixtures, idempotent load)
         shell: pwsh
@@ -90,6 +93,10 @@ jobs:
       - name: M9 integration test (KAM PDF adapter replay through scheduler & loader)
         shell: pwsh
         run: ./scripts/test-m9.ps1
+
+      - name: M10 differential regression (Spring Boot jar vs FastAPI on identical data)
+        shell: pwsh
+        run: ./scripts/test-m10-diff.ps1
 
       - name: Teardown
         if: always()

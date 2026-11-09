@@ -4,8 +4,9 @@
 # 2. Starts an OpenSearch 3.9-compatible HTTP server (or uses live OpenSearch)
 #    and executes two consecutive projection reindex runs (v1_pass1, v1_pass2)
 #    to verify zero-downtime alias swapping and document count parity.
-# 3. Packages and boots the Spring Boot REST API container and verifies all
-#    6 read-only endpoints against OpenSearch ("sourceEngine": "opensearch").
+# 3. Syncs the FastAPI backend (uv, locked) and boots it in a container,
+#    verifying all 6 read-only endpoints against OpenSearch
+#    ("sourceEngine": "opensearch").
 # 4. Stops the OpenSearch container and verifies automatic PostgreSQL fallback
 #    ("sourceEngine": "postgresql_fallback") with identical cross-retailer
 #    product comparisons, prices, and provenance.
@@ -43,10 +44,12 @@ try {
     & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/test-m2.ps1 -Database $Database -KeepDb
     if ($LASTEXITCODE -ne 0) { throw 'test-m2 setup failed' }
 
-    # 2. Package Spring Boot backend JAR (if not already packaged)
-    Write-Output "=== Step 2: Build & test Spring Boot backend ==="
-    docker run --rm -v "${PWD}/backend:/w" -v aoshopping-m2-repo:/root/.m2 -w /w maven:3.9.9-eclipse-temurin-21 mvn -B test package
-    if ($LASTEXITCODE -ne 0) { throw 'maven test package failed' }
+    # 2. Sync FastAPI backend dependencies and run its test suite (uv, locked)
+    Write-Output '=== Step 2: Sync and test FastAPI backend (uv) ==='
+    docker run --rm -v "${PWD}/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv -v aoshopping-uv-venv:/w/.venv -w /w `
+        ghcr.io/astral-sh/uv:python3.12-bookworm-slim `
+        sh -c "uv sync --locked && uv run pytest -q"
+    if ($LASTEXITCODE -ne 0) { throw 'fastapi backend tests failed' }
 
     # 3. Start OpenSearch service container for projection indexing
     Write-Output "=== Step 3: Start OpenSearch projection server on port $MockOsPort ==="
@@ -83,21 +86,24 @@ try {
     }
     Write-Output 'PASS opensearch_alias_swap_v1_pass2'
 
-    # 5. Start Spring Boot backend container connected to Postgres and OpenSearch
-    Write-Output "=== Step 5: Start Spring Boot REST API container on port $ApiPort ==="
+    # 5. Start FastAPI backend container connected to Postgres and OpenSearch
+    Write-Output "=== Step 5: Start FastAPI REST API container on port $ApiPort ==="
     docker run -d --name $apiContainer --add-host=host.docker.internal:host-gateway `
-        -p "${ApiPort}:8080" `
-        -e "SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:${DbPort}/${Database}" `
-        -e "SPRING_DATASOURCE_USERNAME=${DbUser}" `
-        -e "SPRING_DATASOURCE_PASSWORD=${DbPass}" `
-        -e "AISHOPPING_OPENSEARCH_URL=http://host.docker.internal:${MockOsPort}" `
-        -v "${PWD}/backend:/w" -w /w maven:3.9.9-eclipse-temurin-21 `
-        java -jar target/ai-shopping-backend-0.3.0-SNAPSHOT.jar | Out-Null
+        -p "${ApiPort}:8000" `
+        -e "POSTGRES_HOST=host.docker.internal" `
+        -e "POSTGRES_PORT=${DbPort}" `
+        -e "POSTGRES_DB=${Database}" `
+        -e "POSTGRES_USER=${DbUser}" `
+        -e "POSTGRES_PASSWORD=${DbPass}" `
+        -e "OPENSEARCH_URL=http://host.docker.internal:${MockOsPort}" `
+        -v "${PWD}/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv -v aoshopping-uv-venv:/w/.venv -w /w `
+        ghcr.io/astral-sh/uv:python3.12-bookworm-slim `
+        uv run uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'failed to start backend container' }
 
     $apiBase = "http://localhost:$ApiPort/api/v1"
     $apiReady = $false
-    for ($i = 0; $i -lt 90; $i++) {
+    for ($i = 0; $i -lt 240; $i++) {
         try {
             $health = Invoke-RestMethod -Uri "$apiBase/health" -TimeoutSec 2
             if ($health.status -eq 'UP') { $apiReady = $true; break }
@@ -106,8 +112,8 @@ try {
     }
     if (-not $apiReady) {
         docker logs --tail 15 $apiContainer
-        "::error::spring_boot_api_not_healthy port=$ApiPort containers=$((docker ps -a --format '{{.Names}} {{.Status}}') -join ' | ')"
-        throw 'Spring Boot API did not become healthy'
+        "::error::fastapi_api_not_healthy port=$ApiPort containers=$((docker ps -a --format '{{.Names}} {{.Status}}') -join ' | ')"
+        throw 'FastAPI API did not become healthy'
     }
 
     # 6. Verify REST endpoints backed by OpenSearch

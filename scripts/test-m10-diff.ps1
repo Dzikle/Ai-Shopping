@@ -12,7 +12,6 @@ param(
     [int]$PythonPort = 18089,
     [string]$JavaDb = 'ai_shopping_m10_diff_java',
     [string]$PythonDb = 'ai_shopping_m10_diff_py',
-    [string]$Query = '',
     [switch]$SkipCleanup,
     [switch]$KeepDatabases
 )
@@ -40,6 +39,7 @@ function Invoke-Sql([string]$Database, [string]$Sql) {
 }
 
 $apiContainer = 'ai-shopping-m10-diff-api'
+$pyApiContainer = 'ai-shopping-m10-diff-py-api'
 $uvicornJob = $null
 try {
     Write-Output '=== Step 1: mvn -B test package (Java suite) ==='
@@ -80,24 +80,25 @@ try {
         java -jar target/ai-shopping-backend-0.3.0-SNAPSHOT.jar | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'failed to start java container' }
 
-    Write-Output "=== Step 6b: Start uvicorn (port $PythonPort) on host ==="
-    $script:RepoRoot = (Get-Location).Path
-    $uvicornJob = Start-Job -ScriptBlock {
-        param($repoRoot, $port, $dbName, $dbUser, $dbPass, $osUrl)
-        Set-Location -LiteralPath (Join-Path $repoRoot 'backend_py')
-        $env:POSTGRES_HOST = '127.0.0.1'
-        $env:POSTGRES_PORT = '5432'
-        $env:POSTGRES_DB = $dbName
-        $env:POSTGRES_USER = $dbUser
-        $env:POSTGRES_PASSWORD = $dbPass
-        $env:OPENSEARCH_URL = $osUrl
-        uv run uvicorn app.main:create_app --factory --host 127.0.0.1 --port $port
-    } -ArgumentList $script:RepoRoot, $PythonPort, $PythonDb, $DbUser, $DbPass, $OsUrl
-    $uvicornJobName = $uvicornJob.Name
+    Write-Output "=== Step 6b: Start uvicorn container (port $PythonPort) ==="
+    docker rm -f $pyApiContainer 2>$null | Out-Null
+    docker run -d --name $pyApiContainer `
+        --add-host=host.docker.internal:host-gateway `
+        -p "${PythonPort}:8000" `
+        -e "POSTGRES_HOST=host.docker.internal" `
+        -e "POSTGRES_PORT=${DbPort}" `
+        -e "POSTGRES_DB=${PythonDb}" `
+        -e "POSTGRES_USER=${DbUser}" `
+        -e "POSTGRES_PASSWORD=${DbPass}" `
+        -e "OPENSEARCH_URL=http://host.docker.internal:9200" `
+        -v "${PWD}/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv -v aoshopping-uv-venv:/w/.venv -w /w `
+        ghcr.io/astral-sh/uv:python3.12-bookworm-slim `
+        uv run uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 | Out-Null
+    if ($LASTEXITCODE -ne 0) { throw 'failed to start python container' }
 
     Write-Output '=== Step 7: Wait for both services ==='
     $javaReady = $false; $pyReady = $false
-    for ($i = 0; $i -lt 90; $i++) {
+    for ($i = 0; $i -lt 240; $i++) {
         if (-not $javaReady) {
             try { Invoke-RestMethod "http://localhost:$JavaPort/api/v1/health" | Out-Null; $javaReady = $true } catch {}
         }
@@ -109,19 +110,19 @@ try {
     }
     if (-not $javaReady) { throw 'java service did not become ready' }
     if (-not $pyReady) {
-        Write-Output (Receive-Job -Name $uvicornJobName -Keep 2>&1 | Select-Object -Last 60 | Out-String)
+        docker logs --tail 30 $pyApiContainer
         throw 'python service did not become ready'
     }
 
     Write-Output '=== Step 8: Differential corpus ==='
-    $runner = Join-Path (Get-Location) 'backend_py'
-    Push-Location $runner
-    $env:PYTHONIOENCODING = 'utf-8'
-    $harnessArgs = @('run', 'python', 'tools/diff_harness.py', '--java', "http://localhost:$JavaPort", '--python', "http://localhost:$PythonPort")
-    if ($Query -ne '') { $harnessArgs += @('--query', $Query) }
-    uv @harnessArgs
+    docker run --rm --add-host=host.docker.internal:host-gateway `
+        -e "PYTHONIOENCODING=utf-8" `
+        -v "${PWD}/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv -v aoshopping-uv-venv:/w/.venv -w /w `
+        ghcr.io/astral-sh/uv:python3.12-bookworm-slim `
+        uv run python tools/diff_harness.py `
+        --java "http://host.docker.internal:$JavaPort" `
+        --python "http://host.docker.internal:$PythonPort"
     $exitCode = $LASTEXITCODE
-    Pop-Location
 
     if ($exitCode -ne 0) { throw "diff harness reported failures (exit=$exitCode)" }
     Write-Output 'DIFF-SUITE PASS'
@@ -131,9 +132,7 @@ finally {
     if (-not $SkipCleanup) {
         Write-Output '=== Cleanup ==='
         docker rm -f $apiContainer 2>$null | Out-Null
-        if ($uvicornJob) {
-            try { Stop-Job $uvicornJob; Remove-Job $uvicornJob -Force } catch {}
-        }
+        docker rm -f $pyApiContainer 2>$null | Out-Null
         if (-not $KeepDatabases) {
             try { Invoke-Sql $DbDefault "DROP DATABASE IF EXISTS $JavaDb WITH (FORCE);" } catch {}
             try { Invoke-Sql $DbDefault "DROP DATABASE IF EXISTS $PythonDb WITH (FORCE);" } catch {}

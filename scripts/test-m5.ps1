@@ -2,7 +2,7 @@
 # 1. Recreates scratch PostgreSQL database (`ai_shopping_m5_test`), applies
 #    migrations V1 + V2 + V3, and loads Vero + Stokomak + Zito fixtures and
 #    deterministic product matches via `scripts/test-m2.ps1 -KeepDb`.
-# 2. Builds and boots the Spring Boot backend container exposing the MCP server
+# 2. Syncs (uv, locked) and boots the FastAPI backend container exposing the MCP server
 #    at `/mcp` on port $ApiPort.
 # 3. Performs full Model Context Protocol 2024-11-05 handshake:
 #    - GET /mcp (server info & discovery)
@@ -50,27 +50,32 @@ try {
     & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/test-m2.ps1 -Database $Database -KeepDb
     if ($LASTEXITCODE -ne 0) { throw 'test-m2 setup failed' }
 
-    # 2. Build & test Spring Boot backend JAR
-    Write-Output '=== Step 2: Build and test Spring Boot backend ==='
-    docker run --rm -v "${PWD}/backend:/w" -v aoshopping-m2-repo:/root/.m2 -w /w maven:3.9.9-eclipse-temurin-21 mvn -B test package
-    if ($LASTEXITCODE -ne 0) { throw 'maven test package failed' }
+    # 2. Sync FastAPI backend dependencies and run its test suite (uv, locked)
+    Write-Output '=== Step 2: Sync and test FastAPI backend (uv) ==='
+    docker run --rm -v "${PWD}/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv -v aoshopping-uv-venv:/w/.venv -w /w `
+        ghcr.io/astral-sh/uv:python3.12-bookworm-slim `
+        sh -c "uv sync --locked && uv run pytest -q"
+    if ($LASTEXITCODE -ne 0) { throw 'fastapi backend tests failed' }
 
-    # 3. Start Spring Boot backend container connected to $Database
-    Write-Output "=== Step 3: Start Spring Boot MCP server container on port $ApiPort ==="
+    # 3. Start FastAPI backend container connected to $Database
+    Write-Output "=== Step 3: Start FastAPI MCP server container on port $ApiPort ==="
     docker run -d --name $apiContainer --add-host=host.docker.internal:host-gateway `
-        -p "${ApiPort}:8080" `
-        -e "SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:${DbPort}/${Database}" `
-        -e "SPRING_DATASOURCE_USERNAME=${DbUser}" `
-        -e "SPRING_DATASOURCE_PASSWORD=${DbPass}" `
-        -e "AISHOPPING_OPENSEARCH_URL=http://127.0.0.1:1" `
-        -v "${PWD}/backend:/w" -w /w maven:3.9.9-eclipse-temurin-21 `
-        java -jar target/ai-shopping-backend-0.3.0-SNAPSHOT.jar | Out-Null
+        -p "${ApiPort}:8000" `
+        -e "POSTGRES_HOST=host.docker.internal" `
+        -e "POSTGRES_PORT=${DbPort}" `
+        -e "POSTGRES_DB=${Database}" `
+        -e "POSTGRES_USER=${DbUser}" `
+        -e "POSTGRES_PASSWORD=${DbPass}" `
+        -e "OPENSEARCH_URL=http://127.0.0.1:1" `
+        -v "${PWD}/backend_py:/w" -v aoshopping-uv-cache:/root/.cache/uv -v aoshopping-uv-venv:/w/.venv -w /w `
+        ghcr.io/astral-sh/uv:python3.12-bookworm-slim `
+        uv run uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8000 | Out-Null
     if ($LASTEXITCODE -ne 0) { throw 'failed to start backend container' }
 
     $mcpBase = "http://localhost:$ApiPort/mcp"
     $restBase = "http://localhost:$ApiPort/api/v1"
     $serverReady = $false
-    for ($i = 0; $i -lt 90; $i++) {
+    for ($i = 0; $i -lt 240; $i++) {
         try {
             $info = Invoke-RestMethod -Uri $mcpBase -TimeoutSec 2
             if ($info.server -eq 'ai-shopping-mcp-server') { $serverReady = $true; break }
