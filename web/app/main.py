@@ -25,6 +25,7 @@ from .formatting import (
     format_price_range,
     format_quantity,
     mk_noun,
+    unit_price_for_offer,
 )
 from . import routes
 
@@ -67,6 +68,7 @@ def create_app(
     templates.env.filters["mkdatetime"] = format_datetime
     templates.env.filters["mkrange"] = format_price_range
     templates.env.filters["mknoun"] = mk_noun
+    templates.env.filters["unit_price"] = unit_price_for_offer
 
     app.state.api = api
     app.state.cache = freshness_cache
