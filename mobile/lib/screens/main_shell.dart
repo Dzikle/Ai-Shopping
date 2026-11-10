@@ -3,13 +3,14 @@
 import '../l10n/app_localizations.dart';
 import '../theme/app_colors.dart';
 import '../widgets/app_logo.dart';
+import 'assistant_screen.dart';
 import 'basket_screen.dart';
 import 'compare_screen.dart';
 import 'home_screen.dart';
 import 'search_screen.dart';
 import 'settings_screen.dart';
 
-/// Bottom navigation shell: Home / Search / Compare / Basket / Settings.
+/// Bottom navigation shell: Home / Search / Compare / Basket / Assistant / Settings.
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
 
@@ -30,6 +31,7 @@ class _MainShellState extends State<MainShell> {
       const SearchScreen(),
       const CompareScreen(),
       const BasketScreen(),
+      const AssistantScreen(),
       const SettingsScreen(),
     ];
 
@@ -83,6 +85,11 @@ class _MainShellState extends State<MainShell> {
             icon: const Icon(Icons.shopping_basket_outlined),
             activeIcon: const Icon(Icons.shopping_basket),
             label: l.t('nav_basket'),
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.auto_awesome_outlined),
+            activeIcon: const Icon(Icons.auto_awesome),
+            label: l.t('nav_ai'),
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings_outlined),

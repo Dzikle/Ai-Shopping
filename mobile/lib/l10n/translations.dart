@@ -231,6 +231,45 @@ const Map<String, Map<String, String>> translations = {
         'Заштедата од поделба е под прагот; препорачана е една продавница',
     'reason_multi_store_plan_found': 'Пронајден е план со повеќе продавници',
 
+    'nav_ai': 'AI',
+
+    'assistant_intro':
+        'Здраво! Јас сум вашиот AI асистент за пазарење. Напишете што ви треба, на пример: „млеко, јајца и леб“, и јас ќе пребарам во вистинскиот каталог. Промените во кошницата се применуваат само по вашата потврда, а вкупните суми ги пресметува оптимизаторот на серверот.',
+    'assistant_input_hint': 'Што ви треба? (например: млеко, 500 г брашно)',
+    'assistant_pick_option':
+        'Иберете точно производ од понудените опции за да продолжиме:',
+    'assistant_demo_chip':
+        'Демо режим: локален детерминистички интерпретатор, без жив AI модел.',
+    'assistant_proposal_add': 'Додај во кошница',
+    'assistant_proposal_replace': 'Промени количина',
+    'assistant_verified': 'верифицирано во каталог',
+    'assistant_unverified': 'непотврдена врска со производ',
+    'assistant_cancel': 'Откажи',
+    'assistant_apply': 'Примени во кошница',
+    'assistant_applied':
+        'Промените влегоа во вашата кошница. Резултатите од оптимизаторот на серверот:',
+    'assistant_nothing_to_apply': 'Нема промени за примена.',
+    'assistant_stale_basket':
+        'Кошницата е сменета откако асистентот одговори; барајте повторно за да добиете свежи предлози.',
+    'assistant_error_generic':
+        'Не успеав да добијам одговор од асистентот на серверот; обидете се повторно.',
+    'assistant_model_unavailable':
+        'AI моделот на серверот не е достапен (не е конфигуриран). Поради тоа во оваа сесија нема да добиете предлози.',
+    'assistant_model_error':
+        'AI моделот одговори со нестандарен излез и ништо не беше применето; обидете се повторно.',
+    'assistant_choice_multiple_products': 'повеќе можни производи',
+    'assistant_choice_multiple_unverified': 'повеќе непотврдени понуди',
+    'assistant_choice_no_in_stock_offers': 'нема достапни понуди',
+    'assistant_choice_generic': 'бара уточнение',
+    'assistant_reason_no_offers': 'нема понуди во каталогот',
+    'assistant_reason_search_failed': 'пребарувањето не успеа',
+    'assistant_reason_budget': 'лимит на најави по барање',
+    'assistant_reason_candidate': 'одбраната опција повеќе не е во каталог',
+    'assistant_reason_generic': 'не е поврзано со производ',
+    'assistant_substitute_tag': 'заменски кандидат',
+    'assistant_preview_subtotal':
+        'Со предлозите: {total} во „{store}“ (преглед на серверот; примената го преиспитува).',
+
     'settings_title': 'Поставки',
     'settings_language': 'Јазик',
     'settings_language_mk': 'Македонски',
@@ -478,6 +517,44 @@ const Map<String, Map<String, String>> translations = {
     'reason_single_store_recommended_split_savings_below_threshold':
         'Split savings are below the threshold; one store is recommended',
     'reason_multi_store_plan_found': 'A multi-store plan was found',
+
+    'nav_ai': 'AI',
+
+    'assistant_intro':
+        'Hi! I am your AI shopping assistant. Tell me what you need, e.g. "млеко, јајца и леб", and I will search the real catalog. Basket changes apply only after your confirmation, and totals are computed by the server optimizer.',
+    'assistant_input_hint': 'What do you need? (e.g. млеко, 500 г брашно)',
+    'assistant_pick_option':
+        'Pick one product from the offered options to continue:',
+    'assistant_demo_chip':
+        'Demo mode: local deterministic interpreter, no live AI model.',
+    'assistant_proposal_add': 'Add to basket',
+    'assistant_proposal_replace': 'Change quantity',
+    'assistant_verified': 'verified in catalog',
+    'assistant_unverified': 'unverified product link',
+    'assistant_cancel': 'Cancel',
+    'assistant_apply': 'Apply to basket',
+    'assistant_applied': 'Changes applied to your basket. Server optimizer results:',
+    'assistant_nothing_to_apply': 'No changes to apply.',
+    'assistant_stale_basket':
+        'The basket changed since the assistant replied; search again for fresh proposals.',
+    'assistant_error_generic':
+        'Could not reach the assistant service; please try again.',
+    'assistant_model_unavailable':
+        'The server-side AI model is unavailable (not configured). Because of that you will not get proposals in this session.',
+    'assistant_model_error':
+        'The AI model returned malformed output and nothing was applied; please try again.',
+    'assistant_choice_multiple_products': 'multiple possible products',
+    'assistant_choice_multiple_unverified': 'multiple unverified listings',
+    'assistant_choice_no_in_stock_offers': 'no in-stock offers',
+    'assistant_choice_generic': 'needs clarification',
+    'assistant_reason_no_offers': 'no catalog offers found',
+    'assistant_reason_search_failed': 'search failed',
+    'assistant_reason_budget': 'tool budget exhausted',
+    'assistant_reason_candidate': 'the selected option is no longer in the catalog',
+    'assistant_reason_generic': 'could not be grounded in the catalog',
+    'assistant_substitute_tag': 'substitute candidate',
+    'assistant_preview_subtotal':
+        'With the proposals: {total} at "{store}" (server preview; applying re-runs the optimizer).',
 
     'settings_title': 'Settings',
     'settings_language': 'Language',
