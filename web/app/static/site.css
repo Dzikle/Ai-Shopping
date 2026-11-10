@@ -185,3 +185,55 @@ button.secondary { background: var(--surface); color: var(--ink); border-color: 
   .nav a { padding: 0.25rem 0.35rem; }
   .nav-basket { margin-left: 0; }
 }
+
+/* M14 stabilization: grouped filters and deliberate two-tier mobile navigation. */
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+  align-items: end;
+}
+.filter-field { min-width: 0; }
+.filter-field label { margin-bottom: 0.2rem; }
+.filter-field input, .filter-field select { display: block; width: 100%; min-width: 0; }
+.filter-options {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+  grid-column: span 2;
+}
+.filter-options .check { display: inline-flex; align-items: center; gap: 0.2rem; }
+.filter-submit { justify-self: start; min-width: 9rem; }
+.unit-warning { color: #9b4b00; font-weight: 600; }
+
+@media (max-width: 40rem) {
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.35rem 0.75rem;
+  }
+  .nav .brand {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-size: 1rem;
+    padding: 0.15rem 0;
+  }
+  .nav a:not(.brand) {
+    margin: 0;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.15rem;
+    min-width: 0;
+  }
+  .nav-basket { margin-left: 0; }
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem;
+    padding: 0.75rem;
+  }
+  .filter-query, .filter-options, .filter-submit { grid-column: 1 / -1; }
+  .filter-options { justify-content: space-between; gap: 0.35rem; }
+  .filter-options .check { font-size: 0.85rem; white-space: nowrap; }
+  .filter-submit { justify-self: stretch; width: 100%; }
+  .offer article, .compare-group { padding: 0.7rem 0.85rem; }
+  .offer h2, .compare-group h2 { line-height: 1.35; }
+}
