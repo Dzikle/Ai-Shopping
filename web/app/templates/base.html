@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}AI Пазарење{% endblock %}</title>
+  <meta name="description" content="{% block description %}Споредба на проверени цени од продавници во Македонија: пребарајте понуди, споредете продавачи и оптимизирајте ја кошничката со детерминистички пресметки на серверот.{% endblock %}">
+  {% block robots %}{% endblock %}
+  <link rel="canonical" href="{% block canonical %}{{ web_base_url }}/{{ nav_path.lstrip('/') if nav_path and nav_path != '/' else '' }}{% endblock %}">
+  <link rel="stylesheet" href="/static/site.css">
+</head>
+<body>
+<header class="site-header">
+  <nav class="nav" aria-label="Главна навигација">
+    <a class="brand" href="/">AI Пазарење</a>
+    <a href="/search" {% if nav_path == '/search' %}aria-current="page"{% endif %}>Пребарување</a>
+    <a href="/compare" {% if nav_path == '/compare' %}aria-current="page"{% endif %}>Споредба</a>
+    <a href="/basket" class="nav-basket" {% if nav_path == '/basket' %}aria-current="page"{% endif %}>Кошничка <span id="basket-count" class="basket-count" hidden>0</span></a>
+  </nav>
+</header>
+<main id="main" class="container">
+{% block content %}{% endblock %}
+</main>
+<footer class="site-footer">
+  <div class="container">
+    {% if freshness_summary %}
+    <p>Податоци: {{ freshness_summary.total_offers }} понуди од {{ freshness_summary.retailer_count }} продавачи
+      ({{ freshness_summary.populated_stores }} продавници со активни понуди) ·
+      последно објавено: {{ freshness_summary.latest_published }} ·
+      проверено: {{ freshness_summary.checked_at }}.</p>
+    {% else %}
+    <p>Податоците за обем и свежина моментално не се достапни.</p>
+    {% endif %}
+    <p>Цените се собрани од јавни ценовни листи на продавачите и се информативни.
+      Ова е отворен прототип: <a href="https://github.com/Dzikle/Ai-Shopping" rel="noopener">изворен код</a>.</p>
+  </div>
+</footer>
+<script src="/static/basket.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Најдете каде е најевтино да пазарите</h1>
+  <p class="lead">Пребарајте меѓу проверени понуди од продавници во Македонија, споредете цени меѓу продавачи
+    и оптимизирајте ја кошничката — сите пресметки се детерминистички, на серверот.</p>
+  <form class="search-form" action="/search" method="get" role="search">
+    <label class="sr-only" for="home-q">Пребарај производ</label>
+    <input id="home-q" type="search" name="q" placeholder="напр. млеко, јогурт, mleko" maxlength="100" required>
+    <button type="submit">Пребарај</button>
+  </form>
+  <p class="hint">Поддржани се кирилица и латиница („млеко“ и „mleko“). Пребарувањето не е индексирано.</p>
+</section>
+
+{% if freshness_summary %}
+<section class="panel" aria-labelledby="freshness-title">
+  <h2 id="freshness-title">Податоци и свежина</h2>
+  <p><span class="badge">{{ freshness_summary.status_label }}</span>
+    проверено: {{ freshness_summary.checked_at }}</p>
+  <ul class="retailer-list">
+    {% for r in freshness_summary.retailers %}
+    <li>
+      <strong>{{ r.retailerName or r.retailerSlug }}</strong> —
+      {{ r.offerCount }} {{ r.offerCount | mknoun('понуда', 'понуди') }},
+      {{ r.populatedStoresCount }} {{ r.populatedStoresCount | mknoun('продавница', 'продавници') }},
+      последно објавено {{ r.latestPublishedTs | mkdate }}
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endif %}
+
+<section class="panel" aria-labelledby="how-title">
+  <h2 id="how-title">Како работи</h2>
+  <ol>
+    <li>Пребарајте производ — резултатите се вистински понуди со продавница, количина и дата на објавување.</li>
+    <li>Отворете споредба — прикажуваме само <strong>проверени</strong> идентични производи меѓу продавачи.</li>
+    <li>Додајте во кошничката и оптимизирајте — серверот пресметува најдобра единствена продавница и евентуална поделба.</li>
+  </ol>
+</section>
+{% endblock %}

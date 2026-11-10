@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} — AI Пазарење{% endblock %}
+{% block robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+{% if code == 503 %}
+<p>Услугата не одговори во очекуваното време. Обидете се повторно за кратко.</p>
+{% elif code == 404 %}
+<p>Бараната страница не постои или производот не е пронајден во каталогот.</p>
+{% else %}
+<p>Се појави грешка. Обидете се повторно.</p>
+{% endif %}
+<p><a href="/">← Дома</a></p>
+{% endblock %}

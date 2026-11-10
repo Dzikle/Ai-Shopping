@@ -248,8 +248,8 @@ class FakePostgresRepository:
     def search_offers(self, f):
         return {"sourceEngine": "postgresql_fallback", "total": 0, "page": f.page, "size": f.size, "items": []}
 
-    def compare_products(self, q, min_retailers, page, size):
-        self.compare_calls.append((q, min_retailers, page, size))
+    def compare_products(self, q, min_retailers, page, size, canonical_id=None):
+        self.compare_calls.append((q, min_retailers, page, size, canonical_id))
         return {
             "sourceEngine": "postgresql_fallback",
             "total": 1,

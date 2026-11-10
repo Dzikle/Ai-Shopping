@@ -139,7 +139,7 @@ class OpenSearchClient:
         items = [_offer_dto_from_doc(hit["_source"]) for hit in root["hits"]["hits"]]
         return {"sourceEngine": "opensearch", "total": total, "page": f.page, "size": f.size, "items": items}
 
-    def search_product_comparisons(self, q: str | None, min_retailers: int, page: int, size: int) -> dict[str, Any]:
+    def search_product_comparisons(self, q: str | None, min_retailers: int, page: int, size: int, canonical_id: int | None = None) -> dict[str, Any]:
         must: list[dict[str, Any]] = []
         flt: list[dict[str, Any]] = []
 
@@ -151,6 +151,8 @@ class OpenSearchClient:
                 }
             })
         flt.append({"range": {"retailer_count": {"gte": max(1, min_retailers)}}})
+        if canonical_id is not None:
+            flt.append({"term": {"canonical_product_id": canonical_id}})
 
         boolean: dict[str, Any] = {"filter": flt}
         if must:

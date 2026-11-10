@@ -65,8 +65,9 @@ def make_catalog_router(search_service) -> APIRouter:
         minRetailers: int = Query(default=2),
         page: int = Query(default=0),
         size: int = Query(default=20),
+        canonicalId: Optional[int] = Query(default=None),
     ) -> dict[str, Any]:
-        return search_service.compare_products(q, minRetailers, page, size)
+        return search_service.compare_products(q, minRetailers, page, size, canonicalId)
 
     @router.get("/products/{canonical_id}/history", response_model=None)
     def product_history(canonical_id: int):

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block robots %}<meta name="robots" content="noindex, follow">{% endblock %}
+{% block canonical %}{{ web_base_url }}/search{% endblock %}
+{% block content %}
+<h1>{% if q %}Резултати за „{{ q }}“{% else %}Сите понуди{% endif %}</h1>
+
+<form class="filters" action="/search" method="get">
+  <label for="f-q">Пребарувај</label>
+  <input id="f-q" type="search" name="q" value="{{ q }}" maxlength="100" placeholder="напр. млеко">
+  <label for="f-retailer">Продавач</label>
+  <select id="f-retailer" name="retailer">
+    <option value="">Сите</option>
+    {% for r in retailer_options %}
+    <option value="{{ r.slug }}" {% if retailer == r.slug %}selected{% endif %}>{{ r.name }}</option>
+    {% endfor %}
+  </select>
+  <label class="check"><input type="checkbox" name="instock" value="true" {% if instock %}checked{% endif %}> Само на залиха</label>
+  <label class="check"><input type="checkbox" name="promo" value="true" {% if promo %}checked{% endif %}> Само акции</label>
+  <label for="f-sort">Подредување</label>
+  <select id="f-sort" name="sort">
+    <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Најниска цена</option>
+    <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Највисока цена</option>
+  </select>
+  <input type="hidden" name="page" value="0">
+  <button type="submit">Филтрирај</button>
+</form>
+
+{% if transliterated %}
+<p class="note">Прикажани резултати за „{{ effective_q }}“ (пресловено од латиница). Пребарувањето на серверот работи со кирилица.</p>
+{% endif %}
+
+<p class="result-count" aria-live="polite">{{ total }} {{ 'понуда' if total % 10 == 1 and total % 100 != 11 else 'понуди' }}</p>
+
+{% if not offers %}
+<div class="empty">
+  <p>Нема пронајдени понуди{% if q %} за „{{ q }}“{% endif %}. Обидете се со други зборови или празна кошница на филтри.</p>
+</div>
+{% else %}
+<ul class="offer-list">
+  {% for o in offers %}
+  <li class="offer">
+    <article>
+      <header>
+        <h2>{{ o.listingName or o.canonicalName }}</h2>
+        {% if o.canonicalName and o.listingName and o.canonicalName != o.listingName %}
+        <p class="muted">каталог: {{ o.canonicalName }}</p>
+        {% endif %}
+      </header>
+      <p class="meta">
+        {{ o.retailerName or o.retailerSlug }} · {{ o.storeName or o.storeExternalKey }}{% if o.city %} · {{ o.city }}{% endif %}
+      </p>
+      <p class="size">
+        {% if o.normalizedSize %}{{ o.normalizedSize }}{% endif %}
+        {% if o.unitPrice and o.unitLabel %} · ед. цена {{ o.unitPrice | mkd }}/{{ o.unitLabel }}{% endif %}
+      </p>
+      <p class="price">
+        {% if o.priceCurrent is not none %}{{ o.priceCurrent | mkd }}{% else %}цена непозната{% endif %}
+        {% if o.isPromo %}<span class="promo">акција{% if o.discountPct %} −{{ o.discountPct | mkqty }}%{% endif %}</span>{% endif %}
+        {% if o.regularPrice and o.isPromo %}<s>{{ o.regularPrice | mkd }}</s>{% endif %}
+      </p>
+      <p class="foot">
+        {% if o.availability and o.availability != 'in_stock' %}<span class="unavailable">Нема на залиха</span> · {% endif %}
+        објавено {{ o.publishedTs | mkdate }}
+        {% if o.sourceUrl %} · <a href="{{ o.sourceUrl }}" rel="noopener" target="_blank">извор</a>{% endif %}
+      </p>
+      <button type="button"
+              class="btn-add"
+              {% if o.canonicalProductId is not none %}data-canonical-id="{{ o.canonicalProductId }}"{% endif %}
+              data-retailer-product-id="{{ o.retailerProductId }}"
+              data-label="{{ o.listingName or o.canonicalName }}"
+              data-size="{{ o.normalizedSize or '' }}"
+              {% if o.retailerSlug %}data-retailer="{{ o.retailerSlug }}"{% endif %}>Додај во кошничка</button>
+    </article>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if pages > 1 %}
+<nav class="pagination" aria-label="Страници">
+  {% if page > 0 %}<a href="/search?q={{ q | urlencode }}&amp;retailer={{ retailer | urlencode }}&amp;sort={{ sort }}&amp;page={{ page - 1 }}{% if instock %}&amp;instock=true{% endif %}{% if promo %}&amp;promo=true{% endif %}">← Претходна</a>{% endif %}
+  <span>Страница {{ page + 1 }} од {{ pages }}</span>
+  {% if page + 1 < pages %}<a href="/search?q={{ q | urlencode }}&amp;retailer={{ retailer | urlencode }}&amp;sort={{ sort }}&amp;page={{ page + 1 }}{% if instock %}&amp;instock=true{% endif %}{% if promo %}&amp;promo=true{% endif %}">Следна →</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

@@ -44,6 +44,10 @@ jobs:
           test -f docs/contracts/freshness-api-contract.md
           test -f docs/contracts/assistant-api-contract.md
           test -f docs/milestones/m13-results.md
+          test -f docs/research/m14-web-stack-evaluation.md
+          test -f docs/adr/ADR-0007-web-frontend-stack.md
+          test -f docs/milestones/m14-results.md
+          test -f web/README.md
 
       - name: Prepare env
         run: cp .env.example .env
@@ -120,3 +124,14 @@ jobs:
       - name: Teardown
         if: always()
         run: docker compose down -v
+
+  web:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Web prototype tests (Python 3.12, no browser, no network)
+        run: >
+          docker run --rm -v "$PWD/web:/w" -w /w
+          python:3.12-slim
+          sh -c "pip install --quiet -r requirements.txt pytest && python -m pytest tests -q"
