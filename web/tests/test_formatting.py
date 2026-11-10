@@ -7,6 +7,7 @@ from app.formatting import (
     format_number,
     format_price_range,
     format_quantity,
+    unit_price_for_offer,
 )
 
 
@@ -37,3 +38,53 @@ def test_price_range():
     assert format_price_range(85, 85) == "85,00 ден."
     assert format_price_range(None, 99) == "99,00 ден."
     assert format_price_range(None, None) == "–"
+
+
+
+def test_unit_price_basis_cannot_be_relabelled_from_gram_to_kilo():
+    bread = {
+        "normalizedSize": "500g",
+        "priceCurrent": "32.00",
+        "unitPrice": "64.00",
+        "unitLabel": "1 гр",
+    }
+    assert unit_price_for_offer(bread) == {"text": None, "warning": True}
+    bread["unitLabel"] = "1 кг"
+    assert unit_price_for_offer(bread) == {
+        "text": "64,00 ден./кг", "warning": False,
+    }
+
+
+def test_unit_price_basis_and_promo_regular_price():
+    item = {
+        "normalizedSize": "500g",
+        "priceCurrent": "30.00",
+        "regularPrice": "32.00",
+        "unitPrice": "6.40",
+        "unitLabel": "100 гр",
+    }
+    assert unit_price_for_offer(item) == {
+        "text": "6,40 ден./100 г", "warning": False,
+    }
+    item.update(normalizedSize="1000ml", unitPrice="40", unitLabel="1л")
+    assert unit_price_for_offer(item) == {
+        "text": None, "warning": True,
+    }
+    item.update(unitPrice="30")
+    assert unit_price_for_offer(item)["text"] == "30,00 ден./л"
+
+
+def test_unit_price_multipack_inconsistent_unknown_and_missing():
+    item = {
+        "normalizedSize": "4x500ml",
+        "priceCurrent": "100",
+        "unitPrice": "50",
+        "unitLabel": "1 л",
+    }
+    assert unit_price_for_offer(item)["text"] == "50,00 ден./л"
+    item["normalizedSize"] = "not a verified size"
+    assert unit_price_for_offer(item)["warning"] is True
+    item["unitPrice"] = None
+    assert unit_price_for_offer(item) == {"text": None, "warning": False}
+    item.update(unitPrice="10", unitLabel="unknown", normalizedSize="500ml")
+    assert unit_price_for_offer(item)["warning"] is True
