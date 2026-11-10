@@ -277,6 +277,15 @@ def make_handler(state: OpenSearchState):
             if len(parts) == 2 and parts[1] == "_search":
                 body = json.loads(raw.decode("utf-8")) if raw else {}
                 return self._handle_search(parts[0], body)
+            if len(parts) == 2 and parts[1] == "_count":
+                # Real OpenSearch accepts GET and POST for _count; opensearch-py
+                # uses POST while the old Java RestClient used GET.
+                target = parts[0]
+                resolved = state.resolve_indices(target)
+                if not resolved:
+                    return self._send_json(404, {"error": "index_not_found_exception", "status": 404})
+                total = sum(len(state.indices[i]["docs"]) for i in resolved)
+                return self._send_json(200, {"count": total})
             return self._send_json(404, {"error": "not_found"})
 
         def _handle_search(self, target: str, body: dict):

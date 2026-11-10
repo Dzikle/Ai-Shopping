@@ -1,12 +1,23 @@
 # AI Shopping — Universal Price Intelligence Platform
 
-A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) + M6 (Daily ingestion scheduler, freshness API & automated pipeline) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
+A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) + M6 (Daily ingestion scheduler, freshness API & automated pipeline) + M7 (Match review queue) + M8 (Metrics API) + M9 (KAM Market PDF adapter) + M10 (FastAPI backend migration, differential-verified) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
 
 Initial focus: North Macedonia. Expansion: other countries, retailers and product categories.
 
 Start with [the master plan](docs/architecture/master-plan.md), [the milestone roadmap](docs/milestones/roadmap.md) and [AGENTS.md](AGENTS.md).
 
-Core design: Spring Boot / Java 21, PostgreSQL source of truth, OpenSearch derived indexes, independent Python/TypeScript adapters, optional Redis worker queues, Docker Compose, MCP read-only tools.
+Core design: FastAPI / Python 3.12 backend (ADR-0006, replaces the original Spring Boot stack), PostgreSQL source of truth, OpenSearch derived indexes, independent Python/TypeScript adapters, optional Redis worker queues, Docker Compose, MCP read-only tools.
+
+## Running the backend (FastAPI, M10)
+
+```powershell
+cd backend_py
+uv sync --locked                                  # install locked deps
+uv run uvicorn app.main:create_app --factory --reload   # dev server with hot reload
+uv run pytest -q                                  # backend test suite
+```
+
+Environment (see `.env.example`): `POSTGRES_HOST/PORT/DB/USER/PASSWORD`, `OPENSEARCH_URL`. OpenSearch down is not fatal — the API automatically falls back to PostgreSQL (`activeSearchEngine: postgresql_fallback`).
 
 ## Running the M1–M4 pipelines (replay mode, no network)
 
@@ -60,7 +71,7 @@ curl http://localhost:8080/api/v1/freshness
   - `docker run --rm -v "${PWD}:/w" -w /w/matching python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}:/w" -w /w/search python:3.12-slim python -B tests.py`
   - `docker run --rm -v "${PWD}:/w" -w /w/adapters/scheduler python:3.12-slim python -B tests.py`
-  - `docker run --rm -v "${PWD}/backend:/w" -v aoshopping-m2-repo:/root/.m2 -w /w maven:3.9.9-eclipse-temurin-21 mvn -B test`
+  - Backend (FastAPI): `cd backend_py && uv run pytest -q`
 - Integration tests (scratch DB, idempotency, OpenSearch alias swap, REST API + Postgres fallback, deterministic basket optimization, bounded MCP server, daily pipeline & freshness monitor):
   - `./scripts/test-m1.ps1`
   - `./scripts/test-m2.ps1`
@@ -68,10 +79,12 @@ curl http://localhost:8080/api/v1/freshness
   - `./scripts/test-m4.ps1`
   - `./scripts/test-m5.ps1`
   - `./scripts/test-m6.ps1`
+  - `./scripts/test-m9.ps1`
+  - `./scripts/test-m10-diff.ps1` (differential: Spring Boot jar vs FastAPI on identical data — regression gate kept until owner sign-off)
 
 ## Model Context Protocol (MCP) Server
 
-The Spring Boot backend exposes a Model Context Protocol (`2024-11-05`) JSON-RPC 2.0 server at `POST /mcp` (discovery info at `GET /mcp` and `GET /mcp/sse`), enabling AI agents (such as Claude Desktop or Antigravity) to query product intelligence and optimize shopping baskets deterministically without paid LLM APIs on the backend. See [MCP tools contract](docs/contracts/mcp-tools-contract.md).
+The FastAPI backend exposes a Model Context Protocol (`2024-11-05`) JSON-RPC 2.0 server at `POST /mcp` (discovery info at `GET /mcp` and `GET /mcp/sse`), enabling AI agents (such as Claude Desktop or Antigravity) to query product intelligence and optimize shopping baskets deterministically without paid LLM APIs on the backend. See [MCP tools contract](docs/contracts/mcp-tools-contract.md).
 
 Registered tools:
 1. `search_products`: Catalog offer search with filters and freshness.
