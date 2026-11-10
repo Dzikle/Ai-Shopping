@@ -37,9 +37,11 @@ As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `
 - The Flutter app lives in `mobile/` (Flutter 3.47.x, Dart 3.13). Read
   `mobile/README.md` before touching it; run `flutter analyze` and
   `flutter test` before every commit.
-- The client is guest-first and read-only: only the six catalog/basket
-  endpoints may be consumed; never call review-queue/metrics/MCP from the app
-  and never embed paid AI keys in a build. The M13 chat UI may use only the new bounded guest-safe `/api/v1/assistant/turn` endpoint; all shopping tool access stays server-side.
+- The client is guest-first: the existing product/basket screens use their
+  bounded catalog and optimization REST endpoints; M13 chat may additionally
+  call only the new guest-safe `/api/v1/assistant/turn` route. Never call
+  review-queue/metrics/MCP directly from Flutter or embed AI keys in the build.
+  The assistant's shopping-tool access and provider credentials stay server-side.
 - Server-side math is authoritative: the app formats but never recomputes
   prices, pack counts or totals (ADR-0001/0003 invariants).
 - New UI strings go in `lib/l10n/translations.dart` for **both** `mk` and `en`
