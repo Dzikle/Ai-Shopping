@@ -3,7 +3,7 @@
 **Repository:** https://github.com/Dzikle/Ai-Shopping  
 **Reviewed against:** `main`, November 10, 2026 (M13 authorization update).  
 **Purpose:** Fill the missing consumer-product, Flutter, web, and AI-assistant work after the data-platform milestones.  
-**Status:** M10 and M12 merged, M13 owner-approved for implementation (2026-11-10). M14–M16 remain proposals requiring separate approval.
+**Status:** M10 and M12 merged; M13 implemented on its own branch (PR #4 green, still open; live-model verification pending). M14 web prototype separately owner-approved on 2026-11-10. M15–M16 remain proposals requiring separate approval.
 
 ## Current baseline — verified from repository contents, not independently executed
 
@@ -36,12 +36,12 @@
 | **M10 — merged** | Spring Boot → FastAPI migration | Contract-compatible REST **and MCP**, basket, reviews, freshness, metrics with Python hot-reload development loop | Differential checks against existing Java, M1–M9 fixture/integration tests, no regressions; owner review |
 | **M11 — folded into M12** | KortingKlok mobile feasibility spike | Run upstream Flutter app with mocked feeds, inventory reusable files and dependency liabilities, exercise a real FastAPI endpoint | Android debug build / Flutter tests / realistic reuse estimate; no forced Firebase signup |
 | **M12 — merged** | Flutter customer experience | Macedonian guest browsing, search, retailer comparison, price history, persisted or local shopping list and M4 basket optimizer | End-to-end on Android with fresh/stale/missing-offer handling and deterministic totals |
-| **M13 — approved (implement now)** | AI shopping assistant | In-app agent UX invoking bounded MCP/domain tools, structured shopping list creation and editing, evidence-backed explanations | Agent never invents prices or computes totals, user approves basket edits, no checkout |
-| **M14 — evaluate alongside M12** | Public web product experience | Compare reusing checkjebon vs new web app, SEO and rendering decision, small functional prototype | Same shared FastAPI contracts, measurable reuse/maintenance cost, owner decision |
+| **M13 — PR open, CI green** | AI shopping assistant | In-app agent UX invoking bounded MCP/domain tools, structured shopping list creation and editing, evidence-backed explanations | Agent never invents prices or computes totals, user approves basket edits, no checkout |
+| **M14 — approved (implement now)** | Public web product experience | Compare reusing checkjebon vs new web app, SEO and rendering decision, small functional prototype | Same shared FastAPI contracts, measurable reuse/maintenance cost, owner decision |
 | **M15** | Enhancements | Price alerts, receipts, barcode enrichment, history charts, saved lists, notifications | Small independent increments, each fixture-tested, explicit privacy and data-quality constraints |
 | **M16** | Release readiness | Accessibility, localization, reliability/monitoring, privacy/security, real-device QA, distribution strategy | Release checklist and real-source coverage, not fixture-only proof |
 
-M10 and M12 have been delivered. **M13 was explicitly approved on 2026-11-10** and is specified in `docs/milestones/m13-ai-shopping-assistant-task.md`. M14–M16 still require a separate owner go-ahead.
+M10 and M12 have been delivered. M13 is implemented in branch `m13-ai-shopping-assistant`, PR #4 open, with live-model testing still pending. **M14 was explicitly approved on 2026-11-10** and its bounded web prototype is specified in `docs/milestones/m14-web-frontend-evaluation-task.md`. M15–M16 still require separate approval.
 
 ## Upstream reuse map
 
