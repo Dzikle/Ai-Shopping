@@ -97,7 +97,7 @@ Write-Output "COUNTS_AFTER_FIRST_PASS: $counts1"
 
 # Exercise the read-only export/analyzer on a real scratch PostgreSQL fixture.
 # The matcher-v2 output was just loaded, so there should be no changed keys.
-$auditOut = "snapshots/matching/$date/m2-readonly-identity-audit"
+$auditOut = Join-Path ([System.IO.Path]::GetTempPath()) ("m2-readonly-identity-audit-" + [guid]::NewGuid().ToString("N"))
 & $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/run-match-identity-audit.ps1 -Database $Database -DbUser $DbUser -OutDir $auditOut
 if ($LASTEXITCODE -ne 0) { throw 'M2 read-only reconciliation audit failed' }
 $auditSummary = Get-Content (Join-Path $auditOut 'summary.json') -Raw | ConvertFrom-Json
