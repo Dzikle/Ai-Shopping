@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block description %}Споредба на цени за {{ group.canonicalName }}{% if group.normalizedSize %} ({{ group.normalizedSize }}){% endif %} меѓу проверени продавачи во Македонија.{% endblock %}
+{% block canonical %}{{ web_base_url }}/compare/{{ group.canonicalProductId }}{% endblock %}
+{% block content %}
+<nav class="crumbs"><a href="/compare">← Сите споредби</a></nav>
+<h1>{{ group.canonicalName }}</h1>
+{% if group.normalizedSize %}<p class="size">{{ group.normalizedSize }}</p>{% endif %}
+
+{% if group.retailerCount < 2 %}
+<p class="note">Овој производ моментално има проверена понуда кај само еден продавач — прикажуваме понуди,
+  а не вештачка споредба меѓу продавници.</p>
+{% endif %}
+
+{% if group.cheapestMkd and group.highestMkd and group.retailerCount > 1 %}
+<p class="prices">најниска <strong>{{ group.cheapestMkd | mkd }}</strong> ·
+  највисока {{ group.highestMkd | mkd }} · разлика {{ group.spreadMkd | mkd }}</p>
+{% endif %}
+
+<table class="compare-table">
+  <caption class="sr-only">Понуди по продавач за {{ group.canonicalName }}</caption>
+  <thead>
+    <tr><th scope="col">Продавач</th><th scope="col">Листа</th><th scope="col">Цена</th>
+        <th scope="col">Продавници</th><th scope="col">Објавено</th><th scope="col"><span class="sr-only">Акции</span></th></tr>
+  </thead>
+  <tbody>
+    {% for o in group.offers %}
+    <tr>
+      <td>{{ o.retailerSlug }}</td>
+      <td>{{ o.listingName }}</td>
+      <td>{{ o.minPrice | mkrange(o.maxPrice) }}</td>
+      <td>{{ o.storeCount }}</td>
+      <td>{{ o.latestPublishedTs | mkdate }}</td>
+      <td class="actions">
+        <button type="button"
+                class="btn-add"
+                data-canonical-id="{{ group.canonicalProductId }}"
+                data-retailer-product-id="{{ o.retailerProductId }}"
+                data-label="{{ o.listingName or group.canonicalName }}"
+                data-size="{{ group.normalizedSize or '' }}"
+                data-retailer="{{ o.retailerSlug }}">Додај</button>
+        {% if o.sourceUrl %}<a href="{{ o.sourceUrl }}" rel="noopener" target="_blank">извор</a>{% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<p class="muted">Датумите се од последната објавена ценовна листа; цените се менуваат кај продавачите.</p>
+{% endblock %}

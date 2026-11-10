@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block robots %}{% if noindex %}<meta name="robots" content="noindex, follow">{% endif %}{% endblock %}
+{% block content %}
+<h1>Проверени споредби меѓу продавачи</h1>
+<p class="lead">Овде се прикажани само производи со проверен идентитет меѓу продавачите. Кандидатите на чекање
+  (нешто што личи, но не е потврдено) никогаш не се мешаат во овие споредби.</p>
+
+<form class="filters" action="/compare" method="get">
+  <label for="c-q">Пребарувај</label>
+  <input id="c-q" type="search" name="q" value="{{ q }}" maxlength="100" placeholder="напр. млеко">
+  <button type="submit">Пребарај</button>
+</form>
+
+<p class="result-count" aria-live="polite">{{ total }} {{ 'производ' if total % 10 == 1 and total % 100 != 11 else 'производи' }}</p>
+
+{% if not groups %}
+<div class="empty"><p>Нема проверени споредби{% if q %} за „{{ q }}“{% endif %}.</p></div>
+{% else %}
+<ul class="compare-list">
+  {% for g in groups %}
+  <li>
+    <article class="compare-group">
+      <header>
+        <h2><a href="/compare/{{ g.canonicalProductId }}">{{ g.canonicalName }}</a></h2>
+        {% if g.normalizedSize %}<p class="size">{{ g.normalizedSize }}</p>{% endif %}
+      </header>
+      <p class="prices">
+        најниска <strong>{{ g.cheapestMkd | mkd }}</strong> ·
+        највисока {{ g.highestMkd | mkd }} ·
+        разлика {{ g.spreadMkd | mkd }}
+      </p>
+      <p class="meta">{{ g.retailerCount }} продавачи · {{ g.storeCount }} продавници ·
+        последно објавено {{ g.latestPublishedTs | mkdate }}</p>
+      <ul class="retailer-offers">
+        {% for o in g.offers %}
+        <li>
+          <span class="retailer">{{ o.retailerSlug }}</span>
+          {{ o.listingName }} — {{ o.minPrice | mkrange(o.maxPrice) }}
+          ({{ o.storeCount }} прод.)
+        </li>
+        {% endfor %}
+      </ul>
+    </article>
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if pages > 1 %}
+<nav class="pagination" aria-label="Страници">
+  {% if page > 0 %}<a href="/compare?q={{ q | urlencode }}&amp;page={{ page - 1 }}">← Претходна</a>{% endif %}
+  <span>Страница {{ page + 1 }} од {{ pages }}</span>
+  {% if page + 1 < pages %}<a href="/compare?q={{ q | urlencode }}&amp;page={{ page + 1 }}">Следна →</a>{% endif %}
+</nav>
+{% endif %}
+{% endblock %}

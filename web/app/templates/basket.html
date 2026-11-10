@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block robots %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+{% block canonical %}{{ web_base_url }}/basket{% endblock %}
+{% block content %}
+<h1>Кошничка</h1>
+<p class="lead">Ставките се зачувуваат само во вашиот прелистувач. Оптимизацијата ја пресметува серверот —
+  користи го постоечкиот детерминистички оптимизатор (покритие прво, потоа најниска цена).</p>
+
+<noscript>
+  <p class="warning">Кошничката бара JavaScript во овој прелистувач (ставките се чуваат локално кај вас,
+    без сметка). Страниците за пребарување и споредба работат и без JavaScript.</p>
+</noscript>
+
+<section id="basket-root" aria-label="Ставки во кошничката"></section>
+<p>
+  <button type="button" id="basket-clear" class="secondary">Исчисти кошничка</button>
+  <button type="button" id="basket-optimize">Оптимизирај кошничка</button>
+</p>
+
+<section id="optimize-results" aria-live="polite" aria-label="Резултати од оптимизација"></section>
+
+<script type="application/json" id="basket-labels">
+{
+  "units": {{ units | tojson }},
+  "missing_reasons": {{ missing_reasons | tojson }},
+  "recommendations": {{ recommendations | tojson }},
+  "empty": "Кошничката е празна. Додајте производи од пребарувањето или споредбите.",
+  "remove": "Отстрани",
+  "quantity": "Количина",
+  "unit": "Единица",
+  "optimize": "Оптимизирај…",
+  "error_prefix": "Оптимизацијата не успеа",
+  "best_single": "Најдобра единствена продавница",
+  "multi_plan": "Најдобра поделба меѓу продавници",
+  "rankings": "Сите оценети продавници (топ 5)",
+  "coverage": "Покритие",
+  "total": "Вкупно",
+  "savings_vs_single": "Заштеда според најдобрата единствена продавница",
+  "meets_threshold": "Го исполнува прагот за заштеда",
+  "below_threshold": "Под прагот за заштеда",
+  "substitute": "Замена",
+  "missing": "Недостасува",
+  "no_items": "Додајте барем една ставка.",
+  "updated": "Кошничката е ажурирана."
+}
+</script>
+{% endblock %}
