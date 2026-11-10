@@ -33,6 +33,25 @@ def test_search_renders_server_side_offers(client, stub):
     assert "1 понуда" in html
 
 
+def test_search_hides_inconsistent_source_unit_price(client, stub):
+    stub.offers[0].update({
+        "normalizedSize": "500g",
+        "priceCurrent": "32.00",
+        "unitPrice": "64.00",
+        "unitLabel": "1 гр",
+    })
+    res = client.get("/search", params={"q": "леб"})
+    assert res.status_code == 200
+    assert "ед. цена непотврдена" in res.text
+    assert "64,00 ден./1 гр" not in res.text
+    assert "32,00 ден." in res.text
+
+    stub.offers[0]["unitLabel"] = "1 кг"
+    res = client.get("/search", params={"q": "леб"})
+    assert "64,00 ден./кг" in res.text
+    assert "ед. цена непотврдена" not in res.text
+
+
 def test_search_transliterates_latin_input(client, stub):
     res = client.get("/search", params={"q": "mleko"})
     assert res.status_code == 200
