@@ -10,7 +10,7 @@ As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `
 
 ## Next approved task
 
-**M13 AI Shopping Assistant is owner-approved (2026-11-10).** Implement on a dedicated branch by following `docs/milestones/m13-ai-shopping-assistant-task.md`. Reuse FastAPI's existing bounded read-only shopping MCP/domain tools and the M12 Flutter local basket; the assistant proposes changes, and only user confirmation applies them. All authoritative prices and optimizer totals remain server-side. No new paid model/provider, public deployment, Java rollback deletion, M14 or M15 without separate approval.
+**M14 public web frontend evaluation and functional prototype is owner-approved (2026-11-10).** Read `docs/milestones/m14-web-frontend-evaluation-task.md`; start an isolated `m14-web-evaluation` branch from current `main`. Build one HTML-first FastAPI-backed search/comparison/basket browser slice with verifiable SEO and an evidence-based stack choice. M13 PR #4 passed backend + Flutter CI but remains OPEN/unmerged; do not accidentally merge M13 into M14. M13 live-model verification is still pending. No unapproved paid model/provider, public deployment, Java rollback deletion, M15 or M16.
 
 ## Mandatory engineering rules
 
@@ -30,7 +30,8 @@ As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `
 - Follow-up: remove `backend/` (Java) and the differential gate once the owner signs off on M10.
 - ~~M11 Flutter/KortingKlok feasibility spike~~ Executed together with M12 (owner deferment); reuse audit in `docs/research/kortingklok-reuse.md`.
 - ~~M12 mobile MVP~~ Merged into `main` (2026-11-09), pending owner review - see `docs/milestones/m12-results.md`.
-- **M13 AI assistant** — approved 2026-11-10; implement the gated plan in `docs/milestones/m13-ai-shopping-assistant-task.md` on a dedicated branch.
+- **M13 AI assistant** — implemented on `m13-ai-shopping-assistant` with 42 backend / 29 Flutter tests, PR #4 open and green; live-model verification pending. Do not represent this branch as merged.
+- **M14 web evaluation + working prototype** — approved 2026-11-10; execute `docs/milestones/m14-web-frontend-evaluation-task.md` from `main` without silently taking code from M13.
 
 ## Mobile development (M12+)
 
