@@ -23,10 +23,11 @@ if str(_REPO_ROOT) not in sys.path:
 
 from adapters.common import normalize_name, parse_declared_size
 
-MATCHER_VERSION = "m2.v1"
+MATCHER_VERSION = "m2.v2"
 
-# Macedonian prepositions/conjunctions that vary across retailer listing titles
-STOPWORDS = frozenset({"ОД", "СО", "ЗА", "ВО", "НА", "И", "БЕЗ"})
+# Only neutral connectors are removable. "СО"/"БЕЗ" express opposite variants
+# ("со шеќер" vs "без шеќер") and are identity-defining.
+STOPWORDS = frozenset({"ОД", "ЗА", "ВО", "НА", "И"})
 
 _SIZE_STRIP_RE = re.compile(
     r"(?<![0-9A-Za-zА-Яа-я])(?:\d{1,2}\s*[xхXХ*]\s*)?\d+(?:[.,]\d+)?\s*"
@@ -34,6 +35,18 @@ _SIZE_STRIP_RE = re.compile(
     re.IGNORECASE,
 )
 _WORD_TOKEN_RE = re.compile(r"[A-ZА-ЯЃЅЈЉЊЌЏ0-9]+")
+_PERCENT_RE = re.compile(r"(?<![0-9A-ZА-ЯЃЅЈЉЊЌЏ])([0-9]+(?:[.,][0-9]+)?)\\s*[%％]")
+
+
+def _percent_identity(match: re.Match[str]) -> str:
+    """Retain a distinguishing percentage token (0% != 2%; 2,0% == 2%).
+
+    Decimal normalization handles alternative decimal punctuation without
+    interpreting percentage values as package size or unit-price quantities.
+    """
+    amount = Decimal(match.group(1).replace(",", ".")).normalize()
+    value = format(amount, "f").replace(".", "D")
+    return " PCT" + value + " "
 
 
 def extract_signature(listing_name: str | None) -> dict | None:
@@ -56,10 +69,12 @@ def extract_signature(listing_name: str | None) -> dict | None:
         return None
     norm = normalize_name(listing_name)
     without_size = _SIZE_STRIP_RE.sub(" ", norm)
-    raw_tokens = _WORD_TOKEN_RE.findall(without_size)
-    tokens = tuple(
-        sorted({t for t in raw_tokens if t not in STOPWORDS and len(t) > 1})
-    )
+    # Converting the percent sign *before* tokenization prevents the legacy
+    # one-character filter from conflating 0% and 2% dairy variants.
+    with_percent_tokens = _PERCENT_RE.sub(_percent_identity, without_size)
+    raw_tokens = _WORD_TOKEN_RE.findall(with_percent_tokens)
+    # Preserve one-digit variant tokens as well ("1"/"2" product types).
+    tokens = tuple(sorted({t for t in raw_tokens if t not in STOPWORDS}))
     if not tokens:
         return None
     norm_tokens = " ".join(tokens)
