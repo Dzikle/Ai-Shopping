@@ -1,9 +1,9 @@
 # AI Shopping — Product Delivery Plan v2
 
 **Repository:** https://github.com/Dzikle/Ai-Shopping  
-**Reviewed against:** `main`, November 9, 2026.  
+**Reviewed against:** `main`, November 10, 2026 (M13 authorization update).  
 **Purpose:** Fill the missing consumer-product, Flutter, web, and AI-assistant work after the data-platform milestones.  
-**Status:** Proposed forward plan, not authorization to implement every phase. Owner review gates apply.
+**Status:** M10 and M12 merged, M13 owner-approved for implementation (2026-11-10). M14–M16 remain proposals requiring separate approval.
 
 ## Current baseline — verified from repository contents, not independently executed
 
@@ -13,8 +13,8 @@
 - M7: manual product-match review endpoints and CLI.
 - M8: metrics REST endpoint and Prometheus-style exporter.
 - M9: KAM PDF adapter, live-source discovery and fixture-based integration tests.
-- `backend/` on `main` is still Java/Spring Boot and Maven. A FastAPI replacement is **not merged** into `main`.
-- There is **no consumer frontend** (`mobile/`, `frontend/`, `web/`) in `main`.
+- M10 FastAPI is merged into `main` at `backend_py/`; `backend/` is retained as rollback/reference and the M10 differential gate remains.
+- M12 Flutter Android mobile MVP is merged into `main` under `mobile/`. There is no separate public web frontend yet.
 - Existing `docs/milestones/roadmap.md`, `docs/architecture/master-plan.md`, `AGENTS.md` and README have outdated scopes/status. Update these after owner approval; do not mistake their M0 instructions for current progress.
 - Some integrations are validated by fixture replay, not by unattended production-like live ingestion. Do not advertise deployment or all-store completeness.
 
@@ -33,15 +33,15 @@
 
 | Stage | Name | Core deliverable | Gate |
 | --- | --- | --- | --- |
-| **M10 — do now** | Spring Boot → FastAPI migration | Contract-compatible REST **and MCP**, basket, reviews, freshness, metrics with Python hot-reload development loop | Differential checks against existing Java, M1–M9 fixture/integration tests, no regressions; owner review |
-| **M11 — next** | KortingKlok mobile feasibility spike | Run upstream Flutter app with mocked feeds, inventory reusable files and dependency liabilities, exercise a real FastAPI endpoint | Android debug build / Flutter tests / realistic reuse estimate; no forced Firebase signup |
-| **M12 — mobile MVP** | Flutter customer experience | Macedonian guest browsing, search, retailer comparison, price history, persisted or local shopping list and M4 basket optimizer | End-to-end on Android with fresh/stale/missing-offer handling and deterministic totals |
-| **M13** | AI shopping assistant | In-app agent UX invoking bounded MCP/domain tools, structured shopping list creation and editing, evidence-backed explanations | Agent never invents prices or computes totals, user approves basket edits, no checkout |
+| **M10 — merged** | Spring Boot → FastAPI migration | Contract-compatible REST **and MCP**, basket, reviews, freshness, metrics with Python hot-reload development loop | Differential checks against existing Java, M1–M9 fixture/integration tests, no regressions; owner review |
+| **M11 — folded into M12** | KortingKlok mobile feasibility spike | Run upstream Flutter app with mocked feeds, inventory reusable files and dependency liabilities, exercise a real FastAPI endpoint | Android debug build / Flutter tests / realistic reuse estimate; no forced Firebase signup |
+| **M12 — merged** | Flutter customer experience | Macedonian guest browsing, search, retailer comparison, price history, persisted or local shopping list and M4 basket optimizer | End-to-end on Android with fresh/stale/missing-offer handling and deterministic totals |
+| **M13 — approved (implement now)** | AI shopping assistant | In-app agent UX invoking bounded MCP/domain tools, structured shopping list creation and editing, evidence-backed explanations | Agent never invents prices or computes totals, user approves basket edits, no checkout |
 | **M14 — evaluate alongside M12** | Public web product experience | Compare reusing checkjebon vs new web app, SEO and rendering decision, small functional prototype | Same shared FastAPI contracts, measurable reuse/maintenance cost, owner decision |
 | **M15** | Enhancements | Price alerts, receipts, barcode enrichment, history charts, saved lists, notifications | Small independent increments, each fixture-tested, explicit privacy and data-quality constraints |
 | **M16** | Release readiness | Accessibility, localization, reliability/monitoring, privacy/security, real-device QA, distribution strategy | Release checklist and real-source coverage, not fixture-only proof |
 
-M10 is an already-stated priority. **Do not automatically begin M11–M16 without an explicit owner go-ahead.** While M10 proceeds, research tasks for M11/M14 can be documented on a separate branch, without replacing running code.
+M10 and M12 have been delivered. **M13 was explicitly approved on 2026-11-10** and is specified in `docs/milestones/m13-ai-shopping-assistant-task.md`. M14–M16 still require a separate owner go-ahead.
 
 ## Upstream reuse map
 
