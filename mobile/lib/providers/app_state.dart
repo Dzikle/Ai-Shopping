@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/api_models.dart';
 import '../services/api_client.dart';
+import '../services/assistant_api.dart';
 
 /// Local, guest-only app state: locale, theme and the on-device basket.
 ///
@@ -82,6 +83,14 @@ class AppState extends ChangeNotifier {
     await _persistBasket();
   }
 
+  /// Replaces the whole local basket (used by the assistant Apply flow after
+  /// user confirmation); callers must have already validated staleness.
+  Future<void> replaceAllBasketItems(List<BasketItem> items) async {
+    _basket = List.unmodifiable(items);
+    notifyListeners();
+    await _persistBasket();
+  }
+
   Future<void> updateBasketItem(
     String localId, {
     required double quantity,
@@ -121,16 +130,21 @@ class AppState extends ChangeNotifier {
       'basket-${DateTime.now().microsecondsSinceEpoch}';
 }
 
-/// Provides app state (as an [InheritedNotifier]) and the API implementation.
+/// Provides app state (as an [InheritedNotifier]) and the API implementations.
 class AppScope extends InheritedNotifier<AppState> {
   const AppScope({
     super.key,
     required AppState state,
     required this.api,
+    this.assistantApi,
     required super.child,
   }) : super(notifier: state);
 
   final ShoppingApi api;
+
+  /// Guest-safe assistant transport; tests may omit it, in which case the
+  /// assistant screen builds its own HTTP client.
+  final AssistantApi? assistantApi;
 
   static AppScope of(BuildContext context) {
     final scope = context.dependOnInheritedWidgetOfExactType<AppScope>();
@@ -142,5 +156,7 @@ class AppScope extends InheritedNotifier<AppState> {
 
   @override
   bool updateShouldNotify(covariant AppScope oldWidget) =>
-      super.updateShouldNotify(oldWidget) || oldWidget.api != api;
+      super.updateShouldNotify(oldWidget) ||
+      oldWidget.api != api ||
+      oldWidget.assistantApi != assistantApi;
 }

@@ -18,7 +18,7 @@ from app.mcp.routes import make_mcp_router
 from app.mcp.tool_registry import McpToolRegistry
 
 
-def create_app(settings=None, catalog_service=None, basket_service=None) -> FastAPI:
+def create_app(settings=None, catalog_service=None, basket_service=None, assistant_provider=None) -> FastAPI:
     if catalog_service is None and basket_service is None:
         catalog_service, basket_service = _build_default_stack(settings)
     elif catalog_service is None or basket_service is None:
@@ -28,13 +28,32 @@ def create_app(settings=None, catalog_service=None, basket_service=None) -> Fast
         catalog_service = catalog_service or CatalogSearchService.__new__(CatalogSearchService)
         basket_service = basket_service or BasketOptimizerService.__new__(BasketOptimizerService)
 
+    registry = McpToolRegistry(catalog_service, basket_service)
+
     app = FastAPI(default_response_class=RestJSONResponse)
     app.include_router(make_catalog_router(catalog_service))
     app.include_router(make_baskets_router(basket_service))
-    app.include_router(make_mcp_router(McpToolRegistry(catalog_service, basket_service)))
+    app.include_router(make_mcp_router(registry))
+    app.include_router(make_assistant_router(registry, settings, assistant_provider))
 
     _install_error_handlers(app)
     return app
+
+
+def make_assistant_router(registry, settings, assistant_provider=None):
+    """Builds the M13 assistant route. Uses the injected provider when given
+    (tests), otherwise resolves the provider from server-side config only."""
+    from app.assistant.coordinator import AssistantCoordinator
+    from app.assistant.providers import build_provider
+    from app.routes.assistant import make_assistant_router as make_route
+
+    s = settings
+    if s is None:
+        from app.config import load_settings
+
+        s = load_settings()
+    provider = assistant_provider if assistant_provider is not None else build_provider(s)
+    return make_route(AssistantCoordinator(registry, provider), s)
 
 
 def _build_default_stack(settings):
