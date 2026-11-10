@@ -175,5 +175,91 @@ class MatcherUnitTest(unittest.TestCase):
         self.assertEqual(summary["stage1_auto_accepted"], 2)
 
 
+
+class ReconciliationAuditTests(unittest.TestCase):
+    @staticmethod
+    def _row(name, product_id, canonical_id=2634, old_key="legacy-group",
+             status="auto_accepted", reviewed_at=""):
+        return {
+            "source_slug": "vero" if product_id % 2 else "kam",
+            "sku_key": f"sku-{product_id}",
+            "retailer_product_id": str(product_id),
+            "listing_name": name,
+            "canonical_product_id": str(canonical_id),
+            "canonical_key": old_key,
+            "match_id": str(product_id + 10_000),
+            "review_status": status,
+            "reviewed_at": reviewed_at,
+        }
+
+    def test_yogurt_old_group_splits_and_no_db_mutation(self):
+        from matching.reconciliation_audit import audit_rows
+
+        rows = [
+            self._row("ЈОГУРТ ГРЧКИ 0% 150 Г ОЛИМПУС", 983),
+            self._row("ЈОГУРТ ГРЧКИ 2% 150 Г ОЛИМПУС", 984),
+            self._row("ОЛИМПУС ГРЧКИ ЈОГУРТ 0,0% 150гр", 985),
+        ]
+        audit = audit_rows(rows)
+        summary = audit["summary"]
+        self.assertEqual(summary["source_rows"], 3)
+        self.assertEqual(summary["split_canonical_group_ids"], [2634])
+        self.assertEqual(summary["auto_key_changed"], 3)
+        self.assertEqual(summary["database_mutations_performed"], 0)
+        self.assertFalse(summary["safe_to_apply_automatically"])
+        by_id = {r["retailer_product_id"]: r for r in audit["all_rows"]}
+        self.assertEqual(by_id[983]["proposed_canonical_key"], by_id[985]["proposed_canonical_key"])
+        self.assertNotEqual(by_id[983]["proposed_canonical_key"], by_id[984]["proposed_canonical_key"])
+        self.assertTrue(all(r["old_group_splits"] for r in audit["review_rows"]))
+
+    def test_manual_reviews_are_protected_even_if_signature_changes(self):
+        from matching.reconciliation_audit import audit_rows
+
+        row = self._row("ЈОГУРТ ГРЧКИ 2% 150 Г ОЛИМПУС", 984,
+                        status="approved", reviewed_at="2026-11-09T12:00:00Z")
+        report = audit_rows([row])
+        self.assertEqual(report["all_rows"][0]["classification"], "HUMAN_REVIEW_PROTECTED")
+        self.assertEqual(report["summary"]["human_review_protected"], 1)
+
+    def test_two_old_groups_for_one_signature_require_consolidation_review(self):
+        from matching.reconciliation_audit import audit_rows
+
+        rows = [
+            self._row("ЈОГУРТ ГРЧКИ 0% 150 Г ОЛИМПУС", 983, canonical_id=10),
+            self._row("ОЛИМПУС ГРЧКИ ЈОГУРТ 0,0% 150гр", 985, canonical_id=11),
+        ]
+        report = audit_rows(rows)
+        self.assertEqual(report["summary"]["consolidation_candidate_group_count"], 1)
+        self.assertTrue(all(r["new_key_spans_old_groups"] for r in report["review_rows"]))
+
+    def test_duplicate_verified_identity_or_empty_export_fails_closed(self):
+        from matching.reconciliation_audit import audit_rows
+
+        row = self._row("ЈОГУРТ ГРЧКИ 0% 150Г ОЛИМПУС", 983)
+        with self.assertRaises(ValueError):
+            audit_rows([])
+        with self.assertRaises(ValueError):
+            audit_rows([row, row])
+
+    def test_csv_export_and_cli_generate_review_files(self):
+        import csv
+        import json
+        import tempfile
+        from matching.reconciliation_audit import COLUMNS, main
+
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            source = work / "export.csv"
+            with source.open("w", encoding="utf-8", newline="") as output:
+                writer = csv.DictWriter(output, fieldnames=COLUMNS)
+                writer.writeheader()
+                writer.writerow(self._row("ЈОГУРТ ГРЧКИ 2% 150 Г ОЛИМПУС", 984))
+            out = work / "results"
+            self.assertEqual(main(["--input", str(source), "--out", str(out)]), 0)
+            summary = json.loads((out / "summary.json").read_text(encoding="utf-8"))
+            self.assertEqual(summary["auto_key_changed"], 1)
+            self.assertEqual(len((out / "review_required.csv").read_text().splitlines()), 2)
+
+
 if __name__ == "__main__":
     unittest.main()

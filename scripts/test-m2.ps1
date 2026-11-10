@@ -95,6 +95,20 @@ Invoke-PipelinePass
 $counts1 = Get-DbCounts
 Write-Output "COUNTS_AFTER_FIRST_PASS: $counts1"
 
+# Exercise the read-only export/analyzer on a real scratch PostgreSQL fixture.
+# The matcher-v2 output was just loaded, so there should be no changed keys.
+$auditOut = Join-Path ([System.IO.Path]::GetTempPath()) ("m2-readonly-identity-audit-" + [guid]::NewGuid().ToString("N"))
+& $psExe -NoProfile -ExecutionPolicy Bypass -File scripts/run-match-identity-audit.ps1 -Database $Database -DbUser $DbUser -OutDir $auditOut
+if ($LASTEXITCODE -ne 0) { throw 'M2 read-only reconciliation audit failed' }
+$auditSummary = Get-Content (Join-Path $auditOut 'summary.json') -Raw | ConvertFrom-Json
+if ($auditSummary.source_rows -lt 1 -or $auditSummary.auto_key_changed -ne 0) {
+    throw "M2 identity audit mismatch: rows=$($auditSummary.source_rows) changed=$($auditSummary.auto_key_changed)"
+}
+if ($auditSummary.database_mutations_performed -ne 0) {
+    throw 'M2 identity audit must never change the database'
+}
+Write-Output "PASS readonly_identity_audit rows=$($auditSummary.source_rows) changed=0"
+
 # 5. Second identical pass (idempotency verification across all 3 retailers + matcher)
 Invoke-PipelinePass
 $counts2 = Get-DbCounts

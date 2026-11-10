@@ -13,6 +13,35 @@ CREATE TEMP TABLE stage_canonical_products (doc jsonb);
 CREATE TEMP TABLE stage_product_matches (doc jsonb);
 \copy stage_product_matches FROM '/tmp/aishopping/product_matches.ndjson'
 
+-- Safety gate: matcher version changes can produce a different canonical key
+-- for a product that already has a verified identity. The upsert below never
+-- detaches old active matches, so blindly loading the new identity would either
+-- fail the partial unique index or silently retain the obsolete association.
+-- Fail BEFORE any upsert; the remedy is a reviewed transactional reconciliation.
+DO $match_identity_guard$
+DECLARE
+    changed_active_products bigint;
+BEGIN
+    SELECT count(*) INTO changed_active_products
+      FROM (
+        SELECT DISTINCT rp.id
+          FROM stage_product_matches staged
+          JOIN retailers r ON r.slug = staged.doc->>'source_slug'
+          JOIN retailer_products rp ON rp.retailer_id = r.id
+                                   AND rp.sku_key = staged.doc->>'sku_key'
+          JOIN product_matches existing ON existing.retailer_product_id = rp.id
+                                     AND existing.review_status IN ('auto_accepted', 'approved')
+          JOIN canonical_products old_cp ON old_cp.id = existing.canonical_product_id
+         WHERE staged.doc->>'review_status' = 'auto_accepted'
+           AND old_cp.canonical_key IS DISTINCT FROM staged.doc->>'canonical_key'
+      ) conflicts;
+    IF changed_active_products > 0 THEN
+        RAISE EXCEPTION 'match loader refused % changed active identities; run read-only reconciliation audit and obtain approval first', changed_active_products
+            USING ERRCODE = '23514';
+    END IF;
+END
+$match_identity_guard$;
+
 WITH ins AS (
     INSERT INTO canonical_products
         (canonical_key, canonical_name, normalized_tokens, normalized_size,
