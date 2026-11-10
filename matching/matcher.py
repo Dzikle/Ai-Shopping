@@ -35,7 +35,7 @@ _SIZE_STRIP_RE = re.compile(
     re.IGNORECASE,
 )
 _WORD_TOKEN_RE = re.compile(r"[A-ZА-ЯЃЅЈЉЊЌЏ0-9]+")
-_PERCENT_RE = re.compile(r"(?<![0-9A-ZА-ЯЃЅЈЉЊЌЏ])([0-9]+(?:[.,][0-9]+)?)\\s*[%％]")
+_PERCENT_RE = re.compile(r"(?<![0-9A-ZА-ЯЃЅЈЉЊЌЏ])([0-9]+(?:[.,][0-9]+)?)\s*[%％]")
 
 
 def _percent_identity(match: re.Match[str]) -> str:
