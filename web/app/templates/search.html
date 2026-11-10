@@ -6,24 +6,32 @@
 <h1>{% if q %}Резултати за „{{ q }}“{% else %}Сите понуди{% endif %}</h1>
 
 <form class="filters" action="/search" method="get">
-  <label for="f-q">Пребарувај</label>
-  <input id="f-q" type="search" name="q" value="{{ q }}" maxlength="100" placeholder="напр. млеко">
-  <label for="f-retailer">Продавач</label>
-  <select id="f-retailer" name="retailer">
-    <option value="">Сите</option>
-    {% for r in retailer_options %}
-    <option value="{{ r.slug }}" {% if retailer == r.slug %}selected{% endif %}>{{ r.name }}</option>
-    {% endfor %}
-  </select>
-  <label class="check"><input type="checkbox" name="instock" value="true" {% if instock %}checked{% endif %}> Само на залиха</label>
-  <label class="check"><input type="checkbox" name="promo" value="true" {% if promo %}checked{% endif %}> Само акции</label>
-  <label for="f-sort">Подредување</label>
-  <select id="f-sort" name="sort">
-    <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Најниска цена</option>
-    <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Највисока цена</option>
-  </select>
+  <div class="filter-field filter-query">
+    <label for="f-q">Пребарувај</label>
+    <input id="f-q" type="search" name="q" value="{{ q }}" maxlength="100" placeholder="напр. млеко">
+  </div>
+  <div class="filter-field">
+    <label for="f-retailer">Продавач</label>
+    <select id="f-retailer" name="retailer">
+      <option value="">Сите</option>
+      {% for r in retailer_options %}
+      <option value="{{ r.slug }}" {% if retailer == r.slug %}selected{% endif %}>{{ r.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="filter-field">
+    <label for="f-sort">Подредување</label>
+    <select id="f-sort" name="sort">
+      <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Најниска цена</option>
+      <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Највисока цена</option>
+    </select>
+  </div>
+  <div class="filter-options">
+    <label class="check"><input type="checkbox" name="instock" value="true" {% if instock %}checked{% endif %}> Само на залиха</label>
+    <label class="check"><input type="checkbox" name="promo" value="true" {% if promo %}checked{% endif %}> Само акции</label>
+  </div>
   <input type="hidden" name="page" value="0">
-  <button type="submit">Филтрирај</button>
+  <button type="submit" class="filter-submit">Филтрирај</button>
 </form>
 
 {% if transliterated %}
