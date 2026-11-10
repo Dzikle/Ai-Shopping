@@ -17,7 +17,9 @@ if (-not $DbUser) {
 if (-not $DbUser) { throw 'DB user not specified' }
 if (-not $OutDir) {
     $tag = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ')
-    $OutDir = "snapshots/matching/audit-$tag"
+    # Snapshot folders can be root-owned after Docker bind mounts; keep
+    # audit reports in the invoking user's home directory by default.
+    $OutDir = Join-Path (Join-Path $HOME 'ai-shopping-match-audits') "audit-$tag"
 }
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 $export = Join-Path $OutDir 'current_active_matches.csv'
