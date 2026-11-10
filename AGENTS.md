@@ -28,9 +28,23 @@ As of 2026-11-09, `main` contains backend/data work through M9, including Vero, 
 ## Next work packages after M10 owner sign-off
 
 - Follow-up: remove `backend/` (Java) and the differential gate once the owner signs off on M10.
-- M11 Flutter/KortingKlok feasibility spike, then M12 mobile MVP.
+- ~~M11 Flutter/KortingKlok feasibility spike~~ Executed together with M12 (owner deferment); reuse audit in `docs/research/kortingklok-reuse.md`.
+- ~~M12 mobile MVP~~ Implemented on branch `m12-flutter-mobile-mvp` (2026-11-09), pending owner review - see `docs/milestones/m12-results.md`.
 - M13 AI assistant experience using existing bounded MCP/domain tools.
-- M14 checkjebon-inspired web evaluation and SEO rendering decision.
-- M15 alerts, receipt/GTIN enrichment and optional user features.
+
+## Mobile development (M12+)
+
+- The Flutter app lives in `mobile/` (Flutter 3.47.x, Dart 3.13). Read
+  `mobile/README.md` before touching it; run `flutter analyze` and
+  `flutter test` before every commit.
+- The client is guest-first and read-only: only the six catalog/basket
+  endpoints may be consumed; never call review-queue/metrics/MCP from the app
+  and never embed paid AI keys in a build.
+- Server-side math is authoritative: the app formats but never recomputes
+  prices, pack counts or totals (ADR-0001/0003 invariants).
+- New UI strings go in `lib/l10n/translations.dart` for **both** `mk` and `en`
+  (key-set parity is enforced by `test/models_and_localization_test.dart`).
+- Latin→Cyrillic transliteration (`lib/utils/transliteration.dart`) is input
+  normalization only; never transliterate server data.
 
 Read `docs/architecture/product-delivery-plan.md` before starting any future milestone.
