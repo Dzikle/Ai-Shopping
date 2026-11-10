@@ -21,6 +21,8 @@ Run from the repository root on the machine hosting the PostgreSQL Docker Compos
 
 This runs `scripts/export-match-identity-audit.sql` inside a **READ ONLY PostgreSQL transaction**, copies only source product/match metadata to a local CSV, and processes it locally with Python's standard library.
 
+The default report directory is **`$HOME/ai-shopping-match-audits/audit-<timestamp>`**, not `snapshots/`: Docker-mounted snapshot folders may be root-owned and unwritable by the calling user. You can override with `-OutDir`.
+
 Alternatively, for an already-exported CSV:
 
 ```powershell
