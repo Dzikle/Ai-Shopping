@@ -15,6 +15,7 @@
 | M10 FastAPI migration | Python/FastAPI backend replacing Spring Boot (ADR-0006), differential regression suite, CI/script switch, measured dev-loop gains | 48/48 differential pairs equal on identical data; ported unit suite green; owner sign-off before Java removal |
 | M11 KortingKlok spike | Upstream commit pinned, isolated evaluation, one vertical slice against FastAPI, reuse inventory | Executed in kombinacija with M12 delivery (owner deferred standalone M11 device validation); see `docs/research/kortingklok-reuse.md` |
 | M12 mobile MVP | Guest-first Flutter app: browse/search/compare/history + local basket with server-side optimization, mk/en localization, offline & stale handling | `flutter analyze` clean, 20 unit tests + 4 live-backend integration tests on API-35 emulator, debug APK built; see `docs/milestones/m12-results.md` |
+| M13 AI assistant (owner-approved 2026-11-10) | Bounded model-agnostic FastAPI assistant over existing MCP/domain services + Flutter chat with confirm-before-apply basket proposals | Real catalog resolution and explainable evidence, zero invented prices/totals, confirmed basket changes, backend + Flutter tests; live-provider status recorded separately; see `docs/milestones/m13-ai-shopping-assistant-task.md` |
 
 **Instruction:** The `Implement only M0 now` gate from the original plan is historical — every milestone above is owner-approved before implementation and records evidence in `docs/milestones/current-status.md`. Stale `M0 only` text elsewhere is superseded by AGENTS.md.
 
