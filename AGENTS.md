@@ -4,13 +4,13 @@
 
 ## Current state
 
-As of 2026-11-09, `main` contains backend/data work through M9, including Vero, Stokomak, Zito and KAM ingestion, PostgreSQL, OpenSearch, baskets, a read-only MCP server, daily scheduling, match review, and metrics. M10 (branch `m10-fastapi-migration`) replaces the Java/Spring Boot backend with Python/FastAPI (`backend_py/`, ADR-0006), verified by a differential regression harness against the Spring Boot jar; the Java tree is retained untouched for rollback until owner sign-off. No Flutter or consumer web application is in `main`. See `docs/milestones/current-status.md` for source of truth; verify actual code/tests before trusting claims.
+As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `backend_py/`, PostgreSQL/OpenSearch, retailer adapters, deterministic baskets, seven MCP tools, freshness/metrics/review queue) and M12 Flutter mobile MVP (`mobile/`). M10/M12 are merged; GitHub Actions was green on commit `4118c0f`. The Java tree (`backend/`) and M10 differential harness remain as rollback/regression references. M12 physical-device review and visual polish remain separate follow-ups. See `docs/milestones/current-status.md` for execution evidence and remaining limitations.
 
 **IMPORTANT:** The old roadmap and master plan contain stale `M0 only` instructions; the master plan stack section now reflects FastAPI (ADR-0006). This file supersedes stale operational restrictions. Consult `docs/architecture/product-delivery-plan.md` and the task-specific documents in `docs/milestones/` for next stages; do not treat every proposed stage as authorized.
 
 ## Next approved task
 
-**M10 FastAPI migration and M12 Flutter mobile MVP are merged into `main` (2026-11-09; M10 owner-signed, M12 awaiting owner review)**. The Python/FastAPI backend in `backend_py/` is authoritative; the Java tree (`backend/`) and the differential gate (`scripts/test-m10-diff.ps1`) remain only as rollback and are to be removed in a follow-up commit once the owner confirms. M11 toolchain/device validation remains owner-deferred. Owner review is requested for the M12 mobile app (see `docs/milestones/m12-results.md`); do not begin M13+ without owner approval.
+**M13 AI Shopping Assistant is owner-approved (2026-11-10).** Implement on a dedicated branch by following `docs/milestones/m13-ai-shopping-assistant-task.md`. Reuse FastAPI's existing bounded read-only shopping MCP/domain tools and the M12 Flutter local basket; the assistant proposes changes, and only user confirmation applies them. All authoritative prices and optimizer totals remain server-side. No new paid model/provider, public deployment, Java rollback deletion, M14 or M15 without separate approval.
 
 ## Mandatory engineering rules
 
@@ -30,7 +30,7 @@ As of 2026-11-09, `main` contains backend/data work through M9, including Vero, 
 - Follow-up: remove `backend/` (Java) and the differential gate once the owner signs off on M10.
 - ~~M11 Flutter/KortingKlok feasibility spike~~ Executed together with M12 (owner deferment); reuse audit in `docs/research/kortingklok-reuse.md`.
 - ~~M12 mobile MVP~~ Merged into `main` (2026-11-09), pending owner review - see `docs/milestones/m12-results.md`.
-- M13 AI assistant experience using existing bounded MCP/domain tools.
+- **M13 AI assistant** — approved 2026-11-10; implement the gated plan in `docs/milestones/m13-ai-shopping-assistant-task.md` on a dedicated branch.
 
 ## Mobile development (M12+)
 
@@ -39,7 +39,7 @@ As of 2026-11-09, `main` contains backend/data work through M9, including Vero, 
   `flutter test` before every commit.
 - The client is guest-first and read-only: only the six catalog/basket
   endpoints may be consumed; never call review-queue/metrics/MCP from the app
-  and never embed paid AI keys in a build.
+  and never embed paid AI keys in a build. The M13 chat UI may use only the new bounded guest-safe `/api/v1/assistant/turn` endpoint; all shopping tool access stays server-side.
 - Server-side math is authoritative: the app formats but never recomputes
   prices, pack counts or totals (ADR-0001/0003 invariants).
 - New UI strings go in `lib/l10n/translations.dart` for **both** `mk` and `en`
