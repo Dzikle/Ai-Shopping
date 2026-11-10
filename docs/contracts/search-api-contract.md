@@ -68,6 +68,7 @@ Returns canonical products matched across multiple retailers (`review_status IN 
 Query parameters:
 - `q` (optional): search query on canonical product name / tokens
 - `minRetailers` (optional, default `2`): minimum distinct retailers offering the canonical product
+- `canonicalId` (optional, M14 addition): return only the comparison group for this `canonicalProductId`; omitting the parameter preserves the original behavior
 - `page` (optional, default `0`), `size` (optional, default `20`)
 
 Response: `SearchResponse<ProductComparisonDto>` containing `cheapestMkd`, `highestMkd`, `spreadMkd`, `latestPublishedTs`, and per-retailer offer summaries (`RetailerOfferSummaryDto`).

@@ -1,4 +1,4 @@
-"""Port of CatalogApiTest.java (6 tests) at the HTTP layer via TestClient."""
+﻿"""Port of CatalogApiTest.java (6 tests) at the HTTP layer via TestClient."""
 
 from decimal import Decimal
 
@@ -32,7 +32,7 @@ def test_open_search_primary_for_health_offers_and_comparison(mock_open_search):
     assert health["counts"]["opensearch_offers"] == 1896
 
     offers = client.get(
-        "/api/v1/offers/search?q=млеко&retailer=vero&inStockOnly=true&sort=price_asc&page=0&size=20"
+        "/api/v1/offers/search?q=Ð¼Ð»ÐµÐºÐ¾&retailer=vero&inStockOnly=true&sort=price_asc&page=0&size=20"
     ).json()
     assert offers["sourceEngine"] == "opensearch"
     assert offers["total"] == 1
@@ -40,7 +40,7 @@ def test_open_search_primary_for_health_offers_and_comparison(mock_open_search):
     assert offers["items"][0]["isPromo"] is True
     assert offers["items"][0]["sourceUrl"] == "https://pricelist.vero.com.mk/1_1.html"
 
-    comparisons = client.get("/api/v1/products/compare?q=млеко&minRetailers=2&page=0&size=20").json()
+    comparisons = client.get("/api/v1/products/compare?q=Ð¼Ð»ÐµÐºÐ¾&minRetailers=2&page=0&size=20").json()
     assert comparisons["sourceEngine"] == "opensearch"
     assert comparisons["total"] == 1
     cmp = comparisons["items"][0]
@@ -66,10 +66,10 @@ def test_fallback_to_postgres_when_open_search_unavailable():
     assert stores["sourceEngine"] == "postgresql_fallback"
     assert len(stores["items"]) == 1
 
-    cmp = client.get("/api/v1/products/compare?q=млеко&minRetailers=2&page=0&size=20").json()
+    cmp = client.get("/api/v1/products/compare?q=Ð¼Ð»ÐµÐºÐ¾&minRetailers=2&page=0&size=20").json()
     assert cmp["sourceEngine"] == "postgresql_fallback"
     assert cmp["total"] == 1
-    assert pg.compare_calls == [("млеко", 2, 0, 20)]
+    assert pg.compare_calls == [("Ð¼Ð»ÐµÐºÐ¾", 2, 0, 20, None)]
 
 
 def test_product_history_and_review_queue_endpoints(mock_open_search):
@@ -153,3 +153,29 @@ def test_metrics_endpoint_reports_runs_and_review_queue(mock_open_search):
     assert res["reviewQueue"]["totalPending"] == 3400
     assert res["reviewQueue"]["totalAutoAccepted"] == 322
     assert res["reviewQueue"]["oldestPendingDays"] == 2
+
+
+def test_compare_by_canonical_id_backward_compatible(mock_open_search):
+    # OpenSearch path: canonicalId becomes an extra term filter, q stays optional.
+    url = _routes(mock_open_search)
+    pg = FakePostgresRepository()
+    client = TestClient(create_app(catalog_service=_service(pg, url), basket_service=None))
+
+    res = client.get("/api/v1/products/compare?canonicalId=10&minRetailers=2&page=0&size=20").json()
+    assert res["sourceEngine"] == "opensearch"
+    assert res["total"] == 1
+    assert res["items"][0]["canonicalProductId"] == 10
+
+    # PostgreSQL fallback path: the filter is forwarded to the repository.
+    pg2 = FakePostgresRepository()
+    client2 = TestClient(create_app(catalog_service=_service(pg2, "http://127.0.0.1:1"), basket_service=None))
+    res2 = client2.get("/api/v1/products/compare?canonicalId=10").json()
+    assert res2["sourceEngine"] == "postgresql_fallback"
+    assert res2["total"] == 1
+    assert pg2.compare_calls == [(None, 2, 0, 20, 10)]
+
+    # Omitting the parameter keeps the original behavior (backward compatible).
+    pg3 = FakePostgresRepository()
+    client3 = TestClient(create_app(catalog_service=_service(pg3, "http://127.0.0.1:1"), basket_service=None))
+    client3.get("/api/v1/products/compare?minRetailers=3")
+    assert pg3.compare_calls == [(None, 3, 0, 20, None)]

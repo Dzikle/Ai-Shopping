@@ -227,9 +227,13 @@ class PostgresCatalogRepository:
 
     # ---- product comparison (fallback) ----
 
-    def compare_products(self, q: str | None, min_retailers: int, page: int, size: int):
+    def compare_products(self, q: str | None, min_retailers: int, page: int, size: int, canonical_id: int | None = None):
         filter_clause = " WHERE retailer_count >= %s "
         params: list[Any] = [max(1, min_retailers)]
+
+        if canonical_id is not None:
+            filter_clause += " AND canonical_product_id = %s "
+            params.append(int(canonical_id))
 
         if q and q.strip():
             pattern = "%" + q.strip() + "%"

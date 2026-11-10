@@ -63,13 +63,13 @@ class CatalogSearchService:
                 pass
         return self._pg.search_offers(f)
 
-    def compare_products(self, q: str | None, min_retailers: int, page: int, size: int) -> dict[str, Any]:
+    def compare_products(self, q: str | None, min_retailers: int, page: int, size: int, canonical_id: int | None = None) -> dict[str, Any]:
         if self._os.is_healthy_and_populated():
             try:
-                return self._os.search_product_comparisons(q, min_retailers, page, size)
+                return self._os.search_product_comparisons(q, min_retailers, page, size, canonical_id)
             except Exception:
                 pass
-        return self._pg.compare_products(q, min_retailers, page, size)
+        return self._pg.compare_products(q, min_retailers, page, size, canonical_id)
 
     def get_product_history(self, canonical_product_id: int) -> dict[str, Any] | None:
         return self._pg.get_product_history(canonical_product_id)
