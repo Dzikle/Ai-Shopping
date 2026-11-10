@@ -4,13 +4,13 @@
 
 ## Current state
 
-As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `backend_py/`, PostgreSQL/OpenSearch, retailer adapters, deterministic baskets, seven MCP tools, freshness/metrics/review queue) and M12 Flutter mobile MVP (`mobile/`). M10/M12 are merged; GitHub Actions was green on commit `4118c0f`. The Java tree (`backend/`) and M10 differential harness remain as rollback/regression references. M12 physical-device review and visual polish remain separate follow-ups. See `docs/milestones/current-status.md` for execution evidence and remaining limitations.
+As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `backend_py/`, PostgreSQL/OpenSearch, retailer adapters, deterministic baskets, seven MCP tools, freshness/metrics/review queue) and M12 Flutter mobile MVP (`mobile/`). M10/M12 are merged; GitHub Actions was green on commit `4118c0f`. M13 AI Shopping Assistant is **implemented on branch `m13-ai-shopping-assistant`** (bounded `POST /api/v1/assistant/turn` + Flutter AI tab, pytest 42 passed, `flutter test` 29 passed) and awaits owner review via PR; live-model verification is pending. The Java tree (`backend/`) and M10 differential harness remain as rollback/regression references. M12 physical-device review and visual polish remain separate follow-ups. See `docs/milestones/current-status.md` for execution evidence and remaining limitations.
 
 **IMPORTANT:** The old roadmap and master plan contain stale `M0 only` instructions; the master plan stack section now reflects FastAPI (ADR-0006). This file supersedes stale operational restrictions. Consult `docs/architecture/product-delivery-plan.md` and the task-specific documents in `docs/milestones/` for next stages; do not treat every proposed stage as authorized.
 
 ## Next approved task
 
-**M13 AI Shopping Assistant is owner-approved (2026-11-10).** Implement on a dedicated branch by following `docs/milestones/m13-ai-shopping-assistant-task.md`. Reuse FastAPI's existing bounded read-only shopping MCP/domain tools and the M12 Flutter local basket; the assistant proposes changes, and only user confirmation applies them. All authoritative prices and optimizer totals remain server-side. No new paid model/provider, public deployment, Java rollback deletion, M14 or M15 without separate approval.
+**M13 AI Shopping Assistant was implemented 2026-11-10 on branch `m13-ai-shopping-assistant`** per `docs/milestones/m13-ai-shopping-assistant-task.md`; see `docs/milestones/m13-results.md` for evidence. Owner follow-up decisions: (a) PR review/merge, (b) provider credentials for a live-model verification demo, (c) any M14/M15 approval. Reuse FastAPI's existing bounded read-only shopping MCP/domain tools and the M12 Flutter local basket; the assistant proposes changes, and only user confirmation applies them. All authoritative prices and optimizer totals remain server-side. No new paid model/provider, public deployment, Java rollback deletion, M14 or M15 without separate approval.
 
 ## Mandatory engineering rules
 
@@ -30,7 +30,7 @@ As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `
 - Follow-up: remove `backend/` (Java) and the differential gate once the owner signs off on M10.
 - ~~M11 Flutter/KortingKlok feasibility spike~~ Executed together with M12 (owner deferment); reuse audit in `docs/research/kortingklok-reuse.md`.
 - ~~M12 mobile MVP~~ Merged into `main` (2026-11-09), pending owner review - see `docs/milestones/m12-results.md`.
-- **M13 AI assistant** — approved 2026-11-10; implement the gated plan in `docs/milestones/m13-ai-shopping-assistant-task.md` on a dedicated branch.
+- **M13 AI assistant** — implemented 2026-11-10 on branch `m13-ai-shopping-assistant` per the gated plan in `docs/milestones/m13-ai-shopping-assistant-task.md` (evidence in `docs/milestones/m13-results.md`); live-model verification pending owner provider credentials.
 
 ## Mobile development (M12+)
 

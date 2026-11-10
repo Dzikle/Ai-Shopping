@@ -23,9 +23,18 @@ obligations.
   light/dark/system theme — persisted locally via `shared_preferences`
 - Offline banner + last-cached data when the backend is unreachable; explicit
   loading / empty / stale / error states on every screen
+- **AI tab (M13):** chat screen calling only
+  `POST /api/v1/assistant/turn` (`lib/screens/assistant_screen.dart`). The
+  assistant proposes basket changes as a reviewable diff; **only the Apply
+  button mutates the local basket**, after which the same server-side
+  optimizer is invoked for authoritative totals. Ambiguous products show
+  grounded option cards; substitutes are explicitly tagged; stale-basket
+  proposals and `model_unavailable` are handled honestly. Provider info
+  (`isMock`) is shown as a demo badge when applicable. No AI keys in the app;
+  the assistant provider is configured server-side only.
 
 Not in scope: authentication, push notifications, checkout, list editing with
-remote persistence, AI chat (M13+).
+remote persistence.
 
 ## Prerequisites
 
@@ -80,11 +89,13 @@ public host.
 lib/
   main.dart                  app bootstrap (AiShoppingRoot → MainShell)
   models/api_models.dart     typed contracts for every endpoint consumed
+  models/assistant_models.dart  typed assistant turn contract (M13)
   services/api_service.dart  HTTP transport, typed errors, timeouts
   services/api_client.dart   cached read-only catalog/basket API
+  services/assistant_api.dart  POST /api/v1/assistant/turn client (M13)
   services/response_cache.dart  SharedPreferences-backed offline cache
   providers/app_state.dart   locale/theme/local basket state
-  screens/                   home, search, compare, basket, settings, details
+  screens/                   home, search, compare, basket, assistant, settings, details
   widgets/                   offer card, compare tile, placeholders, error view
   utils/                     MKD/quantity/date formatting, transliteration
   l10n/                      flat translation maps (mk + en) + delegate

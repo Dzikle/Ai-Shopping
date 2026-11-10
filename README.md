@@ -1,6 +1,6 @@
 # AI Shopping — Universal Price Intelligence Platform
 
-A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) + M6 (Daily ingestion scheduler, freshness API & automated pipeline) + M7 (Match review queue) + M8 (Metrics API) + M9 (KAM Market PDF adapter) + M10 (FastAPI backend migration, differential-verified) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
+A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) + M6 (Daily ingestion scheduler, freshness API & automated pipeline) + M7 (Match review queue) + M8 (Metrics API) + M9 (KAM Market PDF adapter) + M10 (FastAPI backend migration, differential-verified) + M12 (Flutter mobile MVP) implemented; M13 (AI shopping assistant) implemented on branch `m13-ai-shopping-assistant`, pending live-model verification — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
 
 Initial focus: North Macedonia. Expansion: other countries, retailers and product categories.
 
@@ -90,6 +90,19 @@ Latin search, verified cross-retailer comparison and price history, and a local
 basket optimized deterministically **server-side**. See `mobile/README.md` for
 setup, run, test and build commands. Status and evidence:
 `docs/milestones/m12-results.md`.
+
+## AI Shopping Assistant (M13, branch `m13-ai-shopping-assistant`)
+
+The backend adds one guest-safe chat endpoint, `POST /api/v1/assistant/turn`
+(provider-neutral adapter: `mock` by default, `openai_compatible` configurable
+server-side only), over the same read-only domain tools used by MCP. The model
+is a language interpreter only: every price, ID and total is catalog-verified by
+the coordinator and basket changes are returned as **proposals** — only the
+user's explicit confirmation in the Flutter AI tab applies them (to the local
+basket, then the deterministic optimizer totals). With no provider configured
+the API answers with the honest `model_unavailable` status. Contract and
+evidence: [assistant API contract](docs/contracts/assistant-api-contract.md),
+`docs/milestones/m13-results.md` (live-model verification pending).
 
 ## Model Context Protocol (MCP) Server
 
