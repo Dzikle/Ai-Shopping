@@ -10,7 +10,7 @@ As of 2026-11-09, `main` contains backend/data work through M9, including Vero, 
 
 ## Next approved task
 
-**M10 FastAPI migration merged (2026-11-09, owner-signed)**. The Python/FastAPI backend in `backend_py/` is authoritative; the Java tree (`backend/`) and the differential gate (`scripts/test-m10-diff.ps1`) remain only as rollback and are to be removed in a follow-up commit now that sign-off is recorded. M12 Flutter mobile MVP is owner-approved and implemented on branch `m12-flutter-mobile-mvp` (`docs/milestones/m12-results.md`); M11 toolchain/device validation remains owner-deferred. Do not begin M13+ without owner approval.
+**M10 FastAPI migration and M12 Flutter mobile MVP are merged into `main` (2026-11-09; M10 owner-signed, M12 awaiting owner review)**. The Python/FastAPI backend in `backend_py/` is authoritative; the Java tree (`backend/`) and the differential gate (`scripts/test-m10-diff.ps1`) remain only as rollback and are to be removed in a follow-up commit once the owner confirms. M11 toolchain/device validation remains owner-deferred. Owner review is requested for the M12 mobile app (see `docs/milestones/m12-results.md`); do not begin M13+ without owner approval.
 
 ## Mandatory engineering rules
 
@@ -29,7 +29,7 @@ As of 2026-11-09, `main` contains backend/data work through M9, including Vero, 
 
 - Follow-up: remove `backend/` (Java) and the differential gate once the owner signs off on M10.
 - ~~M11 Flutter/KortingKlok feasibility spike~~ Executed together with M12 (owner deferment); reuse audit in `docs/research/kortingklok-reuse.md`.
-- ~~M12 mobile MVP~~ Implemented on branch `m12-flutter-mobile-mvp` (2026-11-09), pending owner review - see `docs/milestones/m12-results.md`.
+- ~~M12 mobile MVP~~ Merged into `main` (2026-11-09), pending owner review - see `docs/milestones/m12-results.md`.
 - M13 AI assistant experience using existing bounded MCP/domain tools.
 
 ## Mobile development (M12+)
