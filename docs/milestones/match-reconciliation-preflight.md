@@ -34,6 +34,7 @@ The CSV must contain the columns produced by `export-match-identity-audit.sql`. 
 - `summary.json`: total verified rows, changed auto-accepted keys, protected human reviews, missing signatures, split legacy canonical IDs and consolidation candidates; `safe_to_apply_automatically=false`.
 - `all_matches.csv`: every active mapping with the proposed v2 key and review classification.
 - `review_required.csv`: changed or suspicious mappings. Inspect the old/new key and all members of split legacy groups.
+- `human_review_matches.csv`: separately exported approved/rejected human decisions (including reviewer and notes). Keep these as protected audit evidence when designing any later migration.
 
 The report never generates SQL UPDATE/DELETE, connects to a model provider or changes OpenSearch. CSV listing names are untrusted source text; avoid enabling spreadsheet macros or automatic formula execution when opening them.
 
