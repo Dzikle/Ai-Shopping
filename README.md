@@ -82,6 +82,15 @@ curl http://localhost:8080/api/v1/freshness
   - `./scripts/test-m9.ps1`
   - `./scripts/test-m10-diff.ps1` (differential: Spring Boot jar vs FastAPI on identical data — regression gate kept until owner sign-off)
 
+## Mobile app (Flutter, M12)
+
+`mobile/` contains the guest-first Flutter client (Macedonian + English) over the
+FastAPI backend: browse with freshness/retailer filters, Cyrillic + transliterated
+Latin search, verified cross-retailer comparison and price history, and a local
+basket optimized deterministically **server-side**. See `mobile/README.md` for
+setup, run, test and build commands. Status and evidence:
+`docs/milestones/m12-results.md`.
+
 ## Model Context Protocol (MCP) Server
 
 The FastAPI backend exposes a Model Context Protocol (`2024-11-05`) JSON-RPC 2.0 server at `POST /mcp` (discovery info at `GET /mcp` and `GET /mcp/sse`), enabling AI agents (such as Claude Desktop or Antigravity) to query product intelligence and optimize shopping baskets deterministically without paid LLM APIs on the backend. See [MCP tools contract](docs/contracts/mcp-tools-contract.md).
