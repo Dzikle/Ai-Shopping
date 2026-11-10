@@ -7,6 +7,7 @@ format server-provided numbers only.
 """
 
 import datetime as dt
+import re
 from decimal import Decimal, InvalidOperation
 
 
@@ -103,3 +104,91 @@ def _same(a, b) -> bool:
         return Decimal(str(a)) == Decimal(str(b))
     except (InvalidOperation, ValueError):
         return str(a) == str(b)
+
+
+# Unit-price labels from retailer feeds are untrusted text. A 64 MKD label
+# referring to "1 гр" for a 32 MKD / 500g package is arithmetically
+# inconsistent, and must not be shown as "64 ден./гр" or silently re-labelled.
+_SIZE_RE = re.compile(r"(?:(\d+)x)?(\d+(?:[.,]\d+)?)(g|ml)$", re.IGNORECASE)
+_UNIT_BASIS_RE = re.compile(
+    r"(?:(\d+(?:[.,]\d+)?)\s*)?(кгр|кг|kg|гр|gr|г|g|мл|ml|л|l)\.?$",
+    re.IGNORECASE,
+)
+
+
+def _unit_basis(label: str):
+    """Return (denominator in g/ml, base unit, display label) or None."""
+    basis = label.strip().lower().replace("\u00a0", " ")
+    # Retailers also publish variants such as "ден/кг" or "ден/парче".
+    if basis.startswith("ден/"):
+        basis = basis[4:].strip()
+    if basis in {"парче", "парчe", "бр", "бр.", "пар"}:
+        return Decimal(1), "piece", "парче"
+    match = _UNIT_BASIS_RE.fullmatch(basis)
+    if match is None:
+        return None
+    amount = Decimal((match.group(1) or "1").replace(",", "."))
+    if amount <= 0:
+        return None
+    unit = match.group(2).lower()
+    if unit in {"кг", "кгр", "kg"}:
+        quantity, base_unit, label_unit = amount * 1000, "g", "кг"
+    elif unit in {"гр", "gr", "г", "g"}:
+        quantity, base_unit, label_unit = amount, "g", "г"
+    elif unit in {"л", "l"}:
+        quantity, base_unit, label_unit = amount * 1000, "ml", "л"
+    else:
+        quantity, base_unit, label_unit = amount, "ml", "мл"
+    display = label_unit if amount == 1 else f"{format_quantity(amount)} {label_unit}"
+    return quantity, base_unit, display
+
+
+def unit_price_for_offer(offer):
+    """Render only a source-provided price whose denominator is credible.
+
+    This is a validation/presentation check, NOT a source-price correction.
+    Never generate a replacement unit-price amount from pack arithmetic.
+    Compare against both current and regular selling price because some
+    retailers publish the regular unit price during a promotion.
+    """
+    source_amount, source_basis = offer.get("unitPrice"), offer.get("unitLabel")
+    if source_amount is None or not source_basis:
+        return {"text": None, "warning": False}
+    try:
+        unit_price = Decimal(str(source_amount))
+        if not unit_price.is_finite() or unit_price <= 0:
+            return {"text": None, "warning": True}
+        basis = _unit_basis(str(source_basis))
+        if basis is None:
+            return {"text": None, "warning": True}
+        denominator, dimension, display_label = basis
+        size = str(offer.get("normalizedSize") or "").strip()
+        size_match = _SIZE_RE.fullmatch(size)
+        prices = []
+        for key in ("priceCurrent", "regularPrice"):
+            if offer.get(key) is not None:
+                value = Decimal(str(offer[key]))
+                if value.is_finite() and value > 0:
+                    prices.append(value)
+        if not prices:
+            return {"text": None, "warning": True}
+        if dimension == "piece":
+            expected = prices
+        elif size_match is not None and size_match.group(3).lower() == dimension:
+            pack_count = Decimal(size_match.group(1) or "1")
+            pack_quantity = Decimal(size_match.group(2).replace(",", ".")) * pack_count
+            if pack_quantity <= 0:
+                return {"text": None, "warning": True}
+            expected = [value * denominator / pack_quantity for value in prices]
+        else:
+            return {"text": None, "warning": True}
+        # Two-decimal statutory prices/rounding, with a small relative
+        # allowance; a 1000x wrong gram/kg denominator cannot pass.
+        if not any(
+            abs(unit_price - value) <= max(Decimal("0.05"), abs(value) * Decimal("0.02"))
+            for value in expected
+        ):
+            return {"text": None, "warning": True}
+        return {"text": f"{format_mkd(unit_price)}/{display_label}", "warning": False}
+    except (InvalidOperation, ValueError, TypeError, ArithmeticError):
+        return {"text": None, "warning": True}
