@@ -50,9 +50,11 @@
       <p class="meta">
         {{ o.retailerName or o.retailerSlug }} · {{ o.storeName or o.storeExternalKey }}{% if o.city %} · {{ o.city }}{% endif %}
       </p>
+      {% set unit = o | unit_price %}
       <p class="size">
         {% if o.normalizedSize %}{{ o.normalizedSize }}{% endif %}
-        {% if o.unitPrice and o.unitLabel %} · ед. цена {{ o.unitPrice | mkd }}/{{ o.unitLabel }}{% endif %}
+        {% if unit.text %} · ед. цена {{ unit.text }}{% endif %}
+        {% if unit.warning %} · <span class="unit-warning" title="Единичната цена и мерната единица од изворот не се согласуваат со пакувањето">ед. цена непотврдена</span>{% endif %}
       </p>
       <p class="price">
         {% if o.priceCurrent is not none %}{{ o.priceCurrent | mkd }}{% else %}цена непозната{% endif %}
