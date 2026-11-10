@@ -7,6 +7,7 @@ import 'providers/app_state.dart';
 import 'screens/main_shell.dart';
 import 'services/api_client.dart';
 import 'services/api_service.dart';
+import 'services/assistant_api.dart';
 import 'services/response_cache.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_theme.dart';
@@ -54,6 +55,8 @@ class AiShoppingRoot extends StatefulWidget {
 class _AiShoppingRootState extends State<AiShoppingRoot> {
   late final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
   late final ShoppingApi _api = _buildApi();
+  // Dedicated transport for /api/v1/assistant/turn (same guest base URL).
+  late final AssistantApi _assistantApi = HttpAssistantApi(service: ApiService());
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +69,7 @@ class _AiShoppingRootState extends State<AiShoppingRoot> {
         return AppScope(
           state: AppState(snapshot.data!),
           api: _api,
+          assistantApi: _assistantApi,
           child: const AiShoppingApp(),
         );
       },

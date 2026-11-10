@@ -8,9 +8,9 @@ As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `
 
 **IMPORTANT:** The old roadmap and master plan contain stale `M0 only` instructions; the master plan stack section now reflects FastAPI (ADR-0006). This file supersedes stale operational restrictions. Consult `docs/architecture/product-delivery-plan.md` and the task-specific documents in `docs/milestones/` for next stages; do not treat every proposed stage as authorized.
 
-## Next approved task
+## Current next step — integrated M13/M14 verification
 
-**M14 web evaluation + prototype was implemented 2026-11-10 on branch `m14-web-evaluation`** per `docs/milestones/m14-web-frontend-evaluation-task.md`; decision in ADR-0007 (standalone server-rendered FastAPI+Jinja2 app in `web/`), evidence in `docs/milestones/m14-results.md`. Owner follow-up decisions: (a) review/merge this PR, (b) review/merge the still-open M13 PR #4 (do not auto-merge), (c) live-catalogue browser smoke in an environment where Docker runs, (d) any M15 approval. M13 live-model verification is still pending. No unapproved paid model/provider, public deployment, Java rollback deletion, M15 or M16.
+M13 AI assistant and M14 web prototype have been merged into `main` on 2026-11-10. Before M15, run the integrated FastAPI, Flutter and web checks and review real-product flows on mobile and in the browser. M13 **live-model verification remains pending** (mock/scripted model tests only); M14 **live Postgres/OpenSearch browser smoke remains pending** (fixture API used). The Java rollback tree and differential gate are retained. No unapproved paid provider, deployment, Java deletion, M15 or M16 implementation.
 
 ## Mandatory engineering rules
 
@@ -30,8 +30,8 @@ As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `
 - Follow-up: remove `backend/` (Java) and the differential gate once the owner signs off on M10.
 - ~~M11 Flutter/KortingKlok feasibility spike~~ Executed together with M12 (owner deferment); reuse audit in `docs/research/kortingklok-reuse.md`.
 - ~~M12 mobile MVP~~ Merged into `main` (2026-11-09), pending owner review - see `docs/milestones/m12-results.md`.
-- **M13 AI assistant** — implemented on `m13-ai-shopping-assistant` with 42 backend / 29 Flutter tests, PR #4 open and green; live-model verification pending. Do not represent this branch as merged.
-- **M14 web evaluation + working prototype** — approved 2026-11-10; execute `docs/milestones/m14-web-frontend-evaluation-task.md` from `main` without silently taking code from M13.
+- **M13 AI assistant** — merged to `main` (2026-11-10), 42 backend / 29 Flutter tests reported, CI green; live-model verification pending.
+- **M14 web evaluation + working prototype** — merged to `main` (2026-11-10); CI/fixture Playwright smoke passed; real-catalogue browser smoke is still pending.
 
 ## Web development (M14+)
 
