@@ -30,8 +30,10 @@ docker compose exec -T postgres psql -X -U $DbUser -d $Database -v ON_ERROR_STOP
 if ($LASTEXITCODE -ne 0) { throw 'PostgreSQL read-only export failed' }
 docker compose cp 'postgres:/tmp/aishopping/current_active_matches.csv' $export
 if ($LASTEXITCODE -ne 0) { throw 'Cannot retrieve active-match export' }
+docker compose cp 'postgres:/tmp/aishopping/human_review_matches.csv' (Join-Path $OutDir 'human_review_matches.csv')
+if ($LASTEXITCODE -ne 0) { throw 'Cannot retrieve protected human-review export' }
 
 python -B matching/reconciliation_audit.py --input $export --out $OutDir
 if ($LASTEXITCODE -ne 0) { throw 'Read-only identity analysis failed' }
 Write-Output "READ_ONLY_AUDIT_OK database=$Database out=$OutDir"
-Write-Output "Review $OutDir/summary.json and $OutDir/review_required.csv before any DB change."
+Write-Output "Review $OutDir/summary.json, review_required.csv and human_review_matches.csv before any DB change."
