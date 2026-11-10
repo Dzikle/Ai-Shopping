@@ -40,6 +40,49 @@ class MatcherUnitTest(unittest.TestCase):
         self.assertEqual(s3["canonical_key"], s4["canonical_key"])
         self.assertEqual(s3["normalized_size"], "360g")
 
+    def test_olympus_fat_percentages_are_not_identical(self):
+        zero = extract_signature("ЈОГУРТ ГРЧКИ 0% 150 Г ОЛИМПУС")
+        two = extract_signature("ЈОГУРТ ГРЧКИ 2% 150 Г ОЛИМПУС")
+        equivalent = extract_signature("ОЛИМПУС ГРЧКИ ЈОГУРТ 0,0 % 150гр")
+        self.assertEqual(zero["normalized_size"], "150g")
+        self.assertEqual(zero["canonical_key"], equivalent["canonical_key"])
+        self.assertNotEqual(zero["canonical_key"], two["canonical_key"])
+        self.assertIn("PCT0", zero["tokens"])
+        self.assertIn("PCT2", two["tokens"])
+
+    def test_sugar_and_lactose_modifiers_remain_distinct(self):
+        variants = (
+            ("СО ШЕЌЕР", "БЕЗ ШЕЌЕР"),
+            ("СО ЛАКТОЗА", "БЕЗ ЛАКТОЗА"),
+            ("ТИП 1", "ТИП 2"),
+        )
+        for left, right in variants:
+            with self.subTest(left=left, right=right):
+                a = extract_signature(f"МЛЕКО ТЕСТ {left} 500МЛ")
+                b = extract_signature(f"МЛЕКО ТЕСТ {right} 500МЛ")
+                self.assertNotEqual(a["canonical_key"], b["canonical_key"])
+
+    def test_cross_retailer_percent_variants_never_auto_merge(self):
+        products = [
+            {
+                "source_slug": slug,
+                "sku_key": derive_sku_key(name, "МЛЕЧНИ"),
+                "listing_name": name,
+            }
+            for slug, name in (
+                ("vero", "ЈОГУРТ ГРЧКИ 0% 150 Г ОЛИМПУС"),
+                ("kam", "ЈОГУРТ ГРЧКИ 2% 150 Г ОЛИМПУС"),
+                ("zito", "ОЛИМПУС ГРЧКИ ЈОГУРТ 0% 150гр"),
+            )
+        ]
+        canonicals, matches = match_products(products)
+        self.assertEqual(len(canonicals), 2)
+        stage1 = [m for m in matches if m["review_status"] == "auto_accepted"]
+        keys = {m["source_slug"]: m["canonical_key"] for m in stage1}
+        self.assertEqual(keys["vero"], keys["zito"])
+        self.assertNotEqual(keys["vero"], keys["kam"])
+        self.assertEqual(len(stage1), 3)
+
     def test_different_sizes_never_match(self):
         s1 = extract_signature("КРЕМ НУТЕЛА 400гр")
         s2 = extract_signature("КРЕМ НУТЕЛА 750гр")
