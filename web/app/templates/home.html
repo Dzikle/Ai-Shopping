@@ -22,8 +22,8 @@
     {% for r in freshness_summary.retailers %}
     <li>
       <strong>{{ r.retailerName or r.retailerSlug }}</strong> —
-      {{ r.offerCount }} понуди,
-      {{ r.populatedStoresCount }} продавници,
+      {{ r.offerCount }} {{ r.offerCount | mknoun('понуда', 'понуди') }},
+      {{ r.populatedStoresCount }} {{ r.populatedStoresCount | mknoun('продавница', 'продавници') }},
       последно објавено {{ r.latestPublishedTs | mkdate }}
     </li>
     {% endfor %}

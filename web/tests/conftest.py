@@ -209,7 +209,7 @@ OPTIMIZATION = {
 class StubApi:
     """Records requests and serves deterministic canned responses."""
 
-    def __init__(self):
+    def __init__(self, port: int = 0):
         self.search_calls: list[dict] = []
         self.compare_calls: list[dict] = []
         self.optimize_payloads: list[dict] = []
@@ -290,7 +290,7 @@ class StubApi:
             def log_message(self, format, *args):  # noqa: A002
                 pass
 
-        self.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+        self.server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
         self._thread = threading.Thread(target=self.server.serve_forever, daemon=True)
         self._thread.start()
 

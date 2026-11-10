@@ -114,6 +114,12 @@ def test_compare_detail_unknown_id_404(client):
     assert "не е пронајдена" in res.text
 
 
+def test_compare_detail_non_numeric_id_gets_html_404(client):
+    res = client.get("/compare/not-a-number")
+    assert res.status_code == 404
+    assert "не е пронајдена" in res.text
+
+
 def test_basket_page_is_shell_without_totals(client):
     res = client.get("/basket")
     assert res.status_code == 200

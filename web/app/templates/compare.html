@@ -30,7 +30,8 @@
         највисока {{ g.highestMkd | mkd }} ·
         разлика {{ g.spreadMkd | mkd }}
       </p>
-      <p class="meta">{{ g.retailerCount }} продавачи · {{ g.storeCount }} продавници ·
+      <p class="meta">{{ g.retailerCount }} {{ g.retailerCount | mknoun('продавач', 'продавачи') }} ·
+        {{ g.storeCount }} {{ g.storeCount | mknoun('продавница', 'продавници') }} ·
         последно објавено {{ g.latestPublishedTs | mkdate }}</p>
       <ul class="retailer-offers">
         {% for o in g.offers %}

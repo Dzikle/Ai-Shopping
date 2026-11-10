@@ -335,7 +335,7 @@
       td2.textContent = s.itemsCovered + "/" + s.totalItemsRequested;
       var td3 = document.createElement("td");
       td3.className = "store-total";
-      td3.textContent = formatMkd(s.totalMkd);
+      td3.textContent = s.itemsCovered === 0 ? "\u2013" : formatMkd(s.totalMkd);
       tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
       tbody.appendChild(tr);
     });

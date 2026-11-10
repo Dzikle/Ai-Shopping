@@ -1,6 +1,6 @@
 # AI Shopping — Universal Price Intelligence Platform
 
-A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) + M6 (Daily ingestion scheduler, freshness API & automated pipeline) + M7 (Match review queue) + M8 (Metrics API) + M9 (KAM Market PDF adapter) + M10 (FastAPI backend migration, differential-verified) implemented — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
+A retailer-agnostic platform for daily price ingestion, canonical product matching, store-level comparison, price history, deterministic basket optimization, and AI-assisted grocery shopping. **Status: M0 + M1 (Vero) + M2 (Stokomak + Zito + canonical identity & matching) + M3 (OpenSearch projections & search/comparison REST API) + M4 (Shopping lists, unit conversion & deterministic single/multi-store basket optimization) + M5 (Bounded read-only MCP server over catalog & basket optimizer) + M6 (Daily ingestion scheduler, freshness API & automated pipeline) + M7 (Match review queue) + M8 (Metrics API) + M9 (KAM Market PDF adapter) + M10 (FastAPI backend migration, differential-verified) + M12 (Flutter mobile MVP) implemented; M14 (public web prototype) implemented on branch `m14-web-evaluation` — see [current status](docs/milestones/current-status.md).** No deployed implementation is implied.
 
 Initial focus: North Macedonia. Expansion: other countries, retailers and product categories.
 
@@ -90,6 +90,20 @@ Latin search, verified cross-retailer comparison and price history, and a local
 basket optimized deterministically **server-side**. See `mobile/README.md` for
 setup, run, test and build commands. Status and evidence:
 `docs/milestones/m12-results.md`.
+
+## Web prototype (M14, branch `m14-web-evaluation`)
+
+`web/` is a standalone **server-rendered FastAPI + Jinja2** public site
+(ADR-0007): home with live data-freshness, catalogue search (Cyrillic and
+transliterated Latin input), verified cross-retailer comparisons with stable
+canonical detail URLs, and a guest basket in browser localStorage optimized by
+the same **server-side** deterministic optimizer. SEO-first: full HTML in the
+first response, `lang="mk"`, canonical URLs, robots/sitemap limited to stable
+pages, no trackers or third-party scripts. Run: `cd web && pip install -r
+requirements.txt`, then `uvicorn app.main:create_app --factory --port 8090`
+with `API_BASE_URL` pointing at the backend. See `web/README.md`,
+`docs/research/m14-web-stack-evaluation.md` and
+`docs/milestones/m14-results.md`.
 
 ## Model Context Protocol (MCP) Server
 

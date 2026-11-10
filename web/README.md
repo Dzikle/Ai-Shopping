@@ -53,7 +53,7 @@ Open `http://localhost:8090/`.
 
 ```powershell
 cd web
-.venv\Scripts\python.exe -m pytest tests -q     # 33 tests (2026-11-10)
+.venv\Scripts\python.exe -m pytest tests -q     # 34 tests (2026-11-10)
 ```
 
 The suite covers: server-rendered search/compare/basket pages against a real

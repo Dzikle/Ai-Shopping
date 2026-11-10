@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from typing import Any
 
 from fastapi import Body, FastAPI, Query, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
 from fastapi.templating import Jinja2Templates
 
@@ -105,6 +106,19 @@ def register(app: FastAPI) -> None:
             status_code=404,
         )
 
+    @app.exception_handler(RequestValidationError)
+    def validation_handler(request: Request, exc: RequestValidationError):
+        # Bad GET paths (e.g. /compare/abc) get the HTML error page; the JSON
+        # optimize relay keeps machine-readable 422 semantics for its client.
+        if request.method == "POST":
+            return JSONResponse(status_code=422, content={"error": "invalid_payload"})
+        return _render(
+            request,
+            "error.html",
+            {"title": "Страницата не е пронајдена", "code": 404, "detail": None},
+            status_code=404,
+        )
+
     # ---- home ------------------------------------------------------------
 
     @app.get("/")
@@ -170,6 +184,7 @@ def register(app: FastAPI) -> None:
                 "total": total,
                 "page": page,
                 "pages": pages,
+                "freshness_summary": _freshness_summary(),
             },
         )
 

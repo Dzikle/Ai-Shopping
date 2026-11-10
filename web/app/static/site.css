@@ -181,5 +181,7 @@ button.secondary { background: var(--surface); color: var(--ink); border-color: 
   .filters { align-items: stretch; flex-direction: column; }
   .filters select, .filters input[type="search"] { width: 100%; }
   .compare-table { display: block; overflow-x: auto; }
-  .nav { gap: 0.4rem; }
+  .nav { gap: 0.3rem 0.5rem; }
+  .nav a { padding: 0.25rem 0.35rem; }
+  .nav-basket { margin-left: 0; }
 }

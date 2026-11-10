@@ -10,7 +10,7 @@ As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `
 
 ## Next approved task
 
-**M14 public web frontend evaluation and functional prototype is owner-approved (2026-11-10).** Read `docs/milestones/m14-web-frontend-evaluation-task.md`; start an isolated `m14-web-evaluation` branch from current `main`. Build one HTML-first FastAPI-backed search/comparison/basket browser slice with verifiable SEO and an evidence-based stack choice. M13 PR #4 passed backend + Flutter CI but remains OPEN/unmerged; do not accidentally merge M13 into M14. M13 live-model verification is still pending. No unapproved paid model/provider, public deployment, Java rollback deletion, M15 or M16.
+**M14 web evaluation + prototype was implemented 2026-11-10 on branch `m14-web-evaluation`** per `docs/milestones/m14-web-frontend-evaluation-task.md`; decision in ADR-0007 (standalone server-rendered FastAPI+Jinja2 app in `web/`), evidence in `docs/milestones/m14-results.md`. Owner follow-up decisions: (a) review/merge this PR, (b) review/merge the still-open M13 PR #4 (do not auto-merge), (c) live-catalogue browser smoke in an environment where Docker runs, (d) any M15 approval. M13 live-model verification is still pending. No unapproved paid model/provider, public deployment, Java rollback deletion, M15 or M16.
 
 ## Mandatory engineering rules
 
@@ -32,6 +32,22 @@ As of 2026-11-10, `main` contains backend/data milestones M1–M10 (FastAPI in `
 - ~~M12 mobile MVP~~ Merged into `main` (2026-11-09), pending owner review - see `docs/milestones/m12-results.md`.
 - **M13 AI assistant** — implemented on `m13-ai-shopping-assistant` with 42 backend / 29 Flutter tests, PR #4 open and green; live-model verification pending. Do not represent this branch as merged.
 - **M14 web evaluation + working prototype** — approved 2026-11-10; execute `docs/milestones/m14-web-frontend-evaluation-task.md` from `main` without silently taking code from M13.
+
+## Web development (M14+)
+
+- The web prototype lives in `web/` (FastAPI + Jinja2, ADR-0007): a standalone
+  server-rendered app consuming only the public REST API (`API_BASE_URL`,
+  default `http://127.0.0.1:18089`). Run tests with
+  `web/.venv\Scripts\python.exe -m pytest tests -q`; smoke with
+  `web/tools/browser_smoke.py` (requires the fixture API runner and Playwright).
+- The browser never computes money/quantities: page HTML is server-rendered,
+  the basket lives in browser localStorage, and optimization totals are
+  rendered verbatim from `POST /basket/optimize` → backend optimizer
+  (coverage-first semantics preserved).
+- Keep the guest surface read-only: no admin endpoints, no `/mcp`, no secrets
+  in the web tier; `robots.txt`/`sitemap.xml` list only stable URLs.
+- New UI strings are Macedonian-first in `web/app/templates`; formatters in
+  `web/app/formatting.py` are test-pinned to M12 output parity.
 
 ## Mobile development (M12+)
 

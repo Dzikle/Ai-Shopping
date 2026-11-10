@@ -76,6 +76,15 @@ def format_datetime(value) -> str:
     return f"{format_date(stamp)} {_two(stamp.hour)}:{_two(stamp.minute)}"
 
 
+def mk_noun(value, singular: str, plural: str) -> str:
+    """Pick the Macedonian noun form for a count (1 -> singular, 11 excepted)."""
+    try:
+        n = int(value or 0)
+    except (TypeError, ValueError):
+        return plural
+    return singular if n % 10 == 1 and n % 100 != 11 else plural
+
+
 def format_price_range(min_value, max_value) -> str:
     """`85,00–99,00 ден.`; a single value renders once."""
     if min_value is None and max_value is None:
